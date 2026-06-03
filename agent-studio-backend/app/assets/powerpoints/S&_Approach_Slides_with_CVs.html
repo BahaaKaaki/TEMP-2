@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Approach Slides</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+:root{--slide-w:960px;--slide-h:540px;--left-x:35px;--frame-w:890px;--bg:#fff;--text-main:#2d2d2d;--text-light:#5e5e5e;--brand-red:#A32020;--brand-red-dark:#7a1818;--brand-red-light:#FDF2F4;--grey-light:#f4f4f4;--grey-border:#e0e0e0;--gap:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#eef1f5;font-family:Arial,sans-serif;color:var(--text-main)}
+.deck{display:flex;flex-direction:column;gap:40px;padding:40px;max-width:1020px;margin:0 auto;padding-bottom:120px}
+.slide-section{display:flex;flex-direction:column;gap:12px}
+.slide-label{font-size:12px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.slide{position:relative;width:var(--slide-w);height:var(--slide-h);background:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.title{position:absolute;left:var(--left-x);top:30px;width:var(--frame-w);font:400 28px/1.1 Georgia,serif;color:var(--text-main)}
+.subtitle{position:absolute;left:var(--left-x);top:100px;width:var(--frame-w);font:700 18px/1.2 Arial,sans-serif;color:var(--brand-red)}
+.frame{position:absolute;left:var(--left-x);top:137px;width:var(--frame-w);height:350px}
+.slide-footer{position:absolute;left:var(--left-x);bottom:20px;width:var(--frame-w);display:flex;justify-content:space-between;font-size:12px;color:#888}
+
+/* APPROACH SLIDE */
+.approach-container{display:flex;flex-direction:column;height:100%}
+.phases-row{display:flex;gap:20px}
+.phase-block{flex:1;background:#fff;border:1px solid var(--grey-border);border-top:5px solid var(--brand-red);padding:20px;display:flex;flex-direction:column;height:320px}
+.phase-header{display:flex;align-items:center;gap:14px;margin-bottom:18px;height:50px}
+.phase-num{width:44px;height:44px;background:var(--brand-red);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.phase-titles{display:flex;flex-direction:column}
+.phase-title{font-size:16px;font-weight:700;color:var(--text-main)}
+.phase-duration{font-size:12px;color:var(--text-light);margin-top:2px}
+.substeps{display:flex;flex-direction:column;gap:10px}
+.substep{display:flex;align-items:center;gap:5px;padding:12px 14px;background:var(--grey-light);border-left:3px solid var(--brand-red);height:52px}
+.substep-num{font-size:14px;font-weight:700;color:var(--brand-red);min-width:22px;white-space:nowrap}
+.substep-text{font-size:12px;color:var(--text-main)}
+
+/* 4-STEP VARIANT */
+.phases-row-4{gap:14px}
+.phase-block-4{padding:16px;height:310px}
+.phase-num-sm{width:38px;height:38px;font-size:18px}
+.phase-title-sm{font-size:15px}
+.substep-4{padding:10px 12px;height:46px;gap:4px}
+.substep-4 .substep-num{min-width:18px}
+
+/* 5-STEP VARIANT */
+.phases-row-5{gap:10px}
+.phase-block-5{padding:14px;height:280px}
+.phase-header-5{gap:10px;margin-bottom:14px}
+.phase-num-xs{width:34px;height:34px;font-size:16px}
+.phase-title-xs{font-size:14px}
+.substep-5{padding:10px;height:44px;gap:4px}
+.substep-num-sm{font-size:12px;min-width:18px}
+
+/* HORIZONTAL APPROACH */
+.horiz-approach{display:flex;flex-direction:column;height:100%;gap:20px}
+.horiz-phases{display:flex;align-items:stretch;gap:8px;flex:1}
+.horiz-phase{flex:1;background:#fff;border:1px solid var(--grey-border);border-top:5px solid var(--brand-red);padding:16px;display:flex;flex-direction:column}
+.horiz-phase-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--grey-border)}
+.horiz-num{width:40px;height:40px;background:var(--brand-red);color:#fff;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.horiz-title{font-size:15px;font-weight:700;color:var(--text-main)}
+.horiz-duration{font-size:12px;color:var(--text-light);margin-left:auto}
+.horiz-content{display:flex;flex-direction:column;gap:8px}
+.horiz-item{display:flex;align-items:center;gap:4px;padding:10px 12px;background:var(--grey-light);border-left:3px solid var(--brand-red);font-size:12px;color:var(--text-main)}
+.horiz-bullet{font-size:12px;font-weight:700;color:var(--brand-red);min-width:18px}
+.horiz-arrow{display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--brand-red);padding:0 4px}
+.horiz-crosscut{margin-top:auto}
+.crosscut-bar{display:flex;align-items:center;gap:16px;padding:14px 20px;background:var(--brand-red);border-radius:2px}
+.crosscut-num{font-size:18px;color:#fff;font-weight:700}
+.crosscut-title{font-size:14px;font-weight:700;color:#fff;min-width:240px}
+.crosscut-items{display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,0.9)}
+.crosscut-items span{white-space:nowrap}
+
+/* HORIZONTAL 4-STEP VARIANT */
+.horiz-phases-4{gap:6px}
+.horiz-phase-4{padding:12px}
+.horiz-num-sm{width:34px;height:34px;font-size:16px}
+.horiz-title-sm{font-size:14px}
+.horiz-item-sm{padding:8px 10px;gap:3px}
+
+/* DETAIL SLIDE */
+.detail-container{display:grid;grid-template-columns:1fr 300px;gap:20px;height:100%}
+.activities-section{display:flex;flex-direction:column;overflow:hidden}
+.section-header{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--brand-red)}
+.section-icon{width:24px;height:24px;color:var(--brand-red)}
+.section-title{font-size:14px;font-weight:700;color:var(--text-main)}
+.activity-group{margin-bottom:10px}
+.activity-substep{font-size:13px;font-weight:700;color:var(--brand-red);margin-bottom:5px;display:flex;align-items:center;gap:8px}
+.activity-substep::before{content:"";width:8px;height:8px;background:var(--brand-red);border-radius:50%}
+.activity-list{display:flex;flex-direction:column;gap:5px;padding-left:16px}
+.activity-item{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text-main);padding:6px 10px;background:var(--grey-light);border-radius:2px}
+.activity-item::before{content:"→";color:var(--brand-red);font-weight:700}
+.outcomes-section{background:var(--brand-red-light);border:1px solid var(--brand-red);border-top:5px solid var(--brand-red);padding:14px;display:flex;flex-direction:column}
+.outcomes-header{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.outcomes-icon{width:22px;height:22px;color:var(--brand-red-dark)}
+.outcomes-title{font-size:13px;font-weight:700;color:var(--brand-red-dark);text-transform:uppercase;letter-spacing:0.05em}
+.outcome-list{display:flex;flex-direction:column;gap:8px}
+.outcome-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:#fff;border:1px solid var(--grey-border);border-left:4px solid var(--brand-red)}
+.outcome-num{width:22px;height:22px;background:var(--brand-red);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.outcome-text{font-size:12px;font-weight:600;color:var(--text-main)}
+
+.controls{position:fixed;bottom:24px;right:40px;display:flex;gap:14px;align-items:center;z-index:1000}
+button{background:linear-gradient(135deg,#A32020,#7a1818);color:#fff;border:none;padding:16px 32px;font-size:14px;cursor:pointer;border-radius:4px;font-weight:700;box-shadow:0 8px 24px rgba(163,32,32,.3);text-transform:uppercase;letter-spacing:1px}
+button:hover{background:linear-gradient(135deg,#7a1818,#5a1010)}
+.slide-count{font-size:14px;color:#666;background:#fff;padding:10px 18px;border-radius:4px;border:1px solid var(--grey-border)}
+
+/* CV SLIDE */
+.cv-container{display:flex;height:100%;position:absolute;left:0;top:0;right:0;bottom:0}
+.cv-left{width:320px;background:#2d2d2d;padding:30px 25px;color:#fff;display:flex;flex-direction:column}
+.cv-photo{width:100px;height:100px;background:#555;border-radius:50%;margin-bottom:16px}
+.cv-name{font:700 22px/1.2 Georgia,serif;color:#fff;margin-bottom:4px}
+.cv-level{font:700 14px Arial,sans-serif;color:var(--brand-red);margin-bottom:20px;text-transform:uppercase;letter-spacing:0.5px}
+.cv-section{margin-bottom:18px}
+.cv-section-title{font:700 12px Arial,sans-serif;color:var(--brand-red);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #444}
+.cv-text{font:400 12px/1.5 Arial,sans-serif;color:#ccc}
+.cv-exp-item{margin-bottom:10px}
+.cv-exp-company{font:600 12px Arial,sans-serif;color:#fff}
+.cv-exp-role{font:400 12px Arial,sans-serif;color:#999}
+.cv-edu-item{font:400 12px/1.6 Arial,sans-serif;color:#ccc}
+.cv-right{flex:1;background:#fff;padding:30px 35px}
+.cv-cases-title{font:700 18px Georgia,serif;color:var(--text-main);margin-bottom:20px;padding-bottom:12px;border-bottom:3px solid var(--brand-red)}
+.cv-cases-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.cv-case{padding:16px;background:var(--grey-light);border-left:4px solid var(--brand-red)}
+.cv-case-title{font:700 13px Arial,sans-serif;color:var(--text-main);margin-bottom:10px}
+.cv-case-bullets{list-style:none;display:flex;flex-direction:column;gap:6px}
+.cv-case-bullets li{font:400 12px/1.4 Arial,sans-serif;color:var(--text-light);padding-left:14px;position:relative}
+.cv-case-bullets li::before{content:"•";color:var(--brand-red);position:absolute;left:0;font-weight:700}
+
+/* TEAM SLIDES */
+.team-grid{display:flex;gap:24px;height:100%}
+.team-grid-4{justify-content:space-between}
+.team-grid-3{justify-content:center}
+.team-card{background:#fff;border:1px solid var(--grey-border);border-top:5px solid var(--brand-red);padding:24px 20px;display:flex;flex-direction:column;align-items:center;text-align:center;width:200px}
+.team-card-wide{width:270px;padding:28px 24px}
+.team-photo{width:80px;height:80px;background:var(--grey-light);border-radius:50%;margin-bottom:16px;border:3px solid var(--grey-border)}
+.team-photo-lg{width:100px;height:100px}
+.team-info{display:flex;flex-direction:column;align-items:center}
+.team-name{font:700 16px Georgia,serif;color:var(--text-main);margin-bottom:4px}
+.team-role{font:700 12px Arial,sans-serif;color:var(--brand-red);text-transform:uppercase;letter-spacing:0.3px;margin-bottom:12px}
+.team-desc{font:400 12px/1.5 Arial,sans-serif;color:var(--text-light)}
+
+.page-title{text-align:center;padding:30px 0 10px;font:400 32px Georgia,serif;color:#2d2d2d}
+.page-subtitle{text-align:center;color:#666;font-size:14px;margin-bottom:20px}
+</style>
+</head>
+<body>
+<div class="page-title">Transformation Approach</div>
+<div class="page-subtitle">11 Slides • Approach Examples + Team Credentials</div>
+<div class="controls"><span class="slide-count">11 slides</span><button onclick="generatePPTX()">Download PPTX</button></div>
+
+<main class="deck">
+
+<!-- SLIDE 1: APPROACH OVERVIEW -->
+<div class="slide-section">
+<div class="slide-label">Slide 1 — Approach Overview</div>
+<div class="slide">
+<h1 class="title">We suggest a three-phase approach</h1>
+<h2 class="subtitle">Proposed Approach</h2>
+<div class="frame">
+<div class="approach-container">
+<div class="phases-row">
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div class="phase-titles"><div class="phase-title">Discover & Diagnose</div><div class="phase-duration">Weeks 1–4</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep"><span class="substep-num">1</span><span class="substep-text">Stakeholder Alignment & Interviews</span></div>
+      <div class="substep"><span class="substep-num">2</span><span class="substep-text">Current State Assessment</span></div>
+      <div class="substep"><span class="substep-num">3</span><span class="substep-text">Gap Analysis & Prioritization</span></div>
+    </div>
+  </div>
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div class="phase-titles"><div class="phase-title">Design & Develop</div><div class="phase-duration">Weeks 5–10</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep"><span class="substep-num">1</span><span class="substep-text">Solution Architecture & Blueprint</span></div>
+      <div class="substep"><span class="substep-num">2</span><span class="substep-text">Process Redesign & Optimization</span></div>
+      <div class="substep"><span class="substep-num">3</span><span class="substep-text">Change Roadmap & Governance</span></div>
+    </div>
+  </div>
+  <div class="phase-block">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div class="phase-titles"><div class="phase-title">Deploy & Deliver</div><div class="phase-duration">Weeks 11–16</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep"><span class="substep-num">1</span><span class="substep-text">Pilot Implementation & Testing</span></div>
+      <div class="substep"><span class="substep-num">2</span><span class="substep-text">Training & Capability Building</span></div>
+      <div class="substep"><span class="substep-num">3</span><span class="substep-text">Full Rollout & Transition</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Transformation approach</span><span>1 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 2: 4-STEP APPROACH -->
+<div class="slide-section">
+<div class="slide-label">Slide 2 — 4-Step Approach</div>
+<div class="slide">
+<h1 class="title">Four-phase methodology ensures comprehensive coverage</h1>
+<h2 class="subtitle">Proposed Approach</h2>
+<div class="frame">
+<div class="approach-container">
+<div class="phases-row phases-row-4">
+  <div class="phase-block phase-block-4">
+    <div class="phase-header">
+      <div class="phase-num phase-num-sm">1</div>
+      <div class="phase-titles"><div class="phase-title phase-title-sm">Assess</div><div class="phase-duration">Weeks 1–3</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-4"><span class="substep-num">1</span><span class="substep-text">Stakeholder Interviews</span></div>
+      <div class="substep substep-4"><span class="substep-num">2</span><span class="substep-text">Current State Analysis</span></div>
+      <div class="substep substep-4"><span class="substep-num">3</span><span class="substep-text">Gap Identification</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-4">
+    <div class="phase-header">
+      <div class="phase-num phase-num-sm">2</div>
+      <div class="phase-titles"><div class="phase-title phase-title-sm">Design</div><div class="phase-duration">Weeks 4–7</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-4"><span class="substep-num">1</span><span class="substep-text">Solution Architecture</span></div>
+      <div class="substep substep-4"><span class="substep-num">2</span><span class="substep-text">Process Redesign</span></div>
+      <div class="substep substep-4"><span class="substep-num">3</span><span class="substep-text">Roadmap Development</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-4">
+    <div class="phase-header">
+      <div class="phase-num phase-num-sm">3</div>
+      <div class="phase-titles"><div class="phase-title phase-title-sm">Build</div><div class="phase-duration">Weeks 8–14</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-4"><span class="substep-num">1</span><span class="substep-text">Pilot Development</span></div>
+      <div class="substep substep-4"><span class="substep-num">2</span><span class="substep-text">Testing & Iteration</span></div>
+      <div class="substep substep-4"><span class="substep-num">3</span><span class="substep-text">Training Programs</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-4">
+    <div class="phase-header">
+      <div class="phase-num phase-num-sm">4</div>
+      <div class="phase-titles"><div class="phase-title phase-title-sm">Scale</div><div class="phase-duration">Weeks 15–20</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-4"><span class="substep-num">1</span><span class="substep-text">Enterprise Rollout</span></div>
+      <div class="substep substep-4"><span class="substep-num">2</span><span class="substep-text">Change Management</span></div>
+      <div class="substep substep-4"><span class="substep-num">3</span><span class="substep-text">BAU Transition</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>4-step approach</span><span>2 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 3: 5-STEP APPROACH -->
+<div class="slide-section">
+<div class="slide-label">Slide 3 — 5-Step Approach</div>
+<div class="slide">
+<h1 class="title">Five-phase program delivers end-to-end transformation</h1>
+<h2 class="subtitle">Proposed Approach</h2>
+<div class="frame">
+<div class="approach-container">
+<div class="phases-row phases-row-5">
+  <div class="phase-block phase-block-5">
+    <div class="phase-header phase-header-5">
+      <div class="phase-num phase-num-xs">1</div>
+      <div class="phase-titles"><div class="phase-title phase-title-xs">Mobilize</div><div class="phase-duration">Wk 1–2</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">1</span><span class="substep-text">Team Setup</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">2</span><span class="substep-text">Governance</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">3</span><span class="substep-text">Work Planning</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-5">
+    <div class="phase-header phase-header-5">
+      <div class="phase-num phase-num-xs">2</div>
+      <div class="phase-titles"><div class="phase-title phase-title-xs">Discover</div><div class="phase-duration">Wk 3–6</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">1</span><span class="substep-text">Diagnostics</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">2</span><span class="substep-text">Benchmarks</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">3</span><span class="substep-text">Gap Analysis</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-5">
+    <div class="phase-header phase-header-5">
+      <div class="phase-num phase-num-xs">3</div>
+      <div class="phase-titles"><div class="phase-title phase-title-xs">Design</div><div class="phase-duration">Wk 7–10</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">1</span><span class="substep-text">Target Model</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">2</span><span class="substep-text">Business Case</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">3</span><span class="substep-text">Roadmap</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-5">
+    <div class="phase-header phase-header-5">
+      <div class="phase-num phase-num-xs">4</div>
+      <div class="phase-titles"><div class="phase-title phase-title-xs">Implement</div><div class="phase-duration">Wk 11–18</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">1</span><span class="substep-text">Pilot & Test</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">2</span><span class="substep-text">Full Rollout</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">3</span><span class="substep-text">Training</span></div>
+    </div>
+  </div>
+  <div class="phase-block phase-block-5">
+    <div class="phase-header phase-header-5">
+      <div class="phase-num phase-num-xs">5</div>
+      <div class="phase-titles"><div class="phase-title phase-title-xs">Sustain</div><div class="phase-duration">Wk 19–24</div></div>
+    </div>
+    <div class="substeps">
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">1</span><span class="substep-text">Embed Change</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">2</span><span class="substep-text">Handover</span></div>
+      <div class="substep substep-5"><span class="substep-num substep-num-sm">3</span><span class="substep-text">BAU Support</span></div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>5-step approach</span><span>3 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 4: HORIZONTAL 3-STEP -->
+<div class="slide-section">
+<div class="slide-label">Slide 4 — Horizontal 3-Step</div>
+<div class="slide">
+<h1 class="title">Phased delivery ensures structured implementation</h1>
+<h2 class="subtitle">Proposed Approach</h2>
+<div class="frame">
+<div class="horiz-approach">
+  <div class="horiz-phases">
+    <div class="horiz-phase">
+      <div class="horiz-phase-header">
+        <div class="horiz-num">1</div>
+        <div class="horiz-title">Discover & Diagnose</div>
+        <div class="horiz-duration">Weeks 1–4</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item"><span class="horiz-bullet">1</span>Stakeholder alignment & interviews</div>
+        <div class="horiz-item"><span class="horiz-bullet">2</span>Current state assessment</div>
+        <div class="horiz-item"><span class="horiz-bullet">3</span>Gap analysis & prioritization</div>
+      </div>
+    </div>
+    <div class="horiz-arrow">▶</div>
+    <div class="horiz-phase">
+      <div class="horiz-phase-header">
+        <div class="horiz-num">2</div>
+        <div class="horiz-title">Design & Develop</div>
+        <div class="horiz-duration">Weeks 5–10</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item"><span class="horiz-bullet">1</span>Solution architecture & blueprint</div>
+        <div class="horiz-item"><span class="horiz-bullet">2</span>Process redesign & optimization</div>
+        <div class="horiz-item"><span class="horiz-bullet">3</span>Change roadmap & governance</div>
+      </div>
+    </div>
+    <div class="horiz-arrow">▶</div>
+    <div class="horiz-phase">
+      <div class="horiz-phase-header">
+        <div class="horiz-num">3</div>
+        <div class="horiz-title">Deploy & Deliver</div>
+        <div class="horiz-duration">Weeks 11–16</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item"><span class="horiz-bullet">1</span>Pilot implementation & testing</div>
+        <div class="horiz-item"><span class="horiz-bullet">2</span>Training & capability building</div>
+        <div class="horiz-item"><span class="horiz-bullet">3</span>Full rollout & transition</div>
+      </div>
+    </div>
+  </div>
+  <div class="horiz-crosscut">
+    <div class="crosscut-bar">
+      <div class="crosscut-num">▸</div>
+      <div class="crosscut-title">Change Management & Communications</div>
+      <div class="crosscut-items">
+        <span>Stakeholder engagement</span>
+        <span>•</span>
+        <span>Training programs</span>
+        <span>•</span>
+        <span>Knowledge transfer</span>
+        <span>•</span>
+        <span>Adoption monitoring</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Horizontal approach</span><span>4 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 5: HORIZONTAL 4-STEP -->
+<div class="slide-section">
+<div class="slide-label">Slide 5 — Horizontal 4-Step</div>
+<div class="slide">
+<h1 class="title">Four workstreams drive parallel execution</h1>
+<h2 class="subtitle">Proposed Approach</h2>
+<div class="frame">
+<div class="horiz-approach">
+  <div class="horiz-phases horiz-phases-4">
+    <div class="horiz-phase horiz-phase-4">
+      <div class="horiz-phase-header">
+        <div class="horiz-num horiz-num-sm">1</div>
+        <div class="horiz-title horiz-title-sm">Assess</div>
+        <div class="horiz-duration">Wk 1–3</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">1</span>Interviews</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">2</span>Analysis</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">3</span>Prioritization</div>
+      </div>
+    </div>
+    <div class="horiz-arrow">▶</div>
+    <div class="horiz-phase horiz-phase-4">
+      <div class="horiz-phase-header">
+        <div class="horiz-num horiz-num-sm">2</div>
+        <div class="horiz-title horiz-title-sm">Design</div>
+        <div class="horiz-duration">Wk 4–7</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">1</span>Architecture</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">2</span>Processes</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">3</span>Roadmap</div>
+      </div>
+    </div>
+    <div class="horiz-arrow">▶</div>
+    <div class="horiz-phase horiz-phase-4">
+      <div class="horiz-phase-header">
+        <div class="horiz-num horiz-num-sm">3</div>
+        <div class="horiz-title horiz-title-sm">Build</div>
+        <div class="horiz-duration">Wk 8–14</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">1</span>Development</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">2</span>Testing</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">3</span>Training</div>
+      </div>
+    </div>
+    <div class="horiz-arrow">▶</div>
+    <div class="horiz-phase horiz-phase-4">
+      <div class="horiz-phase-header">
+        <div class="horiz-num horiz-num-sm">4</div>
+        <div class="horiz-title horiz-title-sm">Scale</div>
+        <div class="horiz-duration">Wk 15–20</div>
+      </div>
+      <div class="horiz-content">
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">1</span>Rollout</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">2</span>Change Mgmt</div>
+        <div class="horiz-item horiz-item-sm"><span class="horiz-bullet">3</span>Transition</div>
+      </div>
+    </div>
+  </div>
+  <div class="horiz-crosscut">
+    <div class="crosscut-bar">
+      <div class="crosscut-num">▸</div>
+      <div class="crosscut-title">Knowledge Transfer & Enablement</div>
+      <div class="crosscut-items">
+        <span>Documentation</span>
+        <span>•</span>
+        <span>Capability building</span>
+        <span>•</span>
+        <span>Tool training</span>
+        <span>•</span>
+        <span>Handover support</span>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Horizontal 4-step</span><span>5 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 2: STEP 1 DETAIL -->
+<div class="slide-section">
+<div class="slide-label">Slide 6 — Step 1: Discover & Diagnose</div>
+<div class="slide">
+<h1 class="title">Establish baseline understanding and identify priority improvement areas</h1>
+<h2 class="subtitle">Step 1: Discover & Diagnose</h2>
+<div class="frame">
+<div class="detail-container">
+  <div class="activities-section">
+    <div class="section-header">
+      <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+      <span class="section-title">Key Activities</span>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">1.1 Stakeholder Alignment & Interviews</div>
+      <div class="activity-list">
+        <div class="activity-item">Conduct executive sponsor interviews to confirm vision and success criteria</div>
+        <div class="activity-item">Facilitate cross-functional working sessions with key process owners</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">1.2 Current State Assessment</div>
+      <div class="activity-list">
+        <div class="activity-item">Map existing processes, systems, and data flows across functions</div>
+        <div class="activity-item">Benchmark performance against industry standards and best practices</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">1.3 Gap Analysis & Prioritization</div>
+      <div class="activity-list">
+        <div class="activity-item">Identify capability gaps and root causes of performance issues</div>
+        <div class="activity-item">Develop prioritized opportunity matrix based on value and feasibility</div>
+      </div>
+    </div>
+  </div>
+  <div class="outcomes-section">
+    <div class="outcomes-header">
+      <svg class="outcomes-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="outcomes-title">Deliverables</span>
+    </div>
+    <div class="outcome-list">
+      <div class="outcome-item"><span class="outcome-num">1</span><span class="outcome-text">Stakeholder Interview Synthesis Report</span></div>
+      <div class="outcome-item"><span class="outcome-num">2</span><span class="outcome-text">Current State Process Maps & Pain Points</span></div>
+      <div class="outcome-item"><span class="outcome-num">3</span><span class="outcome-text">Benchmarking Analysis & Scorecard</span></div>
+      <div class="outcome-item"><span class="outcome-num">4</span><span class="outcome-text">Prioritized Opportunity Roadmap</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Discover & Diagnose</span><span>6 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 3: STEP 2 DETAIL -->
+<div class="slide-section">
+<div class="slide-label">Slide 7 — Step 2: Design & Develop</div>
+<div class="slide">
+<h1 class="title">Architect target state solutions and build implementation roadmap</h1>
+<h2 class="subtitle">Step 2: Design & Develop</h2>
+<div class="frame">
+<div class="detail-container">
+  <div class="activities-section">
+    <div class="section-header">
+      <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>
+      <span class="section-title">Key Activities</span>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">2.1 Solution Architecture & Blueprint</div>
+      <div class="activity-list">
+        <div class="activity-item">Define target operating model with roles, responsibilities, and governance</div>
+        <div class="activity-item">Design technology architecture and integration requirements</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">2.2 Process Redesign & Optimization</div>
+      <div class="activity-list">
+        <div class="activity-item">Develop future-state process flows with automation opportunities</div>
+        <div class="activity-item">Define KPIs and measurement framework for continuous improvement</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">2.3 Change Roadmap & Governance</div>
+      <div class="activity-list">
+        <div class="activity-item">Build phased implementation plan with dependencies and milestones</div>
+        <div class="activity-item">Establish governance structure and decision-making protocols</div>
+      </div>
+    </div>
+  </div>
+  <div class="outcomes-section">
+    <div class="outcomes-header">
+      <svg class="outcomes-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="outcomes-title">Deliverables</span>
+    </div>
+    <div class="outcome-list">
+      <div class="outcome-item"><span class="outcome-num">1</span><span class="outcome-text">Target Operating Model Blueprint</span></div>
+      <div class="outcome-item"><span class="outcome-num">2</span><span class="outcome-text">Future-State Process Documentation</span></div>
+      <div class="outcome-item"><span class="outcome-num">3</span><span class="outcome-text">Technology Architecture & Requirements</span></div>
+      <div class="outcome-item"><span class="outcome-num">4</span><span class="outcome-text">Implementation Roadmap & Governance Charter</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Design & Develop</span><span>7 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 4: STEP 3 DETAIL -->
+<div class="slide-section">
+<div class="slide-label">Slide 8 — Step 3: Deploy & Deliver</div>
+<div class="slide">
+<h1 class="title">Execute implementation with structured pilots and enterprise rollout</h1>
+<h2 class="subtitle">Step 3: Deploy & Deliver</h2>
+<div class="frame">
+<div class="detail-container">
+  <div class="activities-section">
+    <div class="section-header">
+      <svg class="section-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      <span class="section-title">Key Activities</span>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">3.1 Pilot Implementation & Testing</div>
+      <div class="activity-list">
+        <div class="activity-item">Execute controlled pilot with selected business unit or geography</div>
+        <div class="activity-item">Conduct user acceptance testing and iterate based on feedback</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">3.2 Training & Capability Building</div>
+      <div class="activity-list">
+        <div class="activity-item">Develop training curriculum and enablement materials</div>
+        <div class="activity-item">Deliver train-the-trainer sessions and certification programs</div>
+      </div>
+    </div>
+    <div class="activity-group">
+      <div class="activity-substep">3.3 Full Rollout & Transition</div>
+      <div class="activity-list">
+        <div class="activity-item">Execute enterprise-wide deployment with hypercare support</div>
+        <div class="activity-item">Transition to business-as-usual with continuous improvement cadence</div>
+      </div>
+    </div>
+  </div>
+  <div class="outcomes-section">
+    <div class="outcomes-header">
+      <svg class="outcomes-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span class="outcomes-title">Deliverables</span>
+    </div>
+    <div class="outcome-list">
+      <div class="outcome-item"><span class="outcome-num">1</span><span class="outcome-text">Pilot Results & Lessons Learned Report</span></div>
+      <div class="outcome-item"><span class="outcome-num">2</span><span class="outcome-text">Training Materials & Certification Framework</span></div>
+      <div class="outcome-item"><span class="outcome-num">3</span><span class="outcome-text">Deployed Solution with User Adoption Metrics</span></div>
+      <div class="outcome-item"><span class="outcome-num">4</span><span class="outcome-text">BAU Transition Plan & Support Model</span></div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Deploy & Deliver</span><span>8 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 5: INDIVIDUAL CV -->
+<div class="slide-section">
+<div class="slide-label">Slide 9 — Consultant CV</div>
+<div class="slide">
+<div class="cv-container">
+  <div class="cv-left">
+    <div class="cv-photo"></div>
+    <h2 class="cv-name">Sarah Mitchell</h2>
+    <div class="cv-level">Director</div>
+    <div class="cv-section">
+      <div class="cv-section-title">Summary</div>
+      <p class="cv-text">15+ years experience in digital transformation and operating model design across financial services and technology sectors. Specialized in large-scale change programs and post-merger integration.</p>
+    </div>
+    <div class="cv-section">
+      <div class="cv-section-title">Previous Experience</div>
+      <div class="cv-exp-item">
+        <div class="cv-exp-company">McKinsey & Company</div>
+        <div class="cv-exp-role">Associate Partner • 2018–2022</div>
+      </div>
+      <div class="cv-exp-item">
+        <div class="cv-exp-company">Deloitte Consulting</div>
+        <div class="cv-exp-role">Senior Manager • 2014–2018</div>
+      </div>
+      <div class="cv-exp-item">
+        <div class="cv-exp-company">JP Morgan Chase</div>
+        <div class="cv-exp-role">VP Operations • 2010–2014</div>
+      </div>
+    </div>
+    <div class="cv-section">
+      <div class="cv-section-title">Education</div>
+      <div class="cv-edu-item">MBA, Harvard Business School</div>
+      <div class="cv-edu-item">BSc Economics, LSE</div>
+    </div>
+  </div>
+  <div class="cv-right">
+    <div class="cv-cases-title">Relevant Experience</div>
+    <div class="cv-cases-grid">
+      <div class="cv-case">
+        <div class="cv-case-title">Global Bank Digital Transformation</div>
+        <ul class="cv-case-bullets">
+          <li>Led $500M digital modernization program across 12 countries</li>
+          <li>Reduced operational costs by 35% through process automation</li>
+          <li>Delivered new mobile platform serving 8M customers</li>
+        </ul>
+      </div>
+      <div class="cv-case">
+        <div class="cv-case-title">Telecom Operating Model Redesign</div>
+        <ul class="cv-case-bullets">
+          <li>Designed target operating model for merged entity</li>
+          <li>Identified $120M annual synergies in first 18 months</li>
+          <li>Led integration of 2,500 FTEs across functions</li>
+        </ul>
+      </div>
+      <div class="cv-case">
+        <div class="cv-case-title">Insurance Claims Optimization</div>
+        <ul class="cv-case-bullets">
+          <li>Implemented AI-driven claims processing system</li>
+          <li>Reduced average claim resolution time by 60%</li>
+          <li>Achieved 95% customer satisfaction rating</li>
+        </ul>
+      </div>
+      <div class="cv-case">
+        <div class="cv-case-title">Retail Bank Branch Network Strategy</div>
+        <ul class="cv-case-bullets">
+          <li>Developed omnichannel distribution strategy</li>
+          <li>Rationalized 400 branches while improving NPS</li>
+          <li>Launched digital-first service model</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Team credentials</span><span>9 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 6: TEAM PAGE (4 profiles) -->
+<div class="slide-section">
+<div class="slide-label">Slide 10 — Core Team</div>
+<div class="slide">
+<h1 class="title">Core project team brings deep sector expertise</h1>
+<h2 class="subtitle">Project Team</h2>
+<div class="frame">
+<div class="team-grid team-grid-4">
+  <div class="team-card">
+    <div class="team-photo"></div>
+    <div class="team-info">
+      <div class="team-name">Sarah Mitchell</div>
+      <div class="team-role">Director</div>
+      <div class="team-desc">15+ years in digital transformation. Led $2B+ programs across financial services. Former McKinsey AP.</div>
+    </div>
+  </div>
+  <div class="team-card">
+    <div class="team-photo"></div>
+    <div class="team-info">
+      <div class="team-name">James Chen</div>
+      <div class="team-role">Manager</div>
+      <div class="team-desc">10 years in operating model design. Specialist in post-merger integration and synergy delivery.</div>
+    </div>
+  </div>
+  <div class="team-card">
+    <div class="team-photo"></div>
+    <div class="team-info">
+      <div class="team-name">Maria Rodriguez</div>
+      <div class="team-role">Senior Associate</div>
+      <div class="team-desc">7 years in process optimization. Expert in Lean Six Sigma and automation implementation.</div>
+    </div>
+  </div>
+  <div class="team-card">
+    <div class="team-photo"></div>
+    <div class="team-info">
+      <div class="team-name">Ahmed Hassan</div>
+      <div class="team-role">Associate</div>
+      <div class="team-desc">4 years in strategy consulting. Focus on data analytics and performance management.</div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Project team</span><span>10 / 11</span></footer>
+</div>
+</div>
+
+<!-- SLIDE 7: TEAM PAGE (3 profiles) -->
+<div class="slide-section">
+<div class="slide-label">Slide 11 — Leadership Team</div>
+<div class="slide">
+<h1 class="title">Senior leadership provides strategic oversight and quality assurance</h1>
+<h2 class="subtitle">Leadership Team</h2>
+<div class="frame">
+<div class="team-grid team-grid-3">
+  <div class="team-card team-card-wide">
+    <div class="team-photo team-photo-lg"></div>
+    <div class="team-info">
+      <div class="team-name">David Thompson</div>
+      <div class="team-role">Partner & Engagement Lead</div>
+      <div class="team-desc">25 years in management consulting with focus on large-scale transformation. Led 50+ engagements across EMEA. Board advisor to Fortune 500 companies.</div>
+    </div>
+  </div>
+  <div class="team-card team-card-wide">
+    <div class="team-photo team-photo-lg"></div>
+    <div class="team-info">
+      <div class="team-name">Lisa Park</div>
+      <div class="team-role">Partner & Quality Lead</div>
+      <div class="team-desc">20 years in financial services transformation. Former CTO at major European bank. Specialist in technology strategy and digital enablement.</div>
+    </div>
+  </div>
+  <div class="team-card team-card-wide">
+    <div class="team-photo team-photo-lg"></div>
+    <div class="team-info">
+      <div class="team-name">Michael Foster</div>
+      <div class="team-role">Senior Director & SME</div>
+      <div class="team-desc">18 years in operations excellence. Global lead for operational transformation practice. Published author on lean management.</div>
+    </div>
+  </div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Leadership team</span><span>11 / 11</span></footer>
+</div>
+</div>
+
+</main>
+
+<script>
+const defined={
+  c:{main:'2d2d2d',light:'5e5e5e',red:'A32020',redDark:'7a1818',redLight:'FDF2F4',greyLight:'f4f4f4',greyBorder:'e0e0e0',white:'FFFFFF'},
+  steps:[
+    {num:'1',title:'Discover & Diagnose',duration:'Weeks 1–4',
+      substeps:[
+        {num:'1.',text:'Stakeholder Alignment & Interviews'},
+        {num:'2.',text:'Current State Assessment'},
+        {num:'3.',text:'Gap Analysis & Prioritization'}
+      ]},
+    {num:'2',title:'Design & Develop',duration:'Weeks 5–10',
+      substeps:[
+        {num:'1.',text:'Solution Architecture & Blueprint'},
+        {num:'2.',text:'Process Redesign & Optimization'},
+        {num:'3.',text:'Change Roadmap & Governance'}
+      ]},
+    {num:'3',title:'Deploy & Deliver',duration:'Weeks 11–16',
+      substeps:[
+        {num:'1.',text:'Pilot Implementation & Testing'},
+        {num:'2.',text:'Training & Capability Building'},
+        {num:'3.',text:'Full Rollout & Transition'}
+      ]}
+  ],
+  steps4:[
+    {num:'1',title:'Assess',duration:'Weeks 1–3',substeps:[{num:'1.',text:'Stakeholder Interviews'},{num:'2.',text:'Current State Analysis'},{num:'3.',text:'Gap Identification'}]},
+    {num:'2',title:'Design',duration:'Weeks 4–7',substeps:[{num:'1.',text:'Solution Architecture'},{num:'2.',text:'Process Redesign'},{num:'3.',text:'Roadmap Development'}]},
+    {num:'3',title:'Build',duration:'Weeks 8–14',substeps:[{num:'1.',text:'Pilot Development'},{num:'2.',text:'Testing & Iteration'},{num:'3.',text:'Training Programs'}]},
+    {num:'4',title:'Scale',duration:'Weeks 15–20',substeps:[{num:'1.',text:'Enterprise Rollout'},{num:'2.',text:'Change Management'},{num:'3.',text:'BAU Transition'}]}
+  ],
+  steps5:[
+    {num:'1',title:'Mobilize',duration:'Wk 1–2',substeps:[{num:'1.',text:'Team Setup'},{num:'2.',text:'Governance'},{num:'3.',text:'Work Planning'}]},
+    {num:'2',title:'Discover',duration:'Wk 3–6',substeps:[{num:'1.',text:'Diagnostics'},{num:'2.',text:'Benchmarks'},{num:'3.',text:'Gap Analysis'}]},
+    {num:'3',title:'Design',duration:'Wk 7–10',substeps:[{num:'1.',text:'Target Model'},{num:'2.',text:'Business Case'},{num:'3.',text:'Roadmap'}]},
+    {num:'4',title:'Implement',duration:'Wk 11–18',substeps:[{num:'1.',text:'Pilot & Test'},{num:'2.',text:'Full Rollout'},{num:'3.',text:'Training'}]},
+    {num:'5',title:'Sustain',duration:'Wk 19–24',substeps:[{num:'1.',text:'Embed Change'},{num:'2.',text:'Handover'},{num:'3.',text:'BAU Support'}]}
+  ],
+  horizSteps:[
+    {num:'1',title:'Discover & Diagnose',duration:'Weeks 1–4',substeps:['Stakeholder alignment & interviews','Current state assessment','Gap analysis & prioritization']},
+    {num:'2',title:'Design & Develop',duration:'Weeks 5–10',substeps:['Solution architecture & blueprint','Process redesign & optimization','Change roadmap & governance']},
+    {num:'3',title:'Deploy & Deliver',duration:'Weeks 11–16',substeps:['Pilot implementation & testing','Training & capability building','Full rollout & transition']}
+  ],
+  horizSteps4:[
+    {num:'1',title:'Assess',duration:'Wk 1–3',substeps:['Interviews','Analysis','Prioritization']},
+    {num:'2',title:'Design',duration:'Wk 4–7',substeps:['Architecture','Processes','Roadmap']},
+    {num:'3',title:'Build',duration:'Wk 8–14',substeps:['Development','Testing','Training']},
+    {num:'4',title:'Scale',duration:'Wk 15–20',substeps:['Rollout','Change Mgmt','Transition']}
+  ],
+  details:[
+    {stepNum:'1',stepTitle:'Discover & Diagnose',subtitle:'Step 1: Discover & Diagnose',mainTitle:'Establish baseline understanding and identify priority improvement areas',
+      activities:[
+        {substep:'1.1 Stakeholder Alignment & Interviews',items:['Conduct executive sponsor interviews to confirm vision and success criteria','Facilitate cross-functional working sessions with key process owners']},
+        {substep:'1.2 Current State Assessment',items:['Map existing processes, systems, and data flows across functions','Benchmark performance against industry standards and best practices']},
+        {substep:'1.3 Gap Analysis & Prioritization',items:['Identify capability gaps and root causes of performance issues','Develop prioritized opportunity matrix based on value and feasibility']}
+      ],
+      deliverables:['Stakeholder Interview Synthesis Report','Current State Process Maps & Pain Points','Benchmarking Analysis & Scorecard','Prioritized Opportunity Roadmap']
+    },
+    {stepNum:'2',stepTitle:'Design & Develop',subtitle:'Step 2: Design & Develop',mainTitle:'Architect target state solutions and build implementation roadmap',
+      activities:[
+        {substep:'2.1 Solution Architecture & Blueprint',items:['Define target operating model with roles, responsibilities, and governance','Design technology architecture and integration requirements']},
+        {substep:'2.2 Process Redesign & Optimization',items:['Develop future-state process flows with automation opportunities','Define KPIs and measurement framework for continuous improvement']},
+        {substep:'2.3 Change Roadmap & Governance',items:['Build phased implementation plan with dependencies and milestones','Establish governance structure and decision-making protocols']}
+      ],
+      deliverables:['Target Operating Model Blueprint','Future-State Process Documentation','Technology Architecture & Requirements','Implementation Roadmap & Governance Charter']
+    },
+    {stepNum:'3',stepTitle:'Deploy & Deliver',subtitle:'Step 3: Deploy & Deliver',mainTitle:'Execute implementation with structured pilots and enterprise rollout',
+      activities:[
+        {substep:'3.1 Pilot Implementation & Testing',items:['Execute controlled pilot with selected business unit or geography','Conduct user acceptance testing and iterate based on feedback']},
+        {substep:'3.2 Training & Capability Building',items:['Develop training curriculum and enablement materials','Deliver train-the-trainer sessions and certification programs']},
+        {substep:'3.3 Full Rollout & Transition',items:['Execute enterprise-wide deployment with hypercare support','Transition to business-as-usual with continuous improvement cadence']}
+      ],
+      deliverables:['Pilot Results & Lessons Learned Report','Training Materials & Certification Framework','Deployed Solution with User Adoption Metrics','BAU Transition Plan & Support Model']
+    }
+  ],
+  cv:{
+    name:'Sarah Mitchell',level:'Director',
+    summary:'15+ years experience in digital transformation and operating model design across financial services and technology sectors. Specialized in large-scale change programs and post-merger integration.',
+    experience:[
+      {company:'McKinsey & Company',role:'Associate Partner • 2018–2022'},
+      {company:'Deloitte Consulting',role:'Senior Manager • 2014–2018'},
+      {company:'JP Morgan Chase',role:'VP Operations • 2010–2014'}
+    ],
+    education:['MBA, Harvard Business School','BSc Economics, LSE'],
+    cases:[
+      {title:'Global Bank Digital Transformation',bullets:['Led $500M digital modernization program across 12 countries','Reduced operational costs by 35% through process automation','Delivered new mobile platform serving 8M customers']},
+      {title:'Telecom Operating Model Redesign',bullets:['Designed target operating model for merged entity','Identified $120M annual synergies in first 18 months','Led integration of 2,500 FTEs across functions']},
+      {title:'Insurance Claims Optimization',bullets:['Implemented AI-driven claims processing system','Reduced average claim resolution time by 60%','Achieved 95% customer satisfaction rating']},
+      {title:'Retail Bank Branch Network Strategy',bullets:['Developed omnichannel distribution strategy','Rationalized 400 branches while improving NPS','Launched digital-first service model']}
+    ]
+  },
+  team4:[
+    {name:'Sarah Mitchell',role:'Director',desc:'15+ years in digital transformation. Led $2B+ programs across financial services. Former McKinsey AP.'},
+    {name:'James Chen',role:'Manager',desc:'10 years in operating model design. Specialist in post-merger integration and synergy delivery.'},
+    {name:'Maria Rodriguez',role:'Senior Associate',desc:'7 years in process optimization. Expert in Lean Six Sigma and automation implementation.'},
+    {name:'Ahmed Hassan',role:'Associate',desc:'4 years in strategy consulting. Focus on data analytics and performance management.'}
+  ],
+  team3:[
+    {name:'David Thompson',role:'Partner & Engagement Lead',desc:'25 years in management consulting with focus on large-scale transformation. Led 50+ engagements across EMEA. Board advisor to Fortune 500 companies.'},
+    {name:'Lisa Park',role:'Partner & Quality Lead',desc:'20 years in financial services transformation. Former CTO at major European bank. Specialist in technology strategy and digital enablement.'},
+    {name:'Michael Foster',role:'Senior Director & SME',desc:'18 years in operations excellence. Global lead for operational transformation practice. Published author on lean management.'}
+  ]
+};
+
+async function generatePPTX(){
+  const btn=document.querySelector('button');
+  btn.disabled=true;btn.innerText='Generating...';
+  
+  try{
+    const pptx=new PptxGenJS();
+    pptx.defineLayout({name:'CUSTOM',width:13.33,height:7.5});
+    pptx.layout='CUSTOM';
+    pptx.title='Transformation Approach';
+    pptx.author='Strategy&';
+    
+    const c=defined.c;
+    const total=11;
+    
+    function addFooter(slide,mid,pn){
+      slide.addText('Strategy&',{x:0.48,y:7.1,w:2,h:0.25,fontFace:'Arial',fontSize:12,color:'888888'});
+      slide.addText(mid,{x:5,y:7.1,w:3.33,h:0.25,fontFace:'Arial',fontSize:12,color:'888888',align:'center'});
+      slide.addText(pn+' / '+total,{x:11.35,y:7.1,w:1.5,h:0.25,fontFace:'Arial',fontSize:12,color:'888888',align:'right'});
+    }
+    
+    // SLIDE 1: APPROACH OVERVIEW
+    const s1=pptx.addSlide();
+    s1.addText('We suggest a three-phase approach',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s1.addText('Proposed Approach',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    
+    const phaseW=3.95,phaseH=4.2,phaseGap=0.25,phaseY=2.0;
+    const substepH=0.7,substepGap=0.15,substepStartY=1.15;
+    
+    defined.steps.forEach((step,i)=>{
+      const pX=0.48+i*(phaseW+phaseGap);
+      // Phase box - same height for all
+      s1.addShape('rect',{x:pX,y:phaseY,w:phaseW,h:phaseH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s1.addShape('rect',{x:pX,y:phaseY,w:phaseW,h:0.07,fill:c.red});
+      // Phase number circle
+      s1.addShape('ellipse',{x:pX+0.2,y:phaseY+0.25,w:0.55,h:0.55,fill:c.red});
+      s1.addText(step.num,{x:pX+0.2,y:phaseY+0.32,w:0.55,h:0.42,fontFace:'Arial',fontSize:20,color:c.white,bold:true,align:'center'});
+      // Phase title & duration
+      s1.addText(step.title,{x:pX+0.85,y:phaseY+0.28,w:phaseW-1.0,h:0.35,fontFace:'Arial',fontSize:16,color:c.main,bold:true});
+      s1.addText(step.duration,{x:pX+0.85,y:phaseY+0.58,w:phaseW-1.0,h:0.25,fontFace:'Arial',fontSize:12,color:c.light});
+      // Substeps - fixed positions for alignment
+      step.substeps.forEach((ss,j)=>{
+        const ssY=phaseY+substepStartY+(j*(substepH+substepGap));
+        s1.addShape('rect',{x:pX+0.15,y:ssY,w:phaseW-0.3,h:substepH,fill:c.greyLight});
+        s1.addShape('rect',{x:pX+0.15,y:ssY,w:0.04,h:substepH,fill:c.red});
+        s1.addText(ss.num,{x:pX+0.22,y:ssY+0.2,w:0.3,h:0.3,fontFace:'Arial',fontSize:14,color:c.red,bold:true});
+        s1.addText(ss.text,{x:pX+0.5,y:ssY+0.2,w:phaseW-0.65,h:0.35,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+    });
+    
+    addFooter(s1,'Transformation approach',1);
+    
+    // SLIDE 2: 4-STEP APPROACH
+    const s2=pptx.addSlide();
+    s2.addText('Four-phase methodology ensures comprehensive coverage',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s2.addText('Proposed Approach',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    
+    const p4W=2.95,p4H=4.0,p4Gap=0.18,p4Y=2.0;
+    const ss4H=0.6,ss4Gap=0.12,ss4StartY=1.05;
+    defined.steps4.forEach((step,i)=>{
+      const pX=0.48+i*(p4W+p4Gap);
+      s2.addShape('rect',{x:pX,y:p4Y,w:p4W,h:p4H,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s2.addShape('rect',{x:pX,y:p4Y,w:p4W,h:0.06,fill:c.red});
+      s2.addShape('ellipse',{x:pX+0.15,y:p4Y+0.2,w:0.48,h:0.48,fill:c.red});
+      s2.addText(step.num,{x:pX+0.15,y:p4Y+0.26,w:0.48,h:0.38,fontFace:'Arial',fontSize:18,color:c.white,bold:true,align:'center'});
+      s2.addText(step.title,{x:pX+0.72,y:p4Y+0.22,w:p4W-0.87,h:0.3,fontFace:'Arial',fontSize:15,color:c.main,bold:true});
+      s2.addText(step.duration,{x:pX+0.72,y:p4Y+0.5,w:p4W-0.87,h:0.22,fontFace:'Arial',fontSize:12,color:c.light});
+      step.substeps.forEach((ss,j)=>{
+        const ssY=p4Y+ss4StartY+(j*(ss4H+ss4Gap));
+        s2.addShape('rect',{x:pX+0.12,y:ssY,w:p4W-0.24,h:ss4H,fill:c.greyLight});
+        s2.addShape('rect',{x:pX+0.12,y:ssY,w:0.04,h:ss4H,fill:c.red});
+        s2.addText(ss.num,{x:pX+0.18,y:ssY+0.16,w:0.26,h:0.28,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        s2.addText(ss.text,{x:pX+0.42,y:ssY+0.16,w:p4W-0.54,h:0.3,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+    });
+    addFooter(s2,'4-step approach',2);
+    
+    // SLIDE 3: 5-STEP APPROACH
+    const s3=pptx.addSlide();
+    s3.addText('Five-phase program delivers end-to-end transformation',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s3.addText('Proposed Approach',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    
+    const p5W=2.35,p5H=3.8,p5Gap=0.14,p5Y=2.0;
+    const ss5H=0.5,ss5Gap=0.08,ss5StartY=0.9;
+    defined.steps5.forEach((step,i)=>{
+      const pX=0.48+i*(p5W+p5Gap);
+      s3.addShape('rect',{x:pX,y:p5Y,w:p5W,h:p5H,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s3.addShape('rect',{x:pX,y:p5Y,w:p5W,h:0.05,fill:c.red});
+      s3.addShape('ellipse',{x:pX+0.12,y:p5Y+0.16,w:0.4,h:0.4,fill:c.red});
+      s3.addText(step.num,{x:pX+0.12,y:p5Y+0.21,w:0.4,h:0.32,fontFace:'Arial',fontSize:16,color:c.white,bold:true,align:'center'});
+      s3.addText(step.title,{x:pX+0.58,y:p5Y+0.18,w:p5W-0.68,h:0.26,fontFace:'Arial',fontSize:14,color:c.main,bold:true});
+      s3.addText(step.duration,{x:pX+0.58,y:p5Y+0.42,w:p5W-0.68,h:0.18,fontFace:'Arial',fontSize:12,color:c.light});
+      step.substeps.forEach((ss,j)=>{
+        const ssY=p5Y+ss5StartY+(j*(ss5H+ss5Gap));
+        s3.addShape('rect',{x:pX+0.1,y:ssY,w:p5W-0.2,h:ss5H,fill:c.greyLight});
+        s3.addShape('rect',{x:pX+0.1,y:ssY,w:0.035,h:ss5H,fill:c.red});
+        s3.addText(ss.num,{x:pX+0.15,y:ssY+0.12,w:0.24,h:0.24,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        s3.addText(ss.text,{x:pX+0.38,y:ssY+0.12,w:p5W-0.48,h:0.26,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+    });
+    addFooter(s3,'5-step approach',3);
+    
+    // SLIDE 4: HORIZONTAL 3-STEP
+    const s4=pptx.addSlide();
+    s4.addText('Phased delivery ensures structured implementation',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s4.addText('Proposed Approach',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    
+    const hW=3.6,hH=3.0,hGap=0.35,hY=2.0;
+    defined.horizSteps.forEach((step,i)=>{
+      const hX=0.48+i*(hW+hGap+0.25);
+      s4.addShape('rect',{x:hX,y:hY,w:hW,h:hH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s4.addShape('rect',{x:hX,y:hY,w:hW,h:0.06,fill:c.red});
+      s4.addShape('ellipse',{x:hX+0.15,y:hY+0.18,w:0.5,h:0.5,fill:c.red});
+      s4.addText(step.num,{x:hX+0.15,y:hY+0.25,w:0.5,h:0.38,fontFace:'Arial',fontSize:18,color:c.white,bold:true,align:'center'});
+      s4.addText(step.title,{x:hX+0.75,y:hY+0.22,w:hW-0.9,h:0.3,fontFace:'Arial',fontSize:15,color:c.main,bold:true});
+      s4.addText(step.duration,{x:hX+0.75,y:hY+0.48,w:hW-0.9,h:0.22,fontFace:'Arial',fontSize:12,color:c.light});
+      s4.addShape('rect',{x:hX+0.15,y:hY+0.85,w:hW-0.3,h:0.01,fill:c.greyBorder});
+      step.substeps.forEach((ss,j)=>{
+        const ssY=hY+0.95+(j*0.6);
+        s4.addShape('rect',{x:hX+0.15,y:ssY,w:hW-0.3,h:0.5,fill:c.greyLight});
+        s4.addShape('rect',{x:hX+0.15,y:ssY,w:0.04,h:0.5,fill:c.red});
+        s4.addText((j+1)+'.',{x:hX+0.22,y:ssY+0.12,w:0.28,h:0.26,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        s4.addText(ss,{x:hX+0.48,y:ssY+0.12,w:hW-0.63,h:0.3,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+      if(i<2){
+        s4.addText('▶',{x:hX+hW+0.08,y:hY+(hH/2)-0.15,w:0.25,h:0.3,fontFace:'Arial',fontSize:18,color:c.red,align:'center'});
+      }
+    });
+    // Crosscut bar
+    const ccY=hY+hH+0.2;
+    s4.addShape('rect',{x:0.48,y:ccY,w:12.37,h:0.65,fill:c.red});
+    s4.addText('▸',{x:0.6,y:ccY+0.15,w:0.3,h:0.35,fontFace:'Arial',fontSize:18,color:c.white,bold:true});
+    s4.addText('Change Management & Communications',{x:0.95,y:ccY+0.18,w:3.2,h:0.3,fontFace:'Arial',fontSize:14,color:c.white,bold:true});
+    s4.addText('Stakeholder engagement  •  Training programs  •  Knowledge transfer  •  Adoption monitoring',{x:4.3,y:ccY+0.2,w:8.3,h:0.28,fontFace:'Arial',fontSize:12,color:'FFFFFF'});
+    addFooter(s4,'Horizontal approach',4);
+    
+    // SLIDE 5: HORIZONTAL 4-STEP
+    const s5=pptx.addSlide();
+    s5.addText('Four workstreams drive parallel execution',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s5.addText('Proposed Approach',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    
+    const h4W=2.7,h4H=2.85,h4Gap=0.22,h4Y=2.0;
+    defined.horizSteps4.forEach((step,i)=>{
+      const hX=0.48+i*(h4W+h4Gap+0.2);
+      s5.addShape('rect',{x:hX,y:h4Y,w:h4W,h:h4H,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s5.addShape('rect',{x:hX,y:h4Y,w:h4W,h:0.05,fill:c.red});
+      s5.addShape('ellipse',{x:hX+0.12,y:h4Y+0.15,w:0.42,h:0.42,fill:c.red});
+      s5.addText(step.num,{x:hX+0.12,y:h4Y+0.21,w:0.42,h:0.32,fontFace:'Arial',fontSize:16,color:c.white,bold:true,align:'center'});
+      s5.addText(step.title,{x:hX+0.6,y:h4Y+0.18,w:h4W-0.72,h:0.26,fontFace:'Arial',fontSize:14,color:c.main,bold:true});
+      s5.addText(step.duration,{x:hX+0.6,y:h4Y+0.42,w:h4W-0.72,h:0.2,fontFace:'Arial',fontSize:12,color:c.light});
+      s5.addShape('rect',{x:hX+0.12,y:h4Y+0.72,w:h4W-0.24,h:0.01,fill:c.greyBorder});
+      step.substeps.forEach((ss,j)=>{
+        const ssY=h4Y+0.82+(j*0.55);
+        s5.addShape('rect',{x:hX+0.12,y:ssY,w:h4W-0.24,h:0.45,fill:c.greyLight});
+        s5.addShape('rect',{x:hX+0.12,y:ssY,w:0.035,h:0.45,fill:c.red});
+        s5.addText((j+1)+'.',{x:hX+0.17,y:ssY+0.1,w:0.24,h:0.24,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        s5.addText(ss,{x:hX+0.4,y:ssY+0.1,w:h4W-0.52,h:0.26,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+      if(i<3){
+        s5.addText('▶',{x:hX+h4W+0.04,y:h4Y+(h4H/2)-0.12,w:0.22,h:0.26,fontFace:'Arial',fontSize:16,color:c.red,align:'center'});
+      }
+    });
+    // Crosscut bar
+    const cc4Y=h4Y+h4H+0.18;
+    s5.addShape('rect',{x:0.48,y:cc4Y,w:12.37,h:0.6,fill:c.red});
+    s5.addText('▸',{x:0.58,y:cc4Y+0.12,w:0.28,h:0.32,fontFace:'Arial',fontSize:16,color:c.white,bold:true});
+    s5.addText('Knowledge Transfer & Enablement',{x:0.9,y:cc4Y+0.15,w:2.8,h:0.28,fontFace:'Arial',fontSize:13,color:c.white,bold:true});
+    s5.addText('Documentation  •  Capability building  •  Tool training  •  Handover support',{x:3.85,y:cc4Y+0.17,w:8.7,h:0.26,fontFace:'Arial',fontSize:12,color:'FFFFFF'});
+    addFooter(s5,'Horizontal 4-step',5);
+    
+    // SLIDES 6-8: DETAIL PAGES
+    defined.details.forEach((det,idx)=>{
+      const slide=pptx.addSlide();
+      const pn=idx+6;
+      
+      // Title & subtitle - swapped
+      slide.addText(det.mainTitle,{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+      slide.addText(det.subtitle,{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+      
+      const frameY=1.95,actW=8.0,outW=4.1,gap=0.27;
+      
+      // Activities section header
+      slide.addShape('rect',{x:0.48,y:frameY,w:actW,h:0.4,fill:c.white});
+      slide.addShape('rect',{x:0.48,y:frameY+0.37,w:actW,h:0.03,fill:c.red});
+      slide.addText('Key Activities',{x:0.85,y:frameY+0.06,w:actW-0.5,h:0.28,fontFace:'Arial',fontSize:14,color:c.main,bold:true});
+      
+      // Activity groups
+      let aY=frameY+0.5;
+      det.activities.forEach((act,ai)=>{
+        // Substep header
+        slide.addShape('ellipse',{x:0.48,y:aY+0.02,w:0.12,h:0.12,fill:c.red});
+        slide.addText(act.substep,{x:0.65,y:aY,w:actW-0.35,h:0.22,fontFace:'Arial',fontSize:13,color:c.red,bold:true});
+        aY+=0.28;
+        // Activity items
+        act.items.forEach((item,ii)=>{
+          slide.addShape('rect',{x:0.65,y:aY,w:actW-0.35,h:0.38,fill:c.greyLight});
+          slide.addText('→',{x:0.72,y:aY+0.08,w:0.22,h:0.22,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+          slide.addText(item,{x:0.95,y:aY+0.08,w:actW-0.75,h:0.28,fontFace:'Arial',fontSize:12,color:c.main});
+          aY+=0.42;
+        });
+        aY+=0.08;
+      });
+      
+      // Outcomes section
+      const outX=0.48+actW+gap,outH=4.2;
+      slide.addShape('rect',{x:outX,y:frameY,w:outW,h:outH,fill:c.redLight,line:{color:c.red,width:0.5}});
+      slide.addShape('rect',{x:outX,y:frameY,w:outW,h:0.06,fill:c.red});
+      slide.addText('DELIVERABLES',{x:outX+0.15,y:frameY+0.18,w:outW-0.3,h:0.25,fontFace:'Arial',fontSize:13,color:c.redDark,bold:true});
+      
+      det.deliverables.forEach((del,di)=>{
+        const dY=frameY+0.55+(di*0.82);
+        slide.addShape('rect',{x:outX+0.12,y:dY,w:outW-0.24,h:0.68,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        slide.addShape('rect',{x:outX+0.12,y:dY,w:0.045,h:0.68,fill:c.red});
+        slide.addShape('ellipse',{x:outX+0.25,y:dY+0.18,w:0.32,h:0.32,fill:c.red});
+        slide.addText(String(di+1),{x:outX+0.25,y:dY+0.22,w:0.32,h:0.25,fontFace:'Arial',fontSize:12,color:c.white,bold:true,align:'center'});
+        slide.addText(del,{x:outX+0.65,y:dY+0.18,w:outW-0.9,h:0.38,fontFace:'Arial',fontSize:12,color:c.main,bold:true});
+      });
+      
+      addFooter(slide,det.stepTitle,pn);
+    });
+    
+    // SLIDE 9: CV PAGE
+    const s9=pptx.addSlide();
+    const cv=defined.cv;
+    // Left dark panel
+    s9.addShape('rect',{x:0,y:0,w:4.2,h:7.5,fill:'2d2d2d'});
+    // Photo placeholder
+    s9.addShape('ellipse',{x:0.4,y:0.4,w:1.2,h:1.2,fill:'555555'});
+    // Name & level
+    s9.addText(cv.name,{x:0.4,y:1.75,w:3.4,h:0.4,fontFace:'Georgia',fontSize:22,color:'FFFFFF',bold:true});
+    s9.addText(cv.level.toUpperCase(),{x:0.4,y:2.15,w:3.4,h:0.3,fontFace:'Arial',fontSize:14,color:c.red,bold:true});
+    // Summary section
+    s9.addText('SUMMARY',{x:0.4,y:2.6,w:3.4,h:0.25,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+    s9.addShape('rect',{x:0.4,y:2.85,w:3.4,h:0.01,fill:'444444'});
+    s9.addText(cv.summary,{x:0.4,y:2.95,w:3.4,h:0.9,fontFace:'Arial',fontSize:12,color:'CCCCCC'});
+    // Experience section
+    s9.addText('PREVIOUS EXPERIENCE',{x:0.4,y:3.95,w:3.4,h:0.25,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+    s9.addShape('rect',{x:0.4,y:4.2,w:3.4,h:0.01,fill:'444444'});
+    cv.experience.forEach((exp,i)=>{
+      const eY=4.35+(i*0.55);
+      s9.addText(exp.company,{x:0.4,y:eY,w:3.4,h:0.22,fontFace:'Arial',fontSize:12,color:'FFFFFF',bold:true});
+      s9.addText(exp.role,{x:0.4,y:eY+0.22,w:3.4,h:0.2,fontFace:'Arial',fontSize:12,color:'999999'});
+    });
+    // Education section
+    s9.addText('EDUCATION',{x:0.4,y:6.05,w:3.4,h:0.25,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+    s9.addShape('rect',{x:0.4,y:6.3,w:3.4,h:0.01,fill:'444444'});
+    cv.education.forEach((ed,i)=>{
+      s9.addText(ed,{x:0.4,y:6.42+(i*0.28),w:3.4,h:0.25,fontFace:'Arial',fontSize:12,color:'CCCCCC'});
+    });
+    // Right white panel - cases
+    s9.addText('Relevant Experience',{x:4.5,y:0.4,w:8.3,h:0.4,fontFace:'Georgia',fontSize:18,color:c.main,bold:true});
+    s9.addShape('rect',{x:4.5,y:0.85,w:8.3,h:0.04,fill:c.red});
+    cv.cases.forEach((cs,i)=>{
+      const col=i%2,row=Math.floor(i/2);
+      const cX=4.5+(col*4.2),cY=1.1+(row*2.9);
+      s9.addShape('rect',{x:cX,y:cY,w:4.0,h:2.6,fill:c.greyLight});
+      s9.addShape('rect',{x:cX,y:cY,w:0.05,h:2.6,fill:c.red});
+      s9.addText(cs.title,{x:cX+0.2,y:cY+0.15,w:3.6,h:0.35,fontFace:'Arial',fontSize:13,color:c.main,bold:true});
+      cs.bullets.forEach((b,bi)=>{
+        s9.addText('•',{x:cX+0.2,y:cY+0.55+(bi*0.55),w:0.2,h:0.2,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        s9.addText(b,{x:cX+0.4,y:cY+0.55+(bi*0.55),w:3.4,h:0.5,fontFace:'Arial',fontSize:12,color:c.light});
+      });
+    });
+    addFooter(s9,'Team credentials',9);
+    
+    // SLIDE 10: TEAM (4 profiles)
+    const s10=pptx.addSlide();
+    s10.addText('Core project team brings deep sector expertise',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s10.addText('Project Team',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    const cardW=2.8,cardH=4.0,cardGap=0.4,startX=0.48;
+    defined.team4.forEach((tm,i)=>{
+      const tX=startX+(i*(cardW+cardGap));
+      s10.addShape('rect',{x:tX,y:2.0,w:cardW,h:cardH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s10.addShape('rect',{x:tX,y:2.0,w:cardW,h:0.06,fill:c.red});
+      s10.addShape('ellipse',{x:tX+(cardW/2)-0.5,y:2.3,w:1.0,h:1.0,fill:c.greyLight,line:{color:c.greyBorder,width:1}});
+      s10.addText(tm.name,{x:tX+0.15,y:3.45,w:cardW-0.3,h:0.3,fontFace:'Georgia',fontSize:14,color:c.main,bold:true,align:'center'});
+      s10.addText(tm.role.toUpperCase(),{x:tX+0.15,y:3.75,w:cardW-0.3,h:0.25,fontFace:'Arial',fontSize:12,color:c.red,bold:true,align:'center'});
+      s10.addText(tm.desc,{x:tX+0.15,y:4.15,w:cardW-0.3,h:1.5,fontFace:'Arial',fontSize:12,color:c.light,align:'center'});
+    });
+    addFooter(s10,'Project team',10);
+    
+    // SLIDE 11: TEAM (3 profiles)
+    const s11=pptx.addSlide();
+    s11.addText('Senior leadership provides strategic oversight and quality assurance',{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+    s11.addText('Leadership Team',{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:18,color:c.red,bold:true});
+    const card3W=3.8,card3H=4.2,card3Gap=0.5,start3X=1.1;
+    defined.team3.forEach((tm,i)=>{
+      const tX=start3X+(i*(card3W+card3Gap));
+      s11.addShape('rect',{x:tX,y:2.0,w:card3W,h:card3H,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      s11.addShape('rect',{x:tX,y:2.0,w:card3W,h:0.06,fill:c.red});
+      s11.addShape('ellipse',{x:tX+(card3W/2)-0.6,y:2.35,w:1.2,h:1.2,fill:c.greyLight,line:{color:c.greyBorder,width:1}});
+      s11.addText(tm.name,{x:tX+0.2,y:3.7,w:card3W-0.4,h:0.3,fontFace:'Georgia',fontSize:16,color:c.main,bold:true,align:'center'});
+      s11.addText(tm.role.toUpperCase(),{x:tX+0.2,y:4.05,w:card3W-0.4,h:0.25,fontFace:'Arial',fontSize:12,color:c.red,bold:true,align:'center'});
+      s11.addText(tm.desc,{x:tX+0.2,y:4.45,w:card3W-0.4,h:1.5,fontFace:'Arial',fontSize:12,color:c.light,align:'center'});
+    });
+    addFooter(s11,'Leadership team',11);
+    
+    await pptx.writeFile({fileName:'Transformation_Approach.pptx'});
+    btn.disabled=false;btn.innerText='Download PPTX';
+  }catch(err){
+    console.error(err);
+    alert('Error: '+err.message);
+    btn.disabled=false;btn.innerText='Retry';
+  }
+}
+</script>
+</body>
+</html>

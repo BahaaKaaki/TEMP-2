@@ -1,0 +1,76 @@
+# Multi-stage build for Agent Builder API
+FROM python:3.13-slim AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy requirements
+COPY requirements.txt .
+
+# Install Python dependencies with increased timeout and retries
+# Use buildkit for better caching
+# Disable SSL verification for pip in corporate environments with self-signed certificates
+RUN pip install --no-cache-dir --user -r requirements.txt
+
+# Pre-download NLP models in builder stage (proven network access from pip install above)
+COPY download_nltk_data.py .
+RUN python3 download_nltk_data.py /nltk_data && \
+    pip install --no-cache-dir --user /tmp/en_core_web_sm-3.8.0-py3-none-any.whl && \
+    rm -f /tmp/en_core_web_sm-3.8.0-py3-none-any.whl download_nltk_data.py
+
+# Production stage
+FROM python:3.13-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install runtime dependencies including unstructured library requirements
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    libgl1 \
+    libglib2.0-0 \
+    libsm6 \
+    libxrender1 \
+    libxext6 \
+    poppler-utils \
+    tesseract-ocr \
+    libreoffice \
+    pandoc \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python dependencies and NLP models from builder
+COPY --from=builder /root/.local /root/.local
+COPY --from=builder /nltk_data /usr/local/share/nltk_data
+RUN chmod -R 755 /usr/local/share/nltk_data
+
+# Set NLTK data path environment variable
+ENV NLTK_DATA=/usr/local/share/nltk_data
+
+# Copy application code
+COPY app/ ./app/
+COPY config/ ./config/
+COPY migrations/ ./migrations/
+COPY run_server.py .
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PATH=/root/.local/bin:$PATH
+
+# Expose port
+EXPOSE 8000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')" || exit 1
+
+# Run the application
+CMD ["python", "run_server.py"]

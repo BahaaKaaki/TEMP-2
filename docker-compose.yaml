@@ -1,0 +1,346 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: ghcr.io/tensorchord/vchord-postgres:pg18-v0.5.3
+    container_name: postgres_server
+    environment:
+      - POSTGRES_USER=${ADMIN_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${ADMIN_POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - APP_USER=${POSTGRES_USER}
+      - APP_PASSWORD=${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-postgres.sh:/docker-entrypoint-initdb.d/init-postgres.sh:ro
+    restart: unless-stopped
+    networks:
+      - agent-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis_server
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: >
+      sh -c '
+      if [ -n "$${REDIS_PASSWORD}" ]; then
+        redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}"
+      else
+        redis-server --appendonly yes
+      fi
+      '
+    restart: unless-stopped
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
+
+  azurite:
+    image: mcr.microsoft.com/azure-storage/azurite:latest
+    container_name: azurite_storage
+    command: azurite-blob --blobHost 0.0.0.0 --blobPort 10000 --loose --skipApiVersionCheck
+    ports:
+      - "10000:10000"
+    volumes:
+      - azurite_data:/data
+    restart: unless-stopped
+    networks:
+      - agent-network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "10000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  backend:
+     build:
+       context: ./agent-studio-backend
+       dockerfile: dockerfile
+     container_name: agent_studio_backend
+     env_file: .env
+     environment:
+       # Docker-specific overrides (these take precedence over .env values)
+       # Database: use Docker service names instead of localhost
+       - DATABASE_HOST=postgres
+       - DATABASE_PRIMARY_HOST=postgres
+       - POSTGRES_SSL=false
+       # Redis: use Docker service name instead of localhost
+       - REDIS_HOST=redis
+       # Azure Storage: point to azurite container instead of localhost
+       - AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=http;AccountName=devstoreaccount1;AccountKey=Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==;BlobEndpoint=http://azurite:10000/devstoreaccount1;
+       # Langfuse: point to langfuse container if running (instead of localhost)
+       - LANGFUSE_HOST=http://langfuse:3000
+     ports:
+       - "8000:8000"
+     volumes:
+       - ./agent-studio-backend/logs:/app/logs
+     depends_on:
+       - postgres
+       - redis
+       - azurite
+     restart: unless-stopped
+     networks:
+       - agent-network
+     healthcheck:
+       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+       interval: 30s
+       timeout: 10s
+       retries: 3
+       start_period: 40s
+  frontend:
+     build:
+       context: ./agent-studio-frontend
+       dockerfile: Dockerfile
+       args:
+         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-}
+     container_name: agent_studio_frontend
+     ports:
+       - "81:81"
+     depends_on:
+       - backend
+     restart: unless-stopped
+     networks:
+       - agent-network
+     healthcheck:
+       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+       interval: 30s
+       timeout: 10s
+       retries: 3
+       start_period: 10s
+  # mcp-server:
+  #   build: ./mcp-server
+  #   container_name: universal-mcp-server
+  #   ports:
+  #     - "8002:8002"
+  #   environment:
+  #     - SERVICE_NAME=universal-mcp-server
+  #     - VERSION=1.0.0
+  #     - HOST=0.0.0.0
+  #     - PORT=8002
+  #     - LOG_LEVEL=INFO
+  #     - ENABLE_CORS=true
+  #     - MAX_QUERY_ROWS=1000
+  #     - QUERY_TIMEOUT=30
+  #     - CONNECTION_TIMEOUT=10
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 40s
+
+  # langfuse-clickhouse:
+  #   image: clickhouse/clickhouse-server:latest
+  #   container_name: langfuse_clickhouse
+  #   environment:
+  #     - CLICKHOUSE_DB=default
+  #     - CLICKHOUSE_USER=${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
+  #     - CLICKHOUSE_PASSWORD=${LANGFUSE_CLICKHOUSE_PASSWORD:-clickhouse}
+  #   ports:
+  #     - "8123:8123"
+  #     - "9000:9000"
+  #   volumes:
+  #     - langfuse_clickhouse_data:/var/lib/clickhouse
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8123/ping"]
+  #     interval: 5s
+  #     timeout: 5s
+  #     retries: 10
+  #     start_period: 1s
+
+  # langfuse-worker:
+  #   image: langfuse/langfuse-worker:3
+  #   container_name: langfuse_worker
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     azurite:
+  #       condition: service_healthy
+  #     langfuse-clickhouse:
+  #       condition: service_healthy
+  #   ports:
+  #     - "3030:3030"
+  #   environment: &langfuse-env
+  #     DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/langfuse
+  #     CLICKHOUSE_URL: http://langfuse-clickhouse:8123
+  #     CLICKHOUSE_MIGRATION_URL: clickhouse://langfuse-clickhouse:9000
+  #     CLICKHOUSE_USER: ${LANGFUSE_CLICKHOUSE_USER:-clickhouse}
+  #     CLICKHOUSE_PASSWORD: ${LANGFUSE_CLICKHOUSE_PASSWORD:-clickhouse}
+  #     CLICKHOUSE_CLUSTER_ENABLED: "false"
+  #     LANGFUSE_USE_AZURE_BLOB: "true"
+  #     LANGFUSE_S3_EVENT_UPLOAD_BUCKET: langfuse
+  #     LANGFUSE_S3_EVENT_UPLOAD_ACCESS_KEY_ID: devstoreaccount1
+  #     LANGFUSE_S3_EVENT_UPLOAD_SECRET_ACCESS_KEY: Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
+  #     LANGFUSE_S3_EVENT_UPLOAD_ENDPOINT: http://azurite:10000/devstoreaccount1
+  #     LANGFUSE_S3_EVENT_UPLOAD_PREFIX: events/
+  #     LANGFUSE_S3_MEDIA_UPLOAD_BUCKET: langfuse
+  #     LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: devstoreaccount1
+  #     LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: Eby8vdM02xNOcqFlqUwJPLlmEtlCDXJ1OUzFT50uSRZ6IFsuFq2UVErCz4I6tq/K1SZFPTOtr/KBHBeksoGMGw==
+  #     LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://azurite:10000/devstoreaccount1
+  #     LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
+  #     REDIS_HOST: redis
+  #     REDIS_PORT: "6379"
+  #     REDIS_AUTH: ${REDIS_PASSWORD}
+  #     NEXTAUTH_URL: http://localhost:3000
+  #     SALT: ${LANGFUSE_SALT:-changeme-random-salt-at-least-32-characters-long}
+  #     ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000}
+  #     TELEMETRY_ENABLED: ${LANGFUSE_TELEMETRY_ENABLED:-true}
+  #     LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: ${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+
+  # langfuse-web:
+  #   image: langfuse/langfuse:3
+  #   container_name: langfuse_web
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #     redis:
+  #       condition: service_healthy
+  #     azurite:
+  #       condition: service_healthy
+  #     langfuse-clickhouse:
+  #       condition: service_healthy
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     <<: *langfuse-env
+  #     NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-changeme-random-secret-at-least-32-characters-long}
+  #     LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-agent-studio}
+  #     LANGFUSE_INIT_PROJECT_PUBLIC_KEY: ${LANGFUSE_INIT_PROJECT_PUBLIC_KEY}
+  #     LANGFUSE_INIT_PROJECT_SECRET_KEY: ${LANGFUSE_INIT_PROJECT_SECRET_KEY}
+  #     LANGFUSE_INIT_USER_EMAIL: ${LANGFUSE_INIT_USER_EMAIL}
+  #     LANGFUSE_INIT_USER_NAME: ${LANGFUSE_INIT_USER_NAME:-Admin}
+  #     LANGFUSE_INIT_USER_PASSWORD: ${LANGFUSE_INIT_USER_PASSWORD}
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/public/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 5
+  #     start_period: 60s
+
+
+  # postgres-exporter:
+  #   image: prometheuscommunity/postgres-exporter:latest
+  #   container_name: postgres_exporter
+  #   environment:
+  #     DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+  #   ports:
+  #     - "9187:9187"
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   depends_on:
+  #     - postgres
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9187/metrics"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+
+  # redis-exporter:
+  #   image: oliver006/redis_exporter:latest
+  #   container_name: redis_exporter
+  #   environment:
+  #     REDIS_ADDR: redis:6379
+  #     REDIS_PASSWORD: ${REDIS_PASSWORD}
+  #   ports:
+  #     - "9121:9121"
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   depends_on:
+  #     - redis
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9121/metrics"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   ports:
+  #     - "9090:9090"
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus_data:/prometheus
+  #   command:
+  #     - '--config.file=/etc/prometheus/prometheus.yml'
+  #     - '--storage.tsdb.path=/prometheus'
+  #     - '--storage.tsdb.retention.time=30d'
+  #     - '--web.enable-lifecycle'
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   depends_on:
+  #     - backend
+  #     - postgres-exporter
+  #     - redis-exporter
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:9090/-/healthy"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 10s
+
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #     - "3001:3000"  # Port 3000 is used by Langfuse
+  #   environment:
+  #     - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD:-admin}
+  #     - GF_USERS_ALLOW_SIGN_UP=false
+  #     - GF_SERVER_ROOT_URL=http://localhost:3001
+  #     - GF_INSTALL_PLUGINS=
+  #   volumes:
+  #     - grafana_data:/var/lib/grafana
+  #     - ./grafana/datasources:/etc/grafana/provisioning/datasources
+  #     - ./grafana/dashboards:/etc/grafana/provisioning/dashboards
+  #   restart: unless-stopped
+  #   networks:
+  #     - agent-network
+  #   depends_on:
+  #     - prometheus
+  #   healthcheck:
+  #     test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/api/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 30s
+
+
+volumes:
+  postgres_data:
+  redis_data:
+  azurite_data:
+
+
+networks:
+  agent-network:
+    driver: bridge
+

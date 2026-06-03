@@ -1,0 +1,1428 @@
+@import "tailwindcss";
+
+/* Strategy& Updated Color Palette - Light backgrounds with dark text */
+:root {
+  --background: #F5F5F5;
+  --surface: #FFFFFF;
+  --primary: #A32020;
+  --primary-hover: #7A1818;
+  --text: #464646;
+  --text-muted: #7D7D7D;
+  --border: rgba(70, 70, 70, 0.2);
+  --secondary: rgba(125, 125, 125, 0.1);
+  
+  /* Additional accent colors */
+  --accent: #82141E;
+  --destructive: #D64554;
+  --success: #1AAB40;
+
+  /* Node backgrounds - Strategy& palette */
+  --bg-blue: rgba(163, 32, 32, 0.1);
+  --bg-amber: rgba(234, 149, 149, 0.15);
+  --bg-green: rgba(26, 171, 64, 0.1);
+  --bg-red: rgba(214, 69, 84, 0.1);
+  --bg-purple: rgba(186, 39, 65, 0.1);
+  --bg-cyan: rgba(219, 83, 106, 0.1);
+}
+
+/* Explicit light theme (same as root - only light mode supported) */
+[data-color-scheme="light"] {
+  --background: #F5F5F5;
+  --surface: #FFFFFF;
+  --primary: #A32020;
+  --primary-hover: #7A1818;
+  --text: #464646;
+  --text-muted: #7D7D7D;
+  --border: rgba(70, 70, 70, 0.2);
+  --secondary: rgba(125, 125, 125, 0.1);
+  
+  --accent: #82141E;
+  --destructive: #D64554;
+  --success: #1AAB40;
+
+  --bg-blue: rgba(163, 32, 32, 0.1);
+  --bg-amber: rgba(234, 149, 149, 0.15);
+  --bg-green: rgba(26, 171, 64, 0.1);
+  --bg-red: rgba(214, 69, 84, 0.1);
+  --bg-purple: rgba(186, 39, 65, 0.1);
+  --bg-cyan: rgba(219, 83, 106, 0.1);
+}
+
+
+/* Map CSS variables to Tailwind utilities using @theme inline */
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-foreground: var(--text);
+  --color-muted: var(--secondary);
+  --color-muted-foreground: var(--text-muted);
+  --color-border: var(--border);
+  --color-secondary: var(--secondary);
+  
+  /* Additional accent colors */
+  --color-accent: var(--accent);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+
+  /* Node palette colors */
+  --color-bg-blue: var(--bg-blue);
+  --color-bg-amber: var(--bg-amber);
+  --color-bg-green: var(--bg-green);
+  --color-bg-red: var(--bg-red);
+  --color-bg-purple: var(--bg-purple);
+  --color-bg-cyan: var(--bg-cyan);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-full: 9999px;
+
+  /* Custom spacing for navbar height */
+  --spacing-navbar: 60px;
+  --font-sans: 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --font-display: 'Geist', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+
+  /* Apex OS app canvas — softer than pure black */
+  --color-canvas: #141414;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 14px;
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  color: var(--color-foreground);
+  background-color: var(--color-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+}
+
+body {
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100dvh;
+  width: 100vw;
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              color 250ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Monaco token colors must not inherit animated `color` from the global rule */
+.monaco-editor,
+.monaco-editor * {
+  transition-property: background-color, border-color, opacity, transform;
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-secondary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-primary);
+}
+
+/* Dark scrollbar for chat panel */
+.scrollbar-dark::-webkit-scrollbar {
+  width: 6px;
+}
+.scrollbar-dark::-webkit-scrollbar-track {
+  background: rgba(70, 70, 70, 0.5);
+  border-radius: 100px;
+}
+.scrollbar-dark::-webkit-scrollbar-thumb {
+  background: #6b6b6b;
+  border-radius: 100px;
+}
+.scrollbar-dark::-webkit-scrollbar-thumb:hover {
+  background: #b5b5b5;
+}
+
+/* Output side panel slide-in animation */
+.output-panel-slide {
+  animation: outputPanelSlideIn 250ms ease-out forwards;
+}
+@keyframes outputPanelSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* App toast — top-right slide in / out */
+.toast-slide-in {
+  animation: toastSlideIn 300ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.toast-slide-out {
+  animation: toastSlideOut 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(calc(100% + 24px));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes toastSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(100% + 24px));
+  }
+}
+
+/* Selection colors */
+::selection {
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+}
+
+/* Custom Select Styling */
+.custom-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b5b5b5' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 16px 16px;
+  padding-right: 2.5rem;
+  color: var(--color-foreground);
+}
+
+/* Style option elements */
+.custom-select option {
+  background-color: #1a1a1a;
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font-weight: 500;
+}
+
+.custom-select option:hover,
+.custom-select option:focus,
+.custom-select option:checked {
+  background-color: var(--color-primary);
+  color: white;
+}
+
+/* Input and textarea styling for better visibility */
+input[type="text"],
+input[type="number"],
+input[type="range"],
+textarea {
+  color: var(--color-foreground) !important;
+}
+
+/* Opt-out override: inputs/textareas that explicitly want pure white text
+   (e.g. the AI code-generator prompt).  Needs !important to beat the
+   global rule above. */
+input.force-white-text,
+textarea.force-white-text {
+  color: #ffffff !important;
+}
+
+/* Submit a Tool modal — dark shell on light-theme root */
+.submit-tool-dialog input[type="text"],
+.submit-tool-dialog input[type="url"],
+.submit-tool-dialog textarea {
+  color: #ffffff !important;
+  background-color: #1a1a1a !important;
+}
+
+.submit-tool-dialog input::placeholder,
+.submit-tool-dialog textarea::placeholder {
+  color: rgba(181, 181, 181, 0.65) !important;
+  opacity: 1;
+}
+
+/* Ensure placeholder text is visible */
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-muted-foreground);
+  opacity: 0.7;
+}
+
+/* ============================================================== */
+/* Workflow builder dark-theme overrides (Figma "Apex OS 5")       */
+/* Scoped to .builder-config-panel + .builder-canvas-context to    */
+/* avoid leaking dark styling into the rest of the (light) app.    */
+/* ============================================================== */
+.builder-config-panel h3,
+.builder-config-panel h4,
+.builder-config-panel p,
+.builder-config-panel span:not(.text-\[\#d93854\]):not(.text-\[\#ff1212\]):not(.text-amber-400):not(:is(.monaco-editor *)) {
+  color: #ffffff;
+}
+
+/* Monaco applies per-token colors via .mtk* classes; the span rule above
+   outranks them when the editor sits inside the config panel. */
+.builder-config-panel .monaco-editor .view-line span,
+.code-editor-modal .monaco-editor .view-line span {
+  -webkit-text-fill-color: currentcolor;
+}
+
+/* Code editor modal — Apex OS palette (figmaSpec) */
+.code-editor-modal {
+  --ce-bg: #141414;
+  --ce-panel: #1a1a1a;
+  --ce-surface: #222222;
+  --ce-border: #464646;
+  --ce-muted: #b5b5b5;
+  --ce-text: #dadada;
+  --ce-accent: #8216c5;
+  --ce-accent-hover: #9a3dd4;
+  --ce-accent-soft: rgba(130, 22, 197, 0.18);
+  --ce-cta: #d93854;
+  --ce-cta-hover: #c52a45;
+  --ce-cta-soft: #3b1c21;
+  --ce-success: #20f778;
+  --ce-success-bg: rgba(24, 35, 29, 0.55);
+  --ce-error: #ff4d6e;
+  --ce-error-bg: rgba(42, 20, 24, 0.55);
+  --ce-review: #16c559;
+  --ce-logic: #c56216;
+  --ce-initiator: #166ac5;
+  --ce-btn: #2a1d21;
+}
+
+/* Inputs panel — visible width slider (status bar) + drag grip */
+.code-editor-inputs-resize-handle {
+  width: 6px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: var(--ce-border);
+  transition: background 0.15s ease;
+}
+
+.code-editor-inputs-resize-handle:hover,
+.code-editor-inputs-resize-handle:active {
+  background: var(--ce-logic);
+}
+
+.code-editor-modal input[type="range"].code-editor-inputs-width-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 7rem;
+  height: 8px;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  accent-color: #ffffff;
+}
+
+.code-editor-modal input[type="range"].code-editor-inputs-width-slider::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.code-editor-modal input[type="range"].code-editor-inputs-width-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -4px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.code-editor-modal input[type="range"].code-editor-inputs-width-slider::-moz-range-track {
+  height: 6px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.code-editor-modal input[type="range"].code-editor-inputs-width-slider::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.code-editor-diff {
+  --ce-bg: #141414;
+  --ce-panel: #1a1a1a;
+  --ce-surface: #222222;
+  --ce-border: #464646;
+  --ce-muted: #b5b5b5;
+  --ce-text: #dadada;
+  --ce-accent: #8216c5;
+  --ce-accent-hover: #9a3dd4;
+  --ce-cta: #d93854;
+  --ce-cta-hover: #c52a45;
+  --ce-cta-soft: #3b1c21;
+  --ce-btn: #2a1d21;
+  --ce-logic: #c56216;
+}
+
+/* Field labels (Figma I83:1505;55:831) — Body 2 Regular #b5b5b5.  Even
+   though the panel theme is dark, the label colour is the medium grey so
+   it sits behind the input text in the visual hierarchy. Sizes are scaled
+   by --fig-scale (set on .builder-config-panel by useFigmaPx) so they
+   shrink proportionally on smaller viewports. */
+.builder-config-panel label {
+  color: #b5b5b5 !important;
+  font-size: calc(16px * var(--fig-scale, 1)) !important;
+  line-height: calc(24px * var(--fig-scale, 1)) !important;
+  font-weight: 400 !important;
+}
+
+.builder-config-panel .text-foreground { color: #ffffff !important; }
+.builder-config-panel .text-muted-foreground { color: #b5b5b5 !important; }
+.builder-config-panel .border-border { border-color: #464646 !important; }
+
+/* All inputs/textareas/selects inside the config panel get the
+   dark Figma treatment (Figma 83:1505 — transparent bg so the panel's
+   gradient bleeds through, #464646 1px border, 16px text, rounded-2xl,
+   16px x / 12px y padding). All sizes scale via --fig-scale.
+   We use a wide selector that catches inputs whether they declare an
+   explicit type or not (React often omits it for `type="text"`). */
+.builder-config-panel input,
+.builder-config-panel textarea,
+.builder-config-panel select {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 1px solid #464646 !important;
+  color: #ffffff !important;
+  border-radius: calc(16px * var(--fig-scale, 1)) !important;
+  padding: calc(12px * var(--fig-scale, 1)) calc(16px * var(--fig-scale, 1)) !important;
+  font-size: calc(16px * var(--fig-scale, 1)) !important;
+  line-height: calc(24px * var(--fig-scale, 1)) !important;
+}
+
+/* Selects need their chevron icon restored AFTER the rule above clears
+   their background-image. We re-declare it with !important so it wins. */
+.builder-config-panel select.custom-select,
+.builder-config-panel select {
+  background-image: url("/icons/chevron-down.svg") !important;
+  background-repeat: no-repeat !important;
+  background-position: right calc(16px * var(--fig-scale, 1)) center !important;
+  background-size: calc(16px * var(--fig-scale, 1)) calc(16px * var(--fig-scale, 1)) !important;
+  background-color: transparent !important;
+  padding-right: calc(44px * var(--fig-scale, 1)) !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Don't touch the tiny checkboxes / radios — the rule above would otherwise
+   blow them up to full input size and remove their native styling. */
+.builder-config-panel input[type="checkbox"],
+.builder-config-panel input[type="radio"],
+.builder-config-panel input[type="range"],
+.builder-config-panel input[type="color"] {
+  background-color: initial !important;
+  background: initial !important;
+  border: initial !important;
+  border-radius: initial !important;
+  padding: initial !important;
+  font-size: initial !important;
+  line-height: initial !important;
+  color: initial !important;
+}
+
+/* Also override the Tailwind background utilities used by shared form
+   components that were written for the light theme: `bg-background`
+   (#F5F5F5) and `bg-gray-50`. We do NOT include `bg-white` so the toggle
+   knob and any intentional white surfaces stay white. We use
+   background-color (not the shorthand) so we don't blow away
+   background-image on selects. */
+.builder-config-panel .bg-background,
+.builder-config-panel .bg-gray-50,
+.builder-config-panel .bg-gray-100 {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+
+/* Chrome / Safari autofill paints inputs with its own yellow-ish bg and
+   black text — disable that so the dark theme stays consistent. */
+.builder-config-panel input:-webkit-autofill,
+.builder-config-panel input:-webkit-autofill:hover,
+.builder-config-panel input:-webkit-autofill:focus,
+.builder-config-panel input:-webkit-autofill:active,
+.builder-config-panel textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
+
+.builder-config-panel input:focus,
+.builder-config-panel textarea:focus,
+.builder-config-panel select:focus {
+  outline: none !important;
+  border-color: #8216c5 !important;
+  box-shadow: 0 0 0 2px rgba(130, 22, 197, 0.2) !important;
+}
+
+.builder-config-panel input::placeholder,
+.builder-config-panel textarea::placeholder {
+  color: rgba(181, 181, 181, 0.7) !important;
+  opacity: 1 !important;
+}
+
+/* The dropdown's option list (native browser popup) — keep it dark to
+   match the panel rather than the system default. */
+.builder-config-panel select option,
+.builder-config-panel .custom-select option {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+
+/* The expandable-text "fake input" tile shown by ExpandableTextField
+   uses bg-gray-50 — flip it for the dark panel + match Figma rounding. */
+.builder-config-panel .bg-gray-50 {
+  background-color: transparent !important;
+  border: 1px solid #464646 !important;
+  border-radius: calc(16px * var(--fig-scale, 1)) !important;
+  padding: calc(12px * var(--fig-scale, 1)) calc(16px * var(--fig-scale, 1)) !important;
+  color: #ffffff !important;
+}
+.builder-config-panel .bg-gray-50:hover {
+  border-color: #8216c5 !important;
+}
+
+/* Checkbox / range styling */
+.builder-config-panel input[type="checkbox"] {
+  accent-color: #d93854;
+}
+.builder-config-panel input[type="range"] {
+  accent-color: #d93854;
+}
+
+/* Category-tinted range (Creativity / temperature) — track + thumb use node accent */
+.builder-config-panel input[type="range"].node-category-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: calc(8px * var(--fig-scale, 1));
+  border-radius: 999px;
+  background: transparent !important;
+  accent-color: var(--range-accent, #d93854);
+}
+
+.builder-config-panel input[type="range"].node-category-range::-webkit-slider-runnable-track {
+  height: calc(8px * var(--fig-scale, 1));
+  border-radius: 999px;
+  background: var(--range-track-bg, linear-gradient(to right, #3a3a3a, #3a3a3a));
+}
+
+.builder-config-panel input[type="range"].node-category-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: calc(18px * var(--fig-scale, 1));
+  height: calc(18px * var(--fig-scale, 1));
+  border-radius: 50%;
+  background: var(--range-accent, #d93854);
+  border: 2px solid #ffffff;
+  margin-top: calc((8px * var(--fig-scale, 1) - 18px * var(--fig-scale, 1)) / 2);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.builder-config-panel input[type="range"].node-category-range::-moz-range-track {
+  height: calc(8px * var(--fig-scale, 1));
+  border-radius: 999px;
+  background: var(--range-track-bg, linear-gradient(to right, #3a3a3a, #3a3a3a));
+}
+
+.builder-config-panel input[type="range"].node-category-range::-moz-range-thumb {
+  width: calc(18px * var(--fig-scale, 1));
+  height: calc(18px * var(--fig-scale, 1));
+  border-radius: 50%;
+  background: var(--range-accent, #d93854);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+}
+
+.builder-config-panel input[type="range"].node-category-range:disabled::-webkit-slider-thumb,
+.builder-config-panel input[type="range"].node-category-range:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+}
+
+/* Buttons inside the panel that use the Tailwind primary palette get
+   re-skinned to the rose CTA pill. */
+.builder-config-panel button.bg-primary {
+  background-color: #d93854 !important;
+}
+.builder-config-panel button.bg-primary:hover {
+  background-color: #c52a45 !important;
+}
+
+/* ============================================================== */
+/* Generic Apex OS dark theme — apply via `data-theme="apex-dark"` */
+/* on any modal / page root. Translates Tailwind light utilities  */
+/* (bg-white, bg-gray-*, text-gray-*, border-gray-*, amber CTAs)  */
+/* to the dark Apex OS palette so popups feel like the workflow   */
+/* builder rather than the legacy light app. Red is the primary   */
+/* CTA color (Figma 27:639 — #d93854).                            */
+/* ============================================================== */
+[data-theme="apex-dark"] {
+  background-color: #141414;
+  color: #ffffff;
+}
+
+/* Full-page app background (builder, chat, shell, login) */
+.bg-canvas {
+  background-color: #141414;
+}
+
+/* Apex OS login page — animated radial rays anchored on the wordmark's "x" */
+.login-page {
+  background: radial-gradient(ellipse at center, #0a0a0a 0%, #050505 70%, #000 100%);
+  isolation: isolate;
+  --ray-length: 110vmax;
+}
+
+.login-page__rays {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+  contain: strict;
+}
+
+.login-page__rays-bundle {
+  position: absolute;
+  left: var(--ray-origin-x, 50%);
+  top: var(--ray-origin-y, 50%);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.login-page__ray {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--ray-length);
+  height: var(--ray-width, 2px);
+  margin-top: calc(var(--ray-width, 2px) / -2);
+  transform: rotate(var(--ray-angle, 0deg));
+  transform-origin: 0 50%;
+  overflow: hidden;
+  opacity: var(--ray-opacity, 1);
+  mix-blend-mode: screen;
+}
+
+.login-page__ray-streak {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 61, 97, 0) 0%,
+    rgba(255, 61, 97, 0.95) 14%,
+    rgba(217, 56, 84, 0.85) 60%,
+    rgba(217, 56, 84, 0) 100%
+  );
+  border-radius: 999px;
+  transform-origin: 0 50%;
+  transform: translateX(-100%) scaleX(0.6);
+  will-change: transform, opacity;
+  animation: apex-ray-stream var(--ray-duration, 3s) linear var(--ray-delay, 0s) infinite;
+  filter: drop-shadow(0 0 4px rgba(255, 61, 97, 0.55));
+}
+
+@keyframes apex-ray-stream {
+  0% {
+    transform: translateX(-60%) scaleX(0.4);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%) scaleX(1);
+    opacity: 0;
+  }
+}
+
+.login-page__vignette {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.55) 85%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+.login-page__content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vh, 80px);
+  padding: 5vh 24px;
+}
+
+.login-page__wordmark {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(72px, 14vw, 220px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  text-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+  display: inline-flex;
+  align-items: baseline;
+  user-select: none;
+}
+
+.login-page__wordmark-apex {
+  color: #ffffff;
+}
+
+.login-page__wordmark-x {
+  color: #ffffff;
+  position: relative;
+  display: inline-block;
+}
+
+.login-page__wordmark-os {
+  color: #d93854;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+
+.login-page__sign-in {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #141414;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 40px rgba(255, 255, 255, 0.18);
+  transition: transform 150ms ease, box-shadow 200ms ease, background-color 200ms ease;
+}
+
+.login-page__sign-in:hover:not(:disabled) {
+  background: #f5f5f5;
+  box-shadow: 0 10px 48px rgba(255, 255, 255, 0.28);
+}
+
+.login-page__sign-in:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.login-page__sign-in:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-page__ray-streak {
+    animation: none !important;
+  }
+  .login-page__ray-streak {
+    transform: translateX(20%) scaleX(0.8) !important;
+    opacity: 0.55 !important;
+  }
+}
+
+/* Apex OS shell — skeleton shimmer + faster control transitions */
+@keyframes apex-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+[data-apex-shell] .apex-skeleton {
+  background: linear-gradient(
+    90deg,
+    #1a1a1a 0%,
+    #2a2a2a 45%,
+    #1f1f1f 55%,
+    #1a1a1a 100%
+  );
+  background-size: 200% 100%;
+  animation: apex-shimmer 1.35s ease-in-out infinite;
+}
+
+[data-apex-shell] :focus-visible {
+  outline: 2px solid #d93854;
+  outline-offset: 2px;
+}
+
+/* Chat thread — single-surface layout (see ChatView) */
+.chat-thread {
+  --chat-divider: rgba(255, 255, 255, 0.08);
+  --chat-composer-bg: #222222;
+  --chat-alert-warn-bg: rgba(99, 31, 42, 0.55);
+  --chat-alert-muted-bg: rgba(70, 70, 70, 0.35);
+}
+
+.chat-thread__header {
+  border-bottom: 1px solid var(--chat-divider);
+}
+
+.chat-thread__composer {
+  border-top: 1px solid var(--chat-divider);
+  background-color: transparent;
+}
+
+.chat-thread__composer-shell {
+  background-color: var(--chat-composer-bg);
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1);
+}
+
+.chat-thread__alert {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+}
+
+.chat-thread__alert--warn {
+  background-color: var(--chat-alert-warn-bg);
+  color: #ffffff;
+}
+
+.chat-thread__alert--muted {
+  background-color: var(--chat-alert-muted-bg);
+  color: #dadada;
+}
+
+/* Storefront — ambient atmosphere + single-column catalog */
+.storefront-page {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.storefront-page__scroll {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.storefront-page__main {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-bottom: 48px;
+  overscroll-behavior: contain;
+  box-sizing: border-box;
+}
+
+.storefront-page__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.storefront-page__title {
+  margin: 0 0 20px;
+  color: #ffffff;
+  text-align: center;
+}
+
+.storefront-page__toolbar {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.storefront-page__catalog {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.storefront-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.storefront-ambient__glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(64px);
+  will-change: transform;
+}
+
+.storefront-ambient__glow--hero {
+  top: 0;
+  left: 50%;
+  right: auto;
+  width: min(72vw, 880px);
+  height: min(48vh, 480px);
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 38%,
+    rgba(217, 56, 84, 0.26) 0%,
+    rgba(217, 56, 84, 0.1) 38%,
+    transparent 72%
+  );
+}
+
+.storefront-ambient__glow--catalog {
+  top: 28%;
+  left: -8%;
+  width: min(48vw, 520px);
+  height: min(42vh, 380px);
+  background: radial-gradient(
+    ellipse 60% 55% at 40% 50%,
+    rgba(217, 56, 84, 0.1) 0%,
+    transparent 68%
+  );
+  filter: blur(80px);
+}
+
+.storefront-ambient__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 95% 85% at 50% 45%,
+    transparent 42%,
+    rgba(10, 10, 10, 0.35) 78%,
+    rgba(8, 8, 8, 0.55) 100%
+  );
+}
+
+.storefront-ambient__grain {
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 180px 180px;
+}
+
+/* Storefront — featured spotlight row */
+.storefront-spotlight {
+  display: grid;
+  gap: 12px;
+  perspective: 1000px;
+  padding: 6px;
+  margin: -6px;
+}
+
+.storefront-spotlight--count-1 {
+  grid-template-columns: 1fr;
+}
+
+.storefront-spotlight--count-2 {
+  grid-template-columns: 1fr 1fr;
+}
+
+.storefront-spotlight--count-3 {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+.storefront-card--spotlight .storefront-card-desc {
+  -webkit-line-clamp: 3;
+}
+
+.storefront-catalog-block--after-spotlight {
+  margin-top: 28px;
+}
+
+@media (max-width: 900px) {
+  .storefront-spotlight--count-2,
+  .storefront-spotlight--count-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .storefront-card-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Storefront — tool cards, section headers */
+.storefront-card {
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid transparent;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.storefront-card--hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(217, 56, 84, 0.14);
+}
+
+.storefront-card-body {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.storefront-card-icon-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.storefront-card-icon-wrap::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--storefront-icon-glow, #d93854) 38%, transparent);
+  filter: blur(14px);
+  opacity: 0.55;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.storefront-card-icon-wrap > * {
+  position: relative;
+  z-index: 1;
+}
+
+.storefront-card-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.storefront-card-icon--tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.storefront-card-title {
+  margin: 0;
+  color: #ffffff;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.storefront-card-desc {
+  margin: 0;
+  flex: 1 1 auto;
+  color: #b5b5b5;
+  font-weight: 400;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.storefront-card-cta-row {
+  margin-top: auto;
+  padding-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.storefront-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+  transition: background-color 150ms ease;
+}
+
+.storefront-cta--chat {
+  background-color: #3b1c21;
+  color: #d93854;
+}
+
+.storefront-cta--chat:hover:not(:disabled) {
+  background-color: #4a232a;
+}
+
+.storefront-cta--chat:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.storefront-cta--launch {
+  background-color: #d93854;
+  color: #ffffff;
+}
+
+.storefront-cta--launch:hover {
+  background-color: #c52a45;
+}
+
+.storefront-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.storefront-section-title {
+  margin: 0;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.storefront-section-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #dadada;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.storefront-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  perspective: 1000px;
+  padding: 6px;
+  margin: -6px;
+}
+
+.storefront-catalog-block + .storefront-catalog-block {
+  margin-top: 28px;
+}
+
+/* Surfaces */
+[data-theme="apex-dark"] .bg-white,
+[data-theme="apex-dark"] .bg-\[\#fafafa\],
+[data-theme="apex-dark"] .bg-\[\#f9fafb\] {
+  background-color: #1a1a1a !important;
+}
+[data-theme="apex-dark"] .bg-gray-50 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+[data-theme="apex-dark"] .bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+[data-theme="apex-dark"] .bg-gray-200 {
+  background-color: #2a2a2a !important;
+}
+[data-theme="apex-dark"] .bg-gray-700 {
+  background-color: #3a3a3a !important;
+}
+[data-theme="apex-dark"] .bg-gray-800 {
+  background-color: #2a2a2a !important;
+}
+[data-theme="apex-dark"] .bg-gray-900 {
+  background-color: #d93854 !important; /* primary CTA → rose */
+}
+[data-theme="apex-dark"] .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+[data-theme="apex-dark"] .hover\:bg-gray-100:hover {
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+[data-theme="apex-dark"] .hover\:bg-gray-300:hover {
+  background-color: #3a3a3a !important;
+}
+[data-theme="apex-dark"] .hover\:bg-gray-800:hover {
+  background-color: #c52a45 !important;
+}
+
+/* Text colours */
+[data-theme="apex-dark"] .text-gray-900 { color: #ffffff !important; }
+[data-theme="apex-dark"] .text-gray-800 { color: #ffffff !important; }
+[data-theme="apex-dark"] .text-gray-700 { color: #d0d0d0 !important; }
+[data-theme="apex-dark"] .text-gray-600 { color: #b5b5b5 !important; }
+[data-theme="apex-dark"] .text-gray-500 { color: #b5b5b5 !important; }
+[data-theme="apex-dark"] .text-gray-400 { color: #888888 !important; }
+[data-theme="apex-dark"] .text-foreground { color: #ffffff !important; }
+[data-theme="apex-dark"] .text-muted-foreground { color: #b5b5b5 !important; }
+[data-theme="apex-dark"] .hover\:text-gray-700:hover { color: #ffffff !important; }
+[data-theme="apex-dark"] .hover\:text-gray-800:hover { color: #ffffff !important; }
+
+/* Borders */
+[data-theme="apex-dark"] .border-gray-100,
+[data-theme="apex-dark"] .border-gray-200,
+[data-theme="apex-dark"] .border-gray-300,
+[data-theme="apex-dark"] .border-border {
+  border-color: #464646 !important;
+}
+
+/* Amber → red. The questionnaire builder uses amber as its accent.
+   Replace it with the Figma rose so the page matches the workflow CTA. */
+[data-theme="apex-dark"] .text-amber-500,
+[data-theme="apex-dark"] .text-amber-600,
+[data-theme="apex-dark"] .text-amber-700 {
+  color: #d93854 !important;
+}
+[data-theme="apex-dark"] .bg-amber-500 {
+  background-color: #d93854 !important;
+}
+[data-theme="apex-dark"] .bg-amber-600,
+[data-theme="apex-dark"] .hover\:bg-amber-600:hover {
+  background-color: #c52a45 !important;
+}
+[data-theme="apex-dark"] .bg-amber-50,
+[data-theme="apex-dark"] .bg-amber-50\/40,
+[data-theme="apex-dark"] .bg-amber-50\/50 {
+  background-color: rgba(217, 56, 84, 0.08) !important;
+}
+[data-theme="apex-dark"] .hover\:bg-amber-50:hover {
+  background-color: rgba(217, 56, 84, 0.1) !important;
+}
+[data-theme="apex-dark"] .border-amber-100,
+[data-theme="apex-dark"] .border-amber-200,
+[data-theme="apex-dark"] .border-amber-300,
+[data-theme="apex-dark"] .border-amber-500 {
+  border-color: #d93854 !important;
+}
+[data-theme="apex-dark"] .focus\:ring-amber-300:focus {
+  --tw-ring-color: rgba(217, 56, 84, 0.4) !important;
+}
+[data-theme="apex-dark"] .ring-amber-300,
+[data-theme="apex-dark"] .ring-amber-500 {
+  --tw-ring-color: #d93854 !important;
+}
+
+/* Form controls inside the dark theme — same treatment as the
+   builder config panel: transparent bg, #464646 border, white text. */
+[data-theme="apex-dark"] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+[data-theme="apex-dark"] textarea,
+[data-theme="apex-dark"] select {
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 1px solid #464646 !important;
+  color: #ffffff !important;
+}
+[data-theme="apex-dark"] select {
+  background-image: url("/icons/chevron-down.svg") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 16px 16px !important;
+  padding-right: 36px !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+[data-theme="apex-dark"] input:focus,
+[data-theme="apex-dark"] textarea:focus,
+[data-theme="apex-dark"] select:focus {
+  outline: none !important;
+  border-color: #d93854 !important;
+}
+[data-theme="apex-dark"] input::placeholder,
+[data-theme="apex-dark"] textarea::placeholder {
+  color: rgba(181, 181, 181, 0.6) !important;
+}
+[data-theme="apex-dark"] select option {
+  background-color: #1a1a1a !important;
+  color: #ffffff !important;
+}
+[data-theme="apex-dark"] input:-webkit-autofill,
+[data-theme="apex-dark"] textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 1000px #1a1a1a inset !important;
+  -webkit-text-fill-color: #ffffff !important;
+  caret-color: #ffffff !important;
+}
+
+/* Inline search wrappers — outer shell owns border/focus; inner input stays flush */
+.kb-inline-search input,
+.kb-inline-search input:hover,
+.kb-inline-search input:focus,
+.kb-inline-search input:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+}
+
+.builder-config-panel .kb-inline-search input,
+.builder-config-panel .kb-inline-search input:focus,
+.builder-config-panel .kb-inline-search input:focus-visible {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  font-size: calc(14px * var(--fig-scale, 1)) !important;
+  line-height: calc(20px * var(--fig-scale, 1)) !important;
+}
+
+.builder-config-panel .kb-inline-search:focus-within {
+  border-color: #8216c5 !important;
+  box-shadow: 0 0 0 2px rgba(130, 22, 197, 0.2) !important;
+}
+
+[data-theme="apex-dark"] .kb-inline-search:focus-within {
+  border-color: #d93854 !important;
+  box-shadow: none !important;
+}
+
+[data-apex-shell] .kb-inline-search input:focus-visible {
+  outline: none !important;
+  outline-offset: 0 !important;
+}
+
+/* Dark theme overrides for DeliverableReview inside the modal */
+.deliverable-dark-theme .bg-white { background-color: #303030 !important; }
+.deliverable-dark-theme .bg-gray-50 { background-color: #353535 !important; }
+.deliverable-dark-theme .bg-gray-100 { background-color: #464646 !important; }
+.deliverable-dark-theme .border-gray-200,
+.deliverable-dark-theme .border-gray-100 { border-color: #464646 !important; }
+.deliverable-dark-theme .border-gray-300 { border-color: #6b6b6b !important; }
+.deliverable-dark-theme .text-gray-900 { color: #ffffff !important; }
+.deliverable-dark-theme .text-gray-800 { color: #ffffff !important; }
+.deliverable-dark-theme .text-gray-700 { color: #dadada !important; }
+.deliverable-dark-theme .text-gray-600 { color: #b5b5b5 !important; }
+.deliverable-dark-theme .text-gray-500 { color: #b5b5b5 !important; }
+.deliverable-dark-theme .text-gray-400 { color: #8a8a8a !important; }
+.deliverable-dark-theme .hover\:bg-gray-50:hover { background-color: #3d3d3d !important; }
+.deliverable-dark-theme .hover\:bg-gray-100:hover { background-color: #555555 !important; }
+.deliverable-dark-theme .bg-blue-100 { background-color: rgba(30,64,175,0.3) !important; }
+.deliverable-dark-theme .text-blue-600 { color: #93c5fd !important; }
+.deliverable-dark-theme .bg-emerald-100 { background-color: rgba(6,78,59,0.3) !important; }
+.deliverable-dark-theme .text-emerald-600 { color: #6ee7b7 !important; }
+.deliverable-dark-theme .bg-red-50 { background-color: rgba(127,29,29,0.3) !important; }
+.deliverable-dark-theme .hover\:bg-red-50:hover { background-color: rgba(127,29,29,0.4) !important; }
+.deliverable-dark-theme .prose,
+.deliverable-dark-theme .prose p,
+.deliverable-dark-theme .prose li,
+.deliverable-dark-theme .prose strong,
+.deliverable-dark-theme .prose span { color: #dadada !important; }
+.deliverable-dark-theme .prose a { color: #d93854 !important; }
+.deliverable-dark-theme .prose code { background-color: #383838 !important; color: #dadada !important; }
+.deliverable-dark-theme .prose pre { background-color: #383838 !important; }
+.deliverable-dark-theme .bg-muted { background-color: #383838 !important; }
+.deliverable-dark-theme textarea { background-color: #2a2a2a !important; color: #ffffff !important; border-color: #464646 !important; }
+.deliverable-dark-theme .border-border { border-color: #464646 !important; }
+.deliverable-dark-theme .border-t { border-color: #464646 !important; }
+.deliverable-dark-theme .text-foreground { color: #ffffff !important; }
+.deliverable-dark-theme .text-muted-foreground { color: #b5b5b5 !important; }
+.deliverable-dark-theme .bg-background { background-color: #2a2a2a !important; }
+.deliverable-dark-theme .bg-surface { background-color: #2a2a2a !important; }
+
+/* OpenUI TreeView org chart (ReactFlow) — force a dark, self-contained skin so
+   the zoom/fit controls stay visible regardless of the app's light/dark mode. */
+.agent-org-chart { color-scheme: dark; }
+.agent-org-chart .react-flow__controls {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #3a3a3a;
+}
+.agent-org-chart .react-flow__controls-button {
+  background: #262626;
+  border-bottom: 1px solid #3a3a3a;
+}
+.agent-org-chart .react-flow__controls-button:hover {
+  background: #353535;
+}
+.agent-org-chart .react-flow__controls-button svg {
+  fill: #e5e5e5;
+}
+.agent-org-chart .react-flow__controls-button:hover svg {
+  fill: #ffffff;
+}
+.agent-org-chart .react-flow__attribution { display: none; }
+
+/* OpenUI chart containers hardcode --openui-foreground / --openui-text-neutral-primary
+   inline on the element, read from genui-lib's own bundled (unexported, light-default)
+   theme context that the app-level ThemeProvider cannot reach. That inline override is
+   why chart tooltips/surfaces render light inside an otherwise dark deliverable. Defer
+   these two tokens back to the inherited (themed) values so charts match the deliverable
+   theme; inheriting keeps this correct for both light and dark surfaces. */
+.openui-message .openui-chart-container {
+  --openui-foreground: inherit !important;
+  --openui-text-neutral-primary: inherit !important;
+}
+
+/* Chart tooltip value (e.g. a pie slice's percentage) ships with
+   overflow:hidden + text-overflow:ellipsis. In the flex row it shares with the
+   category label, that overflow makes its automatic min-size 0, so flexbox
+   collapses it to a sliver while the label keeps its full width -- the value
+   gets clipped to "2..." instead of "28%". Keep the (short) value from
+   shrinking so it always renders in full; the label wraps instead. */
+.openui-message .openui-chart-tooltip-content-value {
+  flex-shrink: 0;
+  overflow: visible;
+  text-overflow: clip;
+}

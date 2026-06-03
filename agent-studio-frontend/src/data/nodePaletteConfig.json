@@ -1,0 +1,467 @@
+{
+  "categories": [
+    {
+      "name": "",
+      "color": "#c5a216",
+      "elements": [
+        {
+          "id": "sticky-note",
+          "name": "Sticky Note",
+          "icon": "/icons/sticky-note.svg",
+          "color": "#6B7280",
+          "description": "Add notes and annotations to your workflow",
+          "configFields": []
+        }
+      ]
+    },
+    {
+      "name": "Initiators",
+      "color": "#166ac5",
+      "elements": [
+        {
+          "id": "chat",
+          "name": "Start",
+          "icon": "/icons/chat.svg",
+          "color": "#166ac5",
+          "description": "Workflow entry point — opens the chat session",
+          "hiddenFromPalette": true,
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "defaultValue": "Start",
+              "placeholder": "Start"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Add Step",
+      "color": "#8216c5",
+      "elements": [
+        {
+          "id": "agent",
+          "name": "AI Agent",
+          "icon": "/icons/agent.svg",
+          "color": "#8216c5",
+          "description": "Configurable AI agent for workflow tasks",
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Name",
+              "type": "text",
+              "defaultValue": "AI Agent",
+              "placeholder": "Agent name",
+              "configCategory": "Basic",
+              "configMode": "basic"
+            },
+            {
+              "key": "systemInstructions",
+              "label": "Instructions",
+              "type": "textarea",
+              "defaultValue": "You are a helpful AI assistant.",
+              "placeholder": "What the agent should do, including goals and constraints…",
+              "rows": 5,
+              "configCategory": "Basic",
+              "configMode": "basic"
+            },
+            {
+              "key": "deliverableSources",
+              "label": "Previous Steps",
+              "type": "deliverable_source_select",
+              "defaultValue": "all",
+              "helpText": "Select outputs from earlier nodes to pass to this agent.",
+              "configCategory": "Sources",
+              "configMode": "advanced"
+            },
+            {
+              "key": "fileScope",
+              "label": "Uploaded Files",
+              "type": "deliverable_source_select",
+              "defaultValue": "all",
+              "helpText": "Allow access to files uploaded by the user in earlier nodes.",
+              "configCategory": "Sources",
+              "configMode": "advanced"
+            },
+            {
+              "key": "enableWebSearch",
+              "label": "Web Search",
+              "type": "toggle_row",
+              "icon": "globe",
+              "defaultValue": false,
+              "helpText": "Allow the agent to search the web. Turn on Deep Research below for multi-agent research.",
+              "configCategory": "Sources",
+              "configMode": "basic"
+            },
+            {
+              "key": "enableDeepResearch",
+              "label": "Deep Research",
+              "type": "toggle_row",
+              "icon": "test",
+              "badge": "Higher token use",
+              "defaultValue": false,
+              "helpText": "Multi-agent deep research with parallel subagents and citations.",
+              "configCategory": "Sources",
+              "configMode": "basic",
+              "requires": {
+                "field": "enableWebSearch",
+                "value": true
+              }
+            },
+            {
+              "key": "knowledgeBase",
+              "label": "Knowledge Bases",
+              "type": "toggle_row",
+              "icon": "kb",
+              "defaultValue": false,
+              "helpText": "Give the agent access to one or more knowledge bases.",
+              "configCategory": "Sources",
+              "configMode": "basic"
+            },
+            {
+              "key": "knowledgeBaseIds",
+              "label": "Knowledge Bases",
+              "type": "kb_multiselect",
+              "defaultValue": [],
+              "options": [],
+              "helpText": "Select knowledge bases for this agent.",
+              "configCategory": "Sources",
+              "configMode": "basic",
+              "showIf": {
+                "field": "knowledgeBase",
+                "value": true
+              }
+            },
+            {
+              "key": "startupMessage",
+              "label": "Startup message",
+              "type": "textarea",
+              "defaultValue": "",
+              "placeholder": "Message shown before the agent runs. Leave empty to auto-run.",
+              "rows": 3,
+              "configCategory": "Behavior",
+              "configMode": "basic"
+            },
+            {
+              "key": "showReasoning",
+              "label": "Show Reasoning",
+              "type": "toggle_row",
+              "icon": "brain",
+              "defaultValue": true,
+              "helpText": "Display agent reasoning to the user while the agent is running.",
+              "configCategory": "Behavior",
+              "configMode": "advanced"
+            },
+            {
+              "key": "agentMode",
+              "label": "Delivery Mode",
+              "type": "select",
+              "defaultValue": "regular",
+              "options": [
+                { "value": "regular", "label": "Autonomous" },
+                { "value": "chat", "label": "Interactive" },
+                { "value": "one_shot", "label": "One-shot" }
+              ],
+              "helpText": "Autonomous: agent decides when to produce output. Interactive: user decides. One-shot: agent produces output immediately using available inputs.",
+              "configCategory": "Behavior",
+              "configMode": "advanced"
+            },
+            {
+              "key": "enableUserQuestions",
+              "label": "Allow Multi-Choice Qs",
+              "type": "toggle_row",
+              "icon": "chat",
+              "defaultValue": true,
+              "helpText": "Lets the agent request clarification in multiple-choice format. Always on for Interactive delivery mode.",
+              "configCategory": "Behavior",
+              "configMode": "advanced"
+            },
+            {
+              "key": "outputSchema",
+              "label": "Output schema",
+              "type": "textarea",
+              "defaultValue": "",
+              "placeholder": "Define the structure of the output (free text if empty)…",
+              "rows": 4,
+              "configCategory": "Output",
+              "configMode": "basic"
+            },
+            {
+              "key": "deliverableName",
+              "label": "Name",
+              "type": "text",
+              "defaultValue": "",
+              "placeholder": "Auto-generated if empty",
+              "helpText": "Deliverable name for downstream nodes.",
+              "configCategory": "Output",
+              "configMode": "advanced"
+            },
+            {
+              "key": "hideDeliverable",
+              "label": "Hide Deliverable from Chat",
+              "type": "checkbox",
+              "defaultValue": false,
+              "helpText": "When enabled, this agent's deliverable will not be displayed in the chat view. The deliverable is still generated and stored — it just won't be visible to the user.",
+              "configCategory": "Output",
+              "configMode": "advanced"
+            },
+            {
+              "key": "modelProvider",
+              "label": "Provider",
+              "type": "select",
+              "defaultValue": "openai",
+              "options": "DYNAMIC",
+              "configCategory": "Model",
+              "configMode": "advanced"
+            },
+            {
+              "key": "modelName",
+              "label": "Model",
+              "type": "select",
+              "defaultValue": "openai.gpt-5",
+              "dependsOn": "modelProvider",
+              "options": "DYNAMIC_MODELS",
+              "configCategory": "Model",
+              "configMode": "advanced"
+            },
+            {
+              "key": "temperature",
+              "label": "Creativity",
+              "type": "slider",
+              "defaultValue": 0.7,
+              "min": 0,
+              "max": 2,
+              "step": 0.1,
+              "helpText": "Low = more deterministic, high = more creative.",
+              "configCategory": "Model",
+              "configMode": "advanced"
+            },
+            {
+              "key": "maxTokens",
+              "label": "Max tokens",
+              "type": "number",
+              "defaultValue": null,
+              "placeholder": "System default",
+              "helpText": "Maximum response length.",
+              "configCategory": "Model",
+              "configMode": "advanced"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Add Step",
+      "color": "#8216c5",
+      "elements": [
+        {
+          "id": "code-executor",
+          "name": "Code Runner",
+          "icon": "/icons/code-executor.svg",
+          "color": "#8216c5",
+          "description": "Run Python code in a secure sandbox. Takes deliverables as input, returns typed outputs (data, charts, files, interactive widgets).",
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "defaultValue": "Code Runner",
+              "placeholder": "Node label"
+            },
+            {
+              "key": "code",
+              "label": "Python Code",
+              "type": "code_editor",
+              "defaultValue": "",
+              "language": "python"
+            },
+            {
+              "key": "inputMappings",
+              "label": "Input Mappings",
+              "type": "input_mapper",
+              "defaultValue": {},
+              "helpText": "Feed data from upstream nodes into your script. Each row maps a variable name (left) to a source path (right). Your code reads them via inputs[\"variable_name\"]."
+            },
+            {
+              "key": "knowledgeBaseIds",
+              "label": "Knowledge Bases",
+              "type": "kb_multiselect",
+              "defaultValue": [],
+              "options": [],
+              "helpText": "Select one or more Knowledge Bases whose structured tables should be queryable from your code via agent_studio.knowledge_base. Tables you can drag and drop into the editor come from these KBs, and the AI code generator uses their schemas to write accurate queries."
+            },
+            {
+              "key": "runtimeInputs",
+              "label": "Runtime User Inputs (optional)",
+              "type": "form_schema_builder",
+              "defaultValue": [],
+              "helpText": "Add fields that the user fills in at runtime before the code runs. Values arrive in inputs[\"runtime\"]. Leave empty to skip."
+            },
+            {
+              "key": "startupMessage",
+              "label": "Startup Message",
+              "type": "text",
+              "defaultValue": "",
+              "placeholder": "e.g. Processing governance document...",
+              "helpText": "Message shown in the chat when this executor starts. Leave empty to run immediately."
+            },
+            {
+              "key": "autoExecute",
+              "label": "Auto-execute when reached",
+              "type": "checkbox",
+              "defaultValue": false,
+              "helpText": "When enabled, this node fires automatically the moment the workflow reaches it — including when it is the entry point of the workflow (opens the session and runs without waiting for a chat message). Does not bypass in-code pauses from output.ask(), output.selection(), output.form(), or runtime-input forms — those are controlled by your script."
+            },
+            {
+              "key": "timeout",
+              "label": "Timeout (seconds)",
+              "type": "number",
+              "defaultValue": 120,
+              "min": 5,
+              "max": 600,
+              "placeholder": "Max execution time"
+            },
+            {
+              "key": "allowedImports",
+              "label": "Extra Allowed Imports",
+              "type": "text",
+              "defaultValue": "",
+              "placeholder": "comma-separated: requests, beautifulsoup4",
+              "helpText": "Packages beyond the safe default list (pandas, numpy, matplotlib, etc.)."
+            },
+            {
+              "key": "deliverableSources",
+              "label": "Upstream Deliverables Access",
+              "type": "deliverable_source_select",
+              "defaultValue": "all",
+              "helpText": "Choose which previous nodes' deliverables this code runner can read. Use Input Mappings above to wire specific data into your script."
+            },
+            {
+              "key": "hideDeliverable",
+              "label": "Hide Deliverable from Chat",
+              "type": "checkbox",
+              "defaultValue": false,
+              "helpText": "When enabled, this code runner's output will not be displayed in the chat view. The output is still generated and stored — it just won't be visible to the user."
+            }
+          ]
+        },
+        {
+          "id": "powerpoint-generator",
+          "name": "PowerPoint Generator",
+          "icon": "/icons/powerpoint-generator.svg",
+          "color": "#8216c5",
+          "description": "Send selected workflow deliverables to Edwin and open the slide editor.",
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "defaultValue": "PowerPoint Generator",
+              "placeholder": "Node label"
+            },
+            {
+              "key": "deliverableSources",
+              "label": "Previous Steps",
+              "type": "deliverable_source_select",
+              "defaultValue": "all",
+              "helpText": "Select outputs from earlier nodes to include in the Edwin handoff."
+            },
+            {
+              "key": "hideDeliverable",
+              "label": "Hide Deliverable from Chat",
+              "type": "checkbox",
+              "defaultValue": true,
+              "helpText": "Edwin opens automatically; only the continuation message is shown in chat."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Control Flow",
+      "color": "#c56216",
+      "elements": [
+        {
+          "id": "condition",
+          "name": "Route",
+          "icon": "/icons/condition.svg",
+          "color": "#c56216",
+          "description": "Branch the workflow based on expressions over previous node outputs",
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "defaultValue": "Route",
+              "placeholder": "Node label"
+            },
+            {
+              "key": "conditions",
+              "label": "Routes",
+              "type": "condition_builder",
+              "defaultValue": [
+                {
+                  "id": "condition_1",
+                  "caseName": "",
+                  "expression": "",
+                  "type": "if"
+                }
+              ],
+              "helpText": "Define routes using expressions. Access previous node outputs with: input.deliverable.fieldName or node.{nodeId}.deliverable.fieldName"
+            }
+          ]
+        },
+        {
+          "id": "human-in-the-loop",
+          "name": "Human Review",
+          "icon": "/icons/human-in-the-loop.svg",
+          "color": "#c56216",
+          "description": "Human review and approval of workflow output",
+          "configFields": [
+            {
+              "key": "label",
+              "label": "Label",
+              "type": "text",
+              "defaultValue": "Human Review",
+              "placeholder": "Review step name"
+            },
+            {
+              "key": "requireApproval",
+              "label": "Require explicit approval",
+              "type": "toggle_row",
+              "icon": "check",
+              "defaultValue": true,
+              "helpText": "Reviewer must approve before the workflow continues. Turn off to allow continue without an explicit approve action."
+            },
+            {
+              "key": "allowEditing",
+              "label": "Allow content editing",
+              "type": "toggle_row",
+              "icon": "edit",
+              "defaultValue": true,
+              "helpText": "Lets the reviewer change deliverable content during review, not only approve or reject as-is."
+            },
+            {
+              "key": "instructions",
+              "label": "Review Instructions",
+              "type": "textarea",
+              "defaultValue": "Please review and approve the content before continuing.",
+              "placeholder": "Instructions for the reviewer...",
+              "rows": 3
+            },
+            {
+              "key": "timeoutMinutes",
+              "label": "Timeout (minutes)",
+              "type": "number",
+              "defaultValue": 60,
+              "min": 1,
+              "placeholder": "Time before auto-escalation"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Impact of AI on the Global Economy – Strategy& Slide</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+:root {
+  --slide-w: 960px;
+  --slide-h: 540px;
+  --left-x: 35px;
+  --frame-w: 890px;
+  --bg: #ffffff;
+  --text-main: #2d2d2d;
+  --text-light: #5e5e5e;
+  --brand-red: #A32020;
+  --brand-red-dark: #7a1818;
+  --brand-red-light: #FDF2F4;
+  --grey-light: #f4f4f4;
+  --grey-border: #e0e0e0;
+  --gap: 18px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: #eef1f5;
+  font-family: Arial, sans-serif;
+  color: var(--text-main);
+}
+.deck {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 32px 40px 120px;
+  max-width: 1020px;
+  margin: 0 auto;
+}
+.slide-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.slide-label {
+  font-size: 12px;
+  color: #666;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+.slide {
+  position: relative;
+  width: var(--slide-w);
+  height: var(--slide-h);
+  background: var(--bg);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.title {
+  position: absolute;
+  left: var(--left-x);
+  top: 30px;
+  width: var(--frame-w);
+  font: 400 28px/1.15 Georgia, serif;
+  color: var(--text-main);
+}
+.subtitle {
+  position: absolute;
+  left: var(--left-x);
+  top: 100px;
+  width: var(--frame-w);
+  font: 700 18px/1.2 Arial, sans-serif;
+  color: var(--brand-red);
+}
+.frame {
+  position: absolute;
+  left: var(--left-x);
+  top: 140px;
+  width: var(--frame-w);
+  height: 340px;
+}
+.slide-footer {
+  position: absolute;
+  left: var(--left-x);
+  bottom: 20px;
+  width: var(--frame-w);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #888;
+}
+
+/* AI IMPACT LAYOUT */
+.ai-impact-frame {
+  display: flex;
+  flex-direction: row;
+  gap: 22px;
+  height: 100%;
+}
+.ai-left {
+  flex: 0 0 360px;
+  background: #ffffff;
+  border: 1px solid var(--grey-border);
+  padding: 22px 22px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.ai-left::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: var(--brand-red);
+}
+.ai-pill {
+  align-self: flex-start;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+  color: var(--brand-red-dark);
+  background: var(--brand-red-light);
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+.ai-hero-kpi {
+  font-size: 48px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--brand-red);
+}
+.ai-hero-label {
+  margin-top: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.ai-hero-subnote {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+.ai-hero-footnote {
+  margin-top: 18px;
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.ai-right {
+  flex: 1;
+  display: grid;
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.ai-card {
+  background: #ffffff;
+  border: 1px solid var(--grey-border);
+  border-left: 4px solid var(--brand-red);
+  padding: 12px 14px 10px;
+  display: flex;
+  flex-direction: column;
+}
+.ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.ai-card-icon {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--brand-red-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--brand-red-dark);
+  flex-shrink: 0;
+}
+.ai-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+.ai-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ai-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-light);
+}
+.ai-line-bullet {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--brand-red);
+  flex-shrink: 0;
+}
+
+.controls {
+  position: fixed;
+  bottom: 24px;
+  right: 40px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  z-index: 1000;
+}
+button#dl-btn {
+  background: linear-gradient(135deg, #A32020, #7a1818);
+  color: #fff;
+  border: none;
+  padding: 12px 26px;
+  font-size: 14px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-weight: 700;
+  box-shadow: 0 8px 24px rgba(163, 32, 32, 0.3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+button#dl-btn:hover {
+  background: linear-gradient(135deg, #7a1818, #5a1010);
+}
+button#dl-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.slide-count {
+  font-size: 14px;
+  color: #666;
+  background: #fff;
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: 1px solid var(--grey-border);
+}
+</style>
+</head>
+<body>
+<div class="controls">
+  <span class="slide-count">1 slide</span>
+  <button id="dl-btn" onclick="generatePPTX()">Download PPTX</button>
+</div>
+
+<main class="deck">
+  <div class="slide-section">
+    <div class="slide-label">Slide 1 — Global AI impact</div>
+    <div class="slide ai-impact">
+      <h1 class="title">AI could unlock trillions in value while reshaping the global economy</h1>
+      <h2 class="subtitle">Global economic impact of AI</h2>
+      <div class="frame">
+        <div class="ai-impact-frame">
+          <div class="ai-left">
+            <div class="ai-pill">Long-term macro impact</div>
+            <div class="ai-hero-kpi">+$7–10T</div>
+            <div class="ai-hero-label">Potential annual GDP uplift at full AI diffusion</div>
+            <div class="ai-hero-subnote">Driven by productivity gains, new products, and automation of routine tasks</div>
+            <div class="ai-hero-footnote">Acceleration depends on adoption, regulation, talent, and infrastructure readiness.</div>
+          </div>
+          <div class="ai-right">
+            <div class="ai-card">
+              <div class="ai-card-header">
+                <div class="ai-card-icon">P</div>
+                <div class="ai-card-title">Productivity & growth</div>
+              </div>
+              <div class="ai-card-body">
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>15–25% efficiency gains in knowledge-intensive work and services over time.</span>
+                </div>
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>Faster innovation cycles, enabling new business models and revenue pools.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-card">
+              <div class="ai-card-header">
+                <div class="ai-card-icon">S</div>
+                <div class="ai-card-title">Sector & value-chain shifts</div>
+              </div>
+              <div class="ai-card-body">
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>Disproportionate upside in tech, finance, and professional services; margin pressure in routine-heavy sectors.</span>
+                </div>
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>Global value chains reconfigure around data, algorithms, and compute capacity.</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="ai-card">
+              <div class="ai-card-header">
+                <div class="ai-card-icon">L</div>
+                <div class="ai-card-title">Labour markets & inclusion</div>
+              </div>
+              <div class="ai-card-body">
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>Tasks are redefined rather than simply replaced, shifting skill demand toward higher-cognition and STEM roles.</span>
+                </div>
+                <div class="ai-line">
+                  <span class="ai-line-bullet">→</span>
+                  <span>Risk of widening wage and regional inequalities without targeted reskilling and policy responses.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="slide-footer">
+        <span>Strategy&amp;</span>
+        <span>Global AI impact</span>
+        <span>1 / 1</span>
+      </footer>
+    </div>
+  </div>
+</main>
+
+<script>
+  const slidesData = [
+    {
+      headline: "AI could unlock trillions in value while reshaping the global economy",
+      subtitle: "Global economic impact of AI",
+      kpi: {
+        value: "+$7–10T",
+        label: "Potential annual GDP uplift at full AI diffusion",
+        subnote: "Driven by productivity gains, new products, and automation of routine tasks",
+        footnote: "Acceleration depends on adoption, regulation, talent, and infrastructure readiness."
+      },
+      cards: [
+        {
+          icon: "P",
+          title: "Productivity & growth",
+          lines: [
+            "15–25% efficiency gains in knowledge-intensive work and services over time.",
+            "Faster innovation cycles, enabling new business models and revenue pools."
+          ]
+        },
+        {
+          icon: "S",
+          title: "Sector & value-chain shifts",
+          lines: [
+            "Disproportionate upside in tech, finance, and professional services; margin pressure in routine-heavy sectors.",
+            "Global value chains reconfigure around data, algorithms, and compute capacity."
+          ]
+        },
+        {
+          icon: "L",
+          title: "Labour markets & inclusion",
+          lines: [
+            "Tasks are redefined rather than simply replaced, shifting skill demand toward higher-cognition and STEM roles.",
+            "Risk of widening wage and regional inequalities without targeted reskilling and policy responses."
+          ]
+        }
+      ]
+    }
+  ];
+
+  async function generatePPTX() {
+    const btn = document.getElementById('dl-btn');
+    const SLIDE_LIMIT = 4;
+
+    try {
+      if (typeof PptxGenJS === 'undefined') {
+        throw new Error('Library missing');
+      }
+      if (!Array.isArray(slidesData)) {
+        throw new Error('slidesData not defined');
+      }
+      if (slidesData.length > SLIDE_LIMIT) {
+        throw new Error(`Refusal: Max ${SLIDE_LIMIT} slides allowed.`);
+      }
+
+      btn.disabled = true;
+      btn.innerText = 'Generating...';
+
+      let pptx = new PptxGenJS();
+      pptx.defineLayout({ name: 'STRAT', width: 13.333, height: 7.5 });
+      pptx.layout = 'STRAT';
+
+      const colors = {
+        main: '2d2d2d',
+        light: '5e5e5e',
+        red: 'A32020',
+        redDark: '7a1818',
+        redLight: 'FDF2F4',
+        greyLight: 'f4f4f4',
+        greyBorder: 'e0e0e0',
+        white: 'FFFFFF'
+      };
+
+      const total = slidesData.length;
+
+      slidesData.forEach((s, idx) => {
+        const slide = pptx.addSlide();
+
+        // Headline & subtitle
+        slide.addText(s.headline, {
+          x: 0.48, y: 0.42, w: 12.37, h: 0.75,
+          fontFace: 'Georgia', fontSize: 28, color: colors.main
+        });
+        slide.addText(s.subtitle, {
+          x: 0.48, y: 1.4, w: 12.37, h: 0.35,
+          fontFace: 'Arial', fontSize: 18, color: colors.red, bold: true
+        });
+
+        // Left hero panel
+        const leftX = 0.48;
+        const leftY = 1.95;
+        const leftW = 4.8;
+        const leftH = 4.4;
+
+        slide.addShape('rect', {
+          x: leftX, y: leftY, w: leftW, h: leftH,
+          fill: colors.white,
+          line: { color: colors.greyBorder, width: 0.75 }
+        });
+        slide.addShape('rect', {
+          x: leftX, y: leftY, w: leftW, h: 0.08,
+          fill: colors.red
+        });
+
+        slide.addText('Long-term macro impact'.toUpperCase(), {
+          x: leftX + 0.25, y: leftY + 0.2, w: leftW - 0.5, h: 0.3,
+          fontFace: 'Arial', fontSize: 11, color: colors.redDark,
+          bold: true
+        });
+
+        slide.addText(s.kpi.value, {
+          x: leftX + 0.25, y: leftY + 0.6, w: leftW - 0.5, h: 0.9,
+          fontFace: 'Arial', fontSize: 40, color: colors.red,
+          bold: true
+        });
+        slide.addText(s.kpi.label, {
+          x: leftX + 0.25, y: leftY + 1.4, w: leftW - 0.5, h: 0.5,
+          fontFace: 'Arial', fontSize: 13, color: colors.main,
+          bold: true
+        });
+        slide.addText(s.kpi.subnote, {
+          x: leftX + 0.25, y: leftY + 1.9, w: leftW - 0.5, h: 0.7,
+          fontFace: 'Arial', fontSize: 12, color: colors.light
+        });
+        slide.addText(s.kpi.footnote, {
+          x: leftX + 0.25, y: leftY + 2.7, w: leftW - 0.5, h: 0.7,
+          fontFace: 'Arial', fontSize: 11, color: colors.light
+        });
+
+        // Right side cards
+        const cardAreaX = leftX + leftW + 0.3;
+        const cardAreaY = leftY;
+        const cardW = 7.8;
+        const cardH = 1.3;
+        const cardGap = 0.25;
+
+        s.cards.forEach((card, iCard) => {
+          const cy = cardAreaY + iCard * (cardH + cardGap);
+
+          slide.addShape('rect', {
+            x: cardAreaX, y: cy, w: cardW, h: cardH,
+            fill: colors.white,
+            line: { color: colors.greyBorder, width: 0.75 }
+          });
+          slide.addShape('rect', {
+            x: cardAreaX, y: cy, w: 0.08, h: cardH,
+            fill: colors.red
+          });
+
+          // Icon circle
+          slide.addShape('ellipse', {
+            x: cardAreaX + 0.2, y: cy + 0.2, w: 0.3, h: 0.3,
+            fill: colors.redLight
+          });
+          slide.addText(card.icon, {
+            x: cardAreaX + 0.2, y: cy + 0.22, w: 0.3, h: 0.26,
+            fontFace: 'Arial', fontSize: 11, color: colors.redDark,
+            bold: true, align: 'center'
+          });
+
+          slide.addText(card.title, {
+            x: cardAreaX + 0.6, y: cy + 0.18, w: cardW - 0.8, h: 0.3,
+            fontFace: 'Arial', fontSize: 13, color: colors.main,
+            bold: true
+          });
+
+          card.lines.forEach((line, iLine) => {
+            const ly = cy + 0.5 + iLine * 0.32;
+            slide.addText('→', {
+              x: cardAreaX + 0.6, y: ly, w: 0.2, h: 0.25,
+              fontFace: 'Arial', fontSize: 12, color: colors.red,
+              bold: true
+            });
+            slide.addText(line, {
+              x: cardAreaX + 0.8, y: ly, w: cardW - 1.0, h: 0.28,
+              fontFace: 'Arial', fontSize: 12, color: colors.light
+            });
+          });
+        });
+
+        // Footer
+        slide.addText('Strategy&', {
+          x: 0.48, y: 7.1, w: 2, h: 0.25,
+          fontFace: 'Arial', fontSize: 12, color: '888888'
+        });
+        slide.addText('Global AI impact', {
+          x: 5, y: 7.1, w: 3.33, h: 0.25,
+          fontFace: 'Arial', fontSize: 12, color: '888888', align: 'center'
+        });
+        slide.addText(`${idx + 1} / ${total}`, {
+          x: 11.35, y: 7.1, w: 1.5, h: 0.25,
+          fontFace: 'Arial', fontSize: 12, color: '888888', align: 'right'
+        });
+      });
+
+      await pptx.writeFile({ fileName: '20260211_S&_AI_Global_Economy_Impact_V1.pptx' });
+    } catch (err) {
+      console.error(err);
+      alert('Error: ' + err.message);
+    } finally {
+      if (btn) {
+        btn.disabled = false;
+        btn.innerText = 'Download PPTX';
+      }
+    }
+  }
+</script>
+</body>
+</html>

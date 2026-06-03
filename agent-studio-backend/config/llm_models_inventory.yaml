@@ -1,0 +1,142 @@
+# Canonical LLM inventory — insert-missing sync on each backend startup (by model_name / binding_key).
+# Existing DB rows are never overwritten; add new keys here, then deploy.
+# Regenerate with: python scripts/inventory_llm_models.py scan
+version: 1
+
+models:
+  - model_name: openai.gpt-5
+    provider: openai
+    display_label: GPT-5 (default)
+    fallback_model_name: openai.gpt-5.4-mini
+  - model_name: openai.gpt-5.4-mini
+    provider: openai
+    display_label: GPT-5.4 Mini
+    fallback_model_name: openai.gpt-5
+  - model_name: openai.gpt-4.1
+    provider: openai
+    display_label: GPT-4.1
+    fallback_model_name: openai.gpt-5.4-mini
+  - model_name: openai.gpt-5.5
+    provider: openai
+    display_label: GPT-5.5
+    fallback_model_name: openai.gpt-5
+  - model_name: openai.gpt-5.1-2025-11-13
+    provider: openai
+    display_label: GPT-5.1
+    fallback_model_name: openai.gpt-5
+  - model_name: openai.o3-deep-research-2025-06-26
+    provider: openai
+    display_label: O3 Deep Research
+    fallback_model_name: openai.gpt-5
+  - model_name: bedrock.anthropic.claude-haiku-4-5
+    provider: anthropic
+    display_label: Claude Haiku 4.5
+    fallback_model_name: bedrock.anthropic.claude-sonnet-4-6
+  - model_name: bedrock.anthropic.claude-sonnet-4-6
+    provider: anthropic
+    display_label: Claude Sonnet 4.6
+    fallback_model_name: openai.gpt-5
+  - model_name: bedrock.anthropic.claude-opus-4-6
+    provider: anthropic
+    display_label: Claude Opus 4.6
+    fallback_model_name: bedrock.anthropic.claude-sonnet-4-6
+  - model_name: vertex_ai.gemini-2.5-flash
+    provider: google
+    display_label: Gemini 2.5 Flash
+    fallback_model_name: openai.gpt-5.4-mini
+  - model_name: vertex_ai.gemini-3.1-flash-lite-preview
+    provider: google
+    display_label: Gemini 3.1 Flash Lite
+    fallback_model_name: vertex_ai.gemini-2.5-flash
+
+bindings:
+  - binding_key: env.default_llm
+    binding_type: env_default
+    primary_model_name: openai.gpt-5
+    display_name: Default LLM (env)
+    source_file: app/config/keyvault.py
+  - binding_key: tool.deep_research.primary
+    binding_type: tool
+    primary_model_name: openai.o3-deep-research-2025-06-26
+    display_name: Deep Research
+    source_file: app/workflow/tools/deep_research.py
+  - binding_key: tool.deep_research.query_planner
+    binding_type: tool
+    primary_model_name: bedrock.anthropic.claude-haiku-4-5
+    display_name: Deep Research Query Planner
+    source_file: app/workflow/tools/deep_research.py
+  - binding_key: tool.web_search
+    binding_type: tool
+    primary_model_name: openai.gpt-5.4-mini
+    display_name: Simple Web Search
+    source_file: app/workflow/tools/simple_web_search.py
+  - binding_key: tool.tool_caller
+    binding_type: tool
+    primary_model_name: openai.gpt-5.4-mini
+    display_name: Agent Tool Caller
+    source_file: app/workflow/nodes/agent_classifier.py
+  - binding_key: service.schema_infer
+    binding_type: service
+    primary_model_name: openai.gpt-4.1
+    display_name: Schema Inference
+    source_file: app/utils/schema_inference.py
+  - binding_key: service.metadata_infer
+    binding_type: service
+    primary_model_name: openai.gpt-4.1
+    display_name: Metadata Inference
+    source_file: app/utils/metadata_inference.py
+  - binding_key: tool.structured_data.analyst
+    binding_type: tool
+    primary_model_name: bedrock.anthropic.claude-haiku-4-5
+    display_name: Structured Data Analyst
+    source_file: app/utils/structured_data_tool.py
+  - binding_key: tool.structured_data.table_select
+    binding_type: tool
+    primary_model_name: bedrock.anthropic.claude-haiku-4-5
+    display_name: Structured Data Table Select
+    source_file: app/utils/structured_data_tool.py
+  - binding_key: service.vision.default
+    binding_type: service
+    primary_model_name: vertex_ai.gemini-2.5-flash
+    display_name: Vision Processor Default
+    source_file: app/utils/vision_processor.py
+  - binding_key: service.powerpoint
+    binding_type: service
+    primary_model_name: bedrock.anthropic.claude-opus-4-6
+    display_name: PowerPoint Generation
+    source_file: app/services/powerpoint_service.py
+  - binding_key: service.code_executor.judge
+    binding_type: service
+    primary_model_name: bedrock.anthropic.claude-haiku-4-5
+    display_name: Code Executor Judge
+    source_file: app/routers/code_executor_routes.py
+  - binding_key: service.code_executor.generator
+    binding_type: service
+    primary_model_name: bedrock.anthropic.claude-opus-4-6
+    display_name: Code Executor Generator
+    source_file: app/routers/code_executor_routes.py
+  - binding_key: service.visualization_analyzer
+    binding_type: service
+    primary_model_name: bedrock.anthropic.claude-sonnet-4-6
+    display_name: Visualization Schema Generator
+    source_file: app/services/visualization_analyzer.py
+  - binding_key: service.citation_processor
+    binding_type: service
+    primary_model_name: openai.gpt-5.1-2025-11-13
+    display_name: Citation Processor
+    source_file: app/workflow/research/citation_processor.py
+  - binding_key: service.openui_translate
+    binding_type: service
+    primary_model_name: openai.gpt-5.5
+    display_name: OpenUI Lang Translation
+    source_file: app/services/openui_translate_service.py
+  - binding_key: settings.kb_researcher_grader
+    binding_type: settings
+    primary_model_name: bedrock.anthropic.claude-haiku-4-5
+    display_name: KB Researcher Grader
+    source_file: app/config/settings.py
+  - binding_key: settings.ocr_vision
+    binding_type: settings
+    primary_model_name: vertex_ai.gemini-3.1-flash-lite-preview
+    display_name: OCR Vision
+    source_file: app/config/settings.py

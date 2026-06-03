@@ -1,0 +1,55 @@
+# Multi-stage build for Agent Studio Frontend (Azure Container Apps)
+FROM node:20-alpine as builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source files
+COPY . .
+
+# For Container Apps, API requests are proxied via nginx (paths include /api)
+ARG VITE_API_BASE_URL=
+RUN echo "VITE_API_BASE_URL=${VITE_API_BASE_URL}" > .env
+
+# Build the application
+RUN npm run build
+
+# Production stage with nginx
+FROM nginx:alpine
+
+# Copy built files from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration template (will be processed at runtime)
+COPY nginx.containerapp.conf.template /etc/nginx/conf.d/default.conf.template
+
+# Copy entrypoint script for environment variable substitution
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Remove default nginx config
+RUN rm -f /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.default
+
+# Create nginx cache directory
+RUN mkdir -p /var/cache/nginx/client_temp && \
+    chmod -R 755 /var/cache/nginx
+
+# Environment variable for backend URL (can be overridden at runtime)
+ENV BACKEND_URL=http://agent-studio-backend:8000
+
+# Expose port
+EXPOSE 443
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost/healthz || exit 1
+
+# Use custom entrypoint that substitutes environment variables
+ENTRYPOINT ["/docker-entrypoint.sh"]
+

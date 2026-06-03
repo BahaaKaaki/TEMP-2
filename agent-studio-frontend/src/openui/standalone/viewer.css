@@ -1,0 +1,24 @@
+/*
+ * Standalone-viewer overrides.
+ *
+ * The app's index.css pins `body { overflow: hidden }` and `#root { height:
+ * 100dvh }` because the SPA scrolls inside internal panes. The exported viewer
+ * is a plain document, so we restore natural page scrolling -- otherwise tall
+ * tabs (e.g. dashboards with stacked charts + tables) get clipped at one screen
+ * with no way to reach the rest. Imported after index.css so these win.
+ */
+
+html,
+body {
+  height: auto !important;
+  min-height: 100dvh;
+  overflow: visible !important;
+  /* Keep the page dark even when the OS is in light mode and content is short. */
+  background: #2a2a2a;
+}
+
+#root {
+  height: auto !important;
+  min-height: 100dvh;
+  width: auto !important;
+}

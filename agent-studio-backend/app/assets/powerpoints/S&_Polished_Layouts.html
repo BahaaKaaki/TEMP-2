@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Professional Consulting Slides - Version 5 (Varied Layouts)</title>
+<script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js"></script>
+<style>
+:root{--slide-w:960px;--slide-h:540px;--left-x:35px;--frame-w:890px;--bg:#fff;--text-main:#2d2d2d;--text-light:#5e5e5e;--brand-red:#A32020;--brand-red-dark:#7a1818;--brand-red-light:#FDF2F4;--grey-light:#f4f4f4;--grey-border:#e0e0e0;--gap:18px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#eef1f5;font-family:Arial,sans-serif;color:var(--text-main)}
+.deck{display:flex;flex-direction:column;gap:40px;padding:40px;max-width:1020px;margin:0 auto;padding-bottom:120px}
+.slide-section{display:flex;flex-direction:column;gap:12px}
+.slide-label{font-size:12px;color:#666;font-weight:700;text-transform:uppercase;letter-spacing:2px}
+.slide{position:relative;width:var(--slide-w);height:var(--slide-h);background:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.1)}
+.title{position:absolute;left:var(--left-x);top:30px;width:var(--frame-w);font:400 28px/1.1 Georgia,serif;color:var(--text-main)}
+.subtitle{position:absolute;left:var(--left-x);top:100px;width:var(--frame-w);font:700 16px/1.2 Arial,sans-serif;color:var(--brand-red)}
+.frame{position:absolute;left:var(--left-x);top:137px;width:var(--frame-w);height:350px}
+.slide-footer{position:absolute;left:var(--left-x);bottom:20px;width:var(--frame-w);display:flex;justify-content:space-between;font-size:12px;color:#888}
+
+/* SHARED */
+.card{background:#fff;border:1px solid var(--grey-border);border-top:4px solid var(--brand-red);display:flex;flex-direction:column}
+.card-header{padding:14px 16px 10px;display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--grey-light)}
+.card-titles{display:flex;flex-direction:column;gap:4px}
+.lever-tag{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--brand-red);font-weight:700}
+.lever-name{font-size:14px;font-weight:700;color:var(--text-main)}
+.card-icon{width:28px;height:28px;color:var(--brand-red)}
+.card-body{padding:12px 16px;flex:1;display:flex;flex-direction:column;gap:10px}
+.main-desc{font-size:12px;line-height:1.4;color:var(--text-light);font-style:italic}
+.action-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.action-item{display:flex;gap:8px;font-size:12px;color:var(--text-main)}
+.num-bullet{color:var(--brand-red);font-weight:700;min-width:22px}
+.card-footer{background:var(--brand-red-light);padding:10px 16px;display:flex;align-items:center;gap:8px;margin-top:auto}
+.footer-text{font-size:12px;font-weight:700;color:var(--brand-red-dark);text-transform:uppercase}
+
+/* L1: 3-COL */
+.threecol .frame{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+.threecol .card{height:100%}
+
+/* L2: 2-COL */
+.twocol .frame{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+.twocol .card{height:100%}
+
+/* L3: SPOTLIGHT (1 big + 2 small) */
+.spotlight .frame{display:grid;grid-template-columns:1.8fr 1fr;gap:var(--gap)}
+.spotlight .main{height:100%}
+.spotlight .main .lever-name{font-size:18px}
+.spotlight .sidebar{display:flex;flex-direction:column;gap:var(--gap)}
+.spotlight .sidebar .card{flex:1}
+.spotlight .sidebar .action-list{display:none}
+.stat-row{display:flex;gap:16px;margin-top:auto;padding-top:12px;border-top:1px solid var(--grey-light)}
+.stat-box{flex:1;text-align:center}
+.stat-value{font-size:24px;font-weight:700;color:var(--brand-red)}
+.stat-label{font-size:12px;color:var(--text-light);margin-top:4px}
+
+/* L4: HORIZONTAL STEPS */
+.steps .frame{display:flex;flex-direction:column;gap:14px}
+.step-row{display:flex;align-items:center;gap:16px;background:#fff;border:1px solid var(--grey-border);padding:14px 18px}
+.step-num{width:44px;height:44px;background:var(--brand-red);color:#fff;font-size:20px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:2px;flex-shrink:0}
+.step-content{flex:1}
+.step-title{font-size:14px;font-weight:700;color:var(--text-main)}
+.step-desc{font-size:12px;color:var(--text-light);margin-top:4px}
+.step-icon{width:32px;height:32px;color:var(--brand-red)}
+.step-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;min-width:110px}
+.step-duration{font-size:12px;color:var(--text-light);background:var(--grey-light);padding:4px 10px;border-radius:2px}
+.step-status{font-size:12px;font-weight:700;text-transform:uppercase;padding:4px 10px;border-radius:2px}
+.step-status.complete{background:#e8f5e9;color:#2e7d32}
+.step-status.progress{background:#fff3e0;color:#e65100}
+.step-status.upcoming{background:var(--brand-red-light);color:var(--brand-red)}
+
+/* L5: METRICS DASHBOARD */
+.metrics .frame{display:flex;flex-direction:column;gap:14px}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.metric-box{background:#fff;border:1px solid var(--grey-border);border-top:4px solid var(--brand-red);padding:16px;text-align:center}
+.metric-value{font-size:28px;font-weight:700;color:var(--brand-red)}
+.metric-label{font-size:12px;color:var(--text-light);margin-top:4px}
+.metric-change{font-size:12px;margin-top:6px;padding:3px 8px;border-radius:2px;display:inline-block;background:#e8f5e9;color:#2e7d32}
+.insight-panel{flex:1;background:#fff;border:1px solid var(--grey-border);display:grid;grid-template-columns:repeat(3,1fr)}
+.insight-col{padding:16px 20px;border-right:1px solid var(--grey-light)}
+.insight-col:last-child{border-right:none}
+.insight-title{font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.insight-icon{width:20px;height:20px;color:var(--brand-red)}
+.insight-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.insight-item{font-size:12px;color:var(--text-light);padding-left:14px;position:relative}
+.insight-item::before{content:"•";position:absolute;left:0;color:var(--brand-red);font-weight:700}
+
+/* L6: TIMELINE */
+.timeline .frame{display:flex;flex-direction:column}
+.timeline-track{display:flex;align-items:center;padding:0 40px;margin-bottom:20px}
+.timeline-line{flex:1;height:3px;background:var(--grey-border)}
+.timeline-dot{width:14px;height:14px;background:var(--brand-red);border-radius:50%;margin:0 -7px;z-index:1}
+.timeline-dot.hollow{background:#fff;border:3px solid var(--brand-red)}
+.timeline-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.timeline-card{background:#fff;border:1px solid var(--grey-border)}
+.timeline-card-header{background:var(--brand-red);color:#fff;padding:10px 14px;display:flex;justify-content:space-between}
+.timeline-card-header.past{background:var(--text-light)}
+.timeline-card-header.future{background:#b34747}
+.timeline-phase{font-size:12px;font-weight:700}
+.timeline-date{font-size:12px;opacity:.9}
+.timeline-card-body{padding:14px}
+.timeline-card-title{font-size:13px;font-weight:700;color:var(--text-main);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.timeline-card-title svg{width:18px;height:18px;color:var(--brand-red)}
+.timeline-card-items{list-style:none;display:flex;flex-direction:column;gap:6px}
+.timeline-card-items li{font-size:12px;color:var(--text-light);padding-left:12px;position:relative}
+.timeline-card-items li::before{content:"→";position:absolute;left:0;color:var(--brand-red);font-size:12px}
+
+/* L7: TABLE */
+.tbl .frame{display:flex;flex-direction:column}
+.comparison-table{width:100%;border-collapse:collapse;background:#fff}
+.comparison-table th{background:var(--brand-red);color:#fff;padding:12px 16px;font-size:12px;font-weight:700;text-align:left;border:1px solid var(--brand-red-dark)}
+.comparison-table th:first-child{background:var(--grey-light);color:var(--text-main);border-color:var(--grey-border)}
+.comparison-table th.rec{background:#2e7d32}
+.comparison-table td{padding:12px 16px;font-size:12px;border:1px solid var(--grey-border)}
+.comparison-table td:first-child{font-weight:700;background:var(--grey-light)}
+.comparison-table tr:nth-child(even) td:not(:first-child){background:#fafafa}
+.table-icon{width:16px;height:16px;vertical-align:middle;margin-right:6px}
+.table-icon.green{color:#2e7d32}
+.table-icon.yellow{color:#f9a825}
+.table-icon.red{color:#c62828}
+.table-footer{margin-top:14px;padding:14px 18px;background:var(--brand-red-light);display:flex;align-items:center;gap:12px}
+.table-footer-text{font-size:12px;color:var(--brand-red-dark)}
+
+/* L8: CTA */
+.cta .frame{display:flex;flex-direction:column;gap:16px}
+.cta-banner{background:linear-gradient(135deg,var(--grey-light),#fff);border:1px solid var(--grey-border);padding:24px 28px;display:flex;align-items:center;gap:24px}
+.cta-icon-box{width:60px;height:60px;background:var(--brand-red);display:flex;align-items:center;justify-content:center;border-radius:4px}
+.cta-icon-box svg{width:32px;height:32px;color:#fff}
+.cta-headline{font-size:18px;font-weight:700;color:var(--text-main);margin-bottom:6px}
+.cta-subtext{font-size:12px;color:var(--text-light)}
+.cta-actions{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.cta-card{background:#fff;border:1px solid var(--grey-border);border-left:4px solid var(--brand-red);padding:18px;display:flex;flex-direction:column}
+.cta-card-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cta-num{width:28px;height:28px;background:var(--brand-red);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cta-card-title{font-size:13px;font-weight:700;color:var(--text-main)}
+.cta-card-desc{font-size:12px;color:var(--text-light);line-height:1.4;flex:1}
+.cta-card-meta{margin-top:12px;padding-top:10px;border-top:1px solid var(--grey-light);display:flex;justify-content:space-between}
+.cta-owner{font-size:12px;color:var(--text-light)}
+.cta-due{font-size:12px;font-weight:700;color:var(--brand-red);background:var(--brand-red-light);padding:4px 10px;border-radius:2px}
+
+.controls{position:fixed;bottom:24px;right:40px;display:flex;gap:14px;align-items:center;z-index:1000}
+button{background:linear-gradient(135deg,#A32020,#7a1818);color:#fff;border:none;padding:16px 32px;font-size:14px;cursor:pointer;border-radius:4px;font-weight:700;box-shadow:0 8px 24px rgba(163,32,32,.3);text-transform:uppercase;letter-spacing:1px}
+.slide-count{font-size:14px;color:#666;background:#fff;padding:10px 18px;border-radius:4px;border:1px solid var(--grey-border)}
+.page-title{text-align:center;padding:30px 0 10px;font:400 32px Georgia,serif;color:#2d2d2d}
+.page-subtitle{text-align:center;color:#666;font-size:13px;margin-bottom:20px}
+</style>
+</head>
+<body>
+<div class="page-title">Professional Consulting Slides v5</div>
+<div class="page-subtitle">8 Varied Layouts • Consistent Design Language</div>
+<div class="controls"><span class="slide-count">8 slides</span><button onclick="generatePPTX()">Download PPTX</button></div>
+
+<main class="deck">
+
+<!-- 1: THREE COLUMNS -->
+<div class="slide-section">
+<div class="slide-label">Layout 1 — Three Pillars</div>
+<div class="slide threecol">
+<h1 class="title">Three levers accelerate digital transformation value capture</h1>
+<h2 class="subtitle">Practical focus areas to move from pilots to scaled impact</h2>
+<div class="frame">
+<article class="card">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Lever 1</span><span class="lever-name">Business-led vision</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></div>
+<div class="card-body"><p class="main-desc">Frame digital around concrete P&L outcomes, not just technology features.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Define value pools</b> down to specific product and segment levels.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Prioritise 3–5 bets</b> with clear owners and targets.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Translate into KPIs</b> embedded in monthly performance reviews.</span></li></ul></div>
+<div class="card-footer"><span class="footer-text">Outcome before tech</span></div>
+</article>
+<article class="card">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Lever 2</span><span class="lever-name">Products & journeys</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg></div>
+<div class="card-body"><p class="main-desc">Redesign a few critical journeys end-to-end with agile squads.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Pick hero journeys</b> that matter most for customers.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Co-locate business & tech</b> around a single backlog.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Ship in sprints</b> with visible increments every 4–6 weeks.</span></li></ul></div>
+<div class="card-footer"><span class="footer-text">Journeys over projects</span></div>
+</article>
+<article class="card">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Lever 3</span><span class="lever-name">Enabling platform</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></div>
+<div class="card-body"><p class="main-desc">Build just-enough data, tech and talent foundations to scale.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Standardise data</b> for a small set of priority domains.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Reuse components</b> (APIs, patterns) across multiple use cases.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Upskill champions</b> in each function as change agents.</span></li></ul></div>
+<div class="card-footer"><span class="footer-text">Platform at pace</span></div>
+</article>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Digital transformation levers</span><span>1 / 8</span></footer>
+</div>
+</div>
+
+<!-- 2: TWO COLUMNS -->
+<div class="slide-section">
+<div class="slide-label">Layout 2 — Dual Focus</div>
+<div class="slide twocol">
+<h1 class="title">Two strategic imperatives define the path forward</h1>
+<h2 class="subtitle">Balancing growth acceleration with operational excellence</h2>
+<div class="frame">
+<article class="card">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Imperative 1</span><span class="lever-name">Accelerate Revenue Growth</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div>
+<div class="card-body"><p class="main-desc">Capture market share through differentiated offerings and superior customer experience.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Launch premium tier</b> targeting high-value segments.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Expand into adjacencies</b> leveraging existing capabilities.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Optimize pricing</b> through value-based models.</span></li><li class="action-item"><span class="num-bullet">4.</span><span><b>Accelerate digital sales</b> with AI recommendations.</span></li></ul></div>
+<div class="card-footer"><span class="footer-text">Target: +15% revenue CAGR</span></div>
+</article>
+<article class="card">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Imperative 2</span><span class="lever-name">Drive Operational Efficiency</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg></div>
+<div class="card-body"><p class="main-desc">Streamline operations and reduce costs while maintaining service quality.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Automate processes</b> across finance, HR, and CS.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Consolidate vendors</b> to achieve scale benefits.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Optimize workforce</b> through reskilling.</span></li><li class="action-item"><span class="num-bullet">4.</span><span><b>Modernize infrastructure</b> with cloud migration.</span></li></ul></div>
+<div class="card-footer"><span class="footer-text">Target: -20% cost base</span></div>
+</article>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Strategic imperatives</span><span>2 / 8</span></footer>
+</div>
+</div>
+
+<!-- 3: SPOTLIGHT -->
+<div class="slide-section">
+<div class="slide-label">Layout 3 — Feature Spotlight (1 Large + 2 Small)</div>
+<div class="slide spotlight">
+<h1 class="title">AI-powered analytics unlocks $45M in annual value</h1>
+<h2 class="subtitle">Customer intelligence drives the largest share of identified benefits</h2>
+<div class="frame">
+<div class="main"><article class="card" style="height:100%">
+<div class="card-header"><div class="card-titles"><span class="lever-tag">Primary Value Driver</span><span class="lever-name">Customer Intelligence Platform</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></div>
+<div class="card-body"><p class="main-desc">Unified view of customer behavior enables predictive insights across the entire lifecycle.</p><ul class="action-list"><li class="action-item"><span class="num-bullet">1.</span><span><b>Deploy churn prediction</b> to identify at-risk customers 90 days early.</span></li><li class="action-item"><span class="num-bullet">2.</span><span><b>Build propensity engines</b> for cross-sell targeting with 3x lift.</span></li><li class="action-item"><span class="num-bullet">3.</span><span><b>Personalize journeys</b> with real-time recommendation engines.</span></li><li class="action-item"><span class="num-bullet">4.</span><span><b>Automate next-best-action</b> for frontline and digital touchpoints.</span></li></ul><div class="stat-row"><div class="stat-box"><div class="stat-value">$18M</div><div class="stat-label">Annual Value</div></div><div class="stat-box"><div class="stat-value">40%</div><div class="stat-label">of Total Benefit</div></div><div class="stat-box"><div class="stat-value">6 mo</div><div class="stat-label">Time to Value</div></div></div></div>
+</article></div>
+<div class="sidebar">
+<article class="card"><div class="card-header"><div class="card-titles"><span class="lever-tag">Supporting</span><span class="lever-name">Operations Analytics</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div><div class="card-body"><p class="main-desc">Demand forecasting, inventory optimization, and automated resource allocation.</p></div><div class="card-footer"><span class="footer-text">$15M value</span></div></article>
+<article class="card"><div class="card-header"><div class="card-titles"><span class="lever-tag">Supporting</span><span class="lever-name">Risk Management</span></div><svg class="card-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="card-body"><p class="main-desc">Anomaly detection, predictive maintenance, and automated risk scoring.</p></div><div class="card-footer"><span class="footer-text">$12M value</span></div></article>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>AI analytics business case</span><span>3 / 8</span></footer>
+</div>
+</div>
+
+<!-- 4: HORIZONTAL STEPS -->
+<div class="slide-section">
+<div class="slide-label">Layout 4 — Horizontal Process Steps</div>
+<div class="slide steps">
+<h1 class="title">Three-phase approach ensures systematic value delivery</h1>
+<h2 class="subtitle">Proven methodology moving from strategy through execution to sustained impact</h2>
+<div class="frame">
+<div class="step-row"><div class="step-num">1</div><div class="step-content"><div class="step-title">Diagnose & Design</div><div class="step-desc">Assess current state, identify capability gaps, and define target operating model with clear success metrics.</div></div><svg class="step-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg><div class="step-meta"><span class="step-duration">Weeks 1–8</span><span class="step-status complete">Complete</span></div></div>
+<div class="step-row"><div class="step-num">2</div><div class="step-content"><div class="step-title">Build & Pilot</div><div class="step-desc">Develop minimum viable products for priority use cases and validate with controlled pilot groups.</div></div><svg class="step-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg><div class="step-meta"><span class="step-duration">Weeks 9–20</span><span class="step-status progress">In Progress</span></div></div>
+<div class="step-row"><div class="step-num">3</div><div class="step-content"><div class="step-title">Scale & Sustain</div><div class="step-desc">Roll out enterprise-wide, build internal capabilities, and embed continuous improvement processes.</div></div><svg class="step-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg><div class="step-meta"><span class="step-duration">Weeks 21–36</span><span class="step-status upcoming">Upcoming</span></div></div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Implementation approach</span><span>4 / 8</span></footer>
+</div>
+</div>
+
+<!-- 5: METRICS DASHBOARD -->
+<div class="slide-section">
+<div class="slide-label">Layout 5 — Metrics Dashboard</div>
+<div class="slide metrics">
+<h1 class="title">Program metrics demonstrate strong execution momentum</h1>
+<h2 class="subtitle">Key performance indicators tracking ahead of plan across all dimensions</h2>
+<div class="frame">
+<div class="metrics-row">
+<div class="metric-box"><div class="metric-value">$18.4M</div><div class="metric-label">Cost Savings Realized</div><span class="metric-change">↑ 24% vs plan</span></div>
+<div class="metric-box"><div class="metric-value">92%</div><div class="metric-label">Milestones Complete</div><span class="metric-change">On track</span></div>
+<div class="metric-box"><div class="metric-value">85%</div><div class="metric-label">User Adoption</div><span class="metric-change">↑ 12 pts</span></div>
+<div class="metric-box"><div class="metric-value">4.6</div><div class="metric-label">Satisfaction (out of 5)</div><span class="metric-change">↑ 0.8 pts</span></div>
+</div>
+<div class="insight-panel">
+<div class="insight-col"><div class="insight-title"><svg class="insight-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>What's Working</div><ul class="insight-list"><li class="insight-item">Cross-functional teams exceeding velocity targets</li><li class="insight-item">Strong executive sponsorship maintained</li><li class="insight-item">Quick wins building momentum</li></ul></div>
+<div class="insight-col"><div class="insight-title"><svg class="insight-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Watch Items</div><ul class="insight-list"><li class="insight-item">Data quality in legacy systems</li><li class="insight-item">Change fatigue in operations</li><li class="insight-item">Vendor delivery timelines</li></ul></div>
+<div class="insight-col"><div class="insight-title"><svg class="insight-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Next Focus</div><ul class="insight-list"><li class="insight-item">Scale pilot to three more BUs</li><li class="insight-item">Launch Phase 2 workstreams</li><li class="insight-item">Accelerate capability building</li></ul></div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Program status update</span><span>5 / 8</span></footer>
+</div>
+</div>
+
+<!-- 6: TIMELINE -->
+<div class="slide-section">
+<div class="slide-label">Layout 6 — Timeline</div>
+<div class="slide timeline">
+<h1 class="title">Implementation roadmap spans four quarters</h1>
+<h2 class="subtitle">Phased delivery with clear milestones and dependencies</h2>
+<div class="frame">
+<div class="timeline-track"><div class="timeline-dot"></div><div class="timeline-line"></div><div class="timeline-dot"></div><div class="timeline-line"></div><div class="timeline-dot hollow"></div><div class="timeline-line"></div><div class="timeline-dot hollow"></div></div>
+<div class="timeline-cards">
+<div class="timeline-card"><div class="timeline-card-header past"><span class="timeline-phase">Q1 2025</span><span class="timeline-date">Jan–Mar</span></div><div class="timeline-card-body"><div class="timeline-card-title"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>Foundation</div><ul class="timeline-card-items"><li>Finalize architecture</li><li>Mobilize delivery teams</li><li>Set up governance</li></ul></div></div>
+<div class="timeline-card"><div class="timeline-card-header"><span class="timeline-phase">Q2 2025</span><span class="timeline-date">Apr–Jun</span></div><div class="timeline-card-body"><div class="timeline-card-title"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Build</div><ul class="timeline-card-items"><li>Deploy cloud infrastructure</li><li>Complete data migration</li><li>Implement core modules</li></ul></div></div>
+<div class="timeline-card"><div class="timeline-card-header future"><span class="timeline-phase">Q3 2025</span><span class="timeline-date">Jul–Sep</span></div><div class="timeline-card-body"><div class="timeline-card-title"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>Pilot</div><ul class="timeline-card-items"><li>Launch with 3 BUs</li><li>Conduct UAT cycles</li><li>Gather user feedback</li></ul></div></div>
+<div class="timeline-card"><div class="timeline-card-header future"><span class="timeline-phase">Q4 2025</span><span class="timeline-date">Oct–Dec</span></div><div class="timeline-card-body"><div class="timeline-card-title"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>Scale</div><ul class="timeline-card-items"><li>Enterprise rollout</li><li>Capability building</li><li>Transition to BAU</li></ul></div></div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Delivery timeline</span><span>6 / 8</span></footer>
+</div>
+</div>
+
+<!-- 7: TABLE -->
+<div class="slide-section">
+<div class="slide-label">Layout 7 — Comparison Table</div>
+<div class="slide tbl">
+<h1 class="title">Three strategic options evaluated against key criteria</h1>
+<h2 class="subtitle">Recommendation: Option B delivers optimal balance of value and risk</h2>
+<div class="frame">
+<table class="comparison-table">
+<thead><tr><th>Criteria</th><th>Option A: Organic</th><th class="rec">Option B: Partnership ★</th><th>Option C: Acquisition</th></tr></thead>
+<tbody>
+<tr><td>Investment Required</td><td>$15M over 3 years</td><td>$25M over 2 years</td><td>$80M upfront</td></tr>
+<tr><td>Time to Market</td><td><svg class="table-icon yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>24–36 months</td><td><svg class="table-icon green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>12–18 months</td><td><svg class="table-icon green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>6–12 months</td></tr>
+<tr><td>Execution Risk</td><td><svg class="table-icon green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Low</td><td><svg class="table-icon yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>Moderate</td><td><svg class="table-icon red" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>High</td></tr>
+<tr><td>Revenue Potential (Y3)</td><td>$30M</td><td><b>$55M</b></td><td>$75M</td></tr>
+<tr><td>Strategic Fit</td><td><svg class="table-icon yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>Medium</td><td><svg class="table-icon green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>High</td><td><svg class="table-icon yellow" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>Medium</td></tr>
+</tbody>
+</table>
+<div class="table-footer"><svg class="table-icon green" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span class="table-footer-text"><b>Recommendation:</b> Pursue Option B (Strategic Partnership) for optimal balance of speed, risk, and value creation</span></div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Strategic options analysis</span><span>7 / 8</span></footer>
+</div>
+</div>
+
+<!-- 8: CTA -->
+<div class="slide-section">
+<div class="slide-label">Layout 8 — Call to Action</div>
+<div class="slide cta">
+<h1 class="title">Clear next steps required to maintain momentum</h1>
+<h2 class="subtitle">Three critical decisions needed from leadership by end of month</h2>
+<div class="frame">
+<div class="cta-banner"><div class="cta-icon-box"><svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div><div class="cta-headline">Executive decisions required to unlock Phase 2</div><div class="cta-subtext">Delay beyond December will impact Q1 delivery milestones and jeopardize value capture timeline</div></div></div>
+<div class="cta-actions">
+<div class="cta-card"><div class="cta-card-header"><span class="cta-num">1</span><span class="cta-card-title">Approve Phase 2 Funding</span></div><div class="cta-card-desc">Authorize $12.5M investment for Phase 2 development, infrastructure scaling, and team expansion to meet delivery timeline.</div><div class="cta-card-meta"><span class="cta-owner">Owner: CFO</span><span class="cta-due">Dec 15</span></div></div>
+<div class="cta-card"><div class="cta-card-header"><span class="cta-num">2</span><span class="cta-card-title">Confirm Pilot Partners</span></div><div class="cta-card-desc">Select 3 business units to participate in pilot based on readiness assessment and change capacity evaluation.</div><div class="cta-card-meta"><span class="cta-owner">Owner: COO</span><span class="cta-due">Dec 20</span></div></div>
+<div class="cta-card"><div class="cta-card-header"><span class="cta-num">3</span><span class="cta-card-title">Launch Steering Committee</span></div><div class="cta-card-desc">Convene inaugural meeting with confirmed executive sponsors to establish governance cadence and decision rights.</div><div class="cta-card-meta"><span class="cta-owner">Owner: CEO</span><span class="cta-due">Jan 8</span></div></div>
+</div>
+</div>
+<footer class="slide-footer"><span>Strategy&</span><span>Immediate actions</span><span>8 / 8</span></footer>
+</div>
+</div>
+
+</main>
+
+<script>
+const defined={
+  c:{main:'2d2d2d',light:'5e5e5e',red:'A32020',redDark:'7a1818',redLight:'FDF2F4',greyLight:'f4f4f4',greyBorder:'e0e0e0',white:'FFFFFF',green:'2e7d32',greenLight:'e8f5e9',yellow:'f9a825',redBright:'c62828'},
+  slides:[
+    {type:'threecol',title:'Three levers accelerate digital transformation value capture',subtitle:'Practical focus areas to move from pilots to scaled impact',footerMid:'Digital transformation levers',
+      cards:[
+        {tag:'Lever 1',name:'Business-led vision',desc:'Frame digital around concrete P&L outcomes, not just technology features.',items:['Define value pools down to specific product and segment levels.','Prioritise 3–5 bets with clear owners and targets.','Translate into KPIs embedded in monthly performance reviews.'],footer:'Outcome before tech'},
+        {tag:'Lever 2',name:'Products & journeys',desc:'Redesign a few critical journeys end-to-end with agile squads.',items:['Pick hero journeys that matter most for customers.','Co-locate business & tech around a single backlog.','Ship in sprints with visible increments every 4–6 weeks.'],footer:'Journeys over projects'},
+        {tag:'Lever 3',name:'Enabling platform',desc:'Build just-enough data, tech and talent foundations to scale.',items:['Standardise data for a small set of priority domains.','Reuse components (APIs, patterns) across multiple use cases.','Upskill champions in each function as change agents.'],footer:'Platform at pace'}
+      ]},
+    {type:'twocol',title:'Two strategic imperatives define the path forward',subtitle:'Balancing growth acceleration with operational excellence',footerMid:'Strategic imperatives',
+      cards:[
+        {tag:'Imperative 1',name:'Accelerate Revenue Growth',desc:'Capture market share through differentiated offerings and superior customer experience.',items:['Launch premium tier targeting high-value segments.','Expand into adjacencies leveraging existing capabilities.','Optimize pricing through value-based models.','Accelerate digital sales with AI recommendations.'],footer:'Target: +15% revenue CAGR'},
+        {tag:'Imperative 2',name:'Drive Operational Efficiency',desc:'Streamline operations and reduce costs while maintaining service quality.',items:['Automate processes across finance, HR, and CS.','Consolidate vendors to achieve scale benefits.','Optimize workforce through reskilling.','Modernize infrastructure with cloud migration.'],footer:'Target: -20% cost base'}
+      ]},
+    {type:'spotlight',title:'AI-powered analytics unlocks $45M in annual value',subtitle:'Customer intelligence drives the largest share of identified benefits',footerMid:'AI analytics business case',
+      main:{tag:'Primary Value Driver',name:'Customer Intelligence Platform',desc:'Unified view of customer behavior enables predictive insights across the entire lifecycle.',items:['Deploy churn prediction to identify at-risk customers 90 days early.','Build propensity engines for cross-sell targeting with 3x lift.','Personalize journeys with real-time recommendation engines.','Automate next-best-action for frontline and digital touchpoints.'],stats:[{value:'$18M',label:'Annual Value'},{value:'40%',label:'of Total Benefit'},{value:'6 mo',label:'Time to Value'}]},
+      sidebar:[
+        {tag:'Supporting',name:'Operations Analytics',desc:'Demand forecasting, inventory optimization, and automated resource allocation.',footer:'$15M value'},
+        {tag:'Supporting',name:'Risk Management',desc:'Anomaly detection, predictive maintenance, and automated risk scoring.',footer:'$12M value'}
+      ]},
+    {type:'steps',title:'Three-phase approach ensures systematic value delivery',subtitle:'Proven methodology moving from strategy through execution to sustained impact',footerMid:'Implementation approach',
+      steps:[
+        {num:'1',title:'Diagnose & Design',desc:'Assess current state, identify capability gaps, and define target operating model with clear success metrics.',duration:'Weeks 1–8',status:'complete'},
+        {num:'2',title:'Build & Pilot',desc:'Develop minimum viable products for priority use cases and validate with controlled pilot groups.',duration:'Weeks 9–20',status:'progress'},
+        {num:'3',title:'Scale & Sustain',desc:'Roll out enterprise-wide, build internal capabilities, and embed continuous improvement processes.',duration:'Weeks 21–36',status:'upcoming'}
+      ]},
+    {type:'metrics',title:'Program metrics demonstrate strong execution momentum',subtitle:'Key performance indicators tracking ahead of plan across all dimensions',footerMid:'Program status update',
+      metrics:[
+        {value:'$18.4M',label:'Cost Savings Realized',change:'↑ 24% vs plan'},
+        {value:'92%',label:'Milestones Complete',change:'On track'},
+        {value:'85%',label:'User Adoption',change:'↑ 12 pts'},
+        {value:'4.6',label:'Satisfaction (out of 5)',change:'↑ 0.8 pts'}
+      ],
+      insights:[
+        {title:"What's Working",items:['Cross-functional teams exceeding velocity targets','Strong executive sponsorship maintained','Quick wins building momentum']},
+        {title:'Watch Items',items:['Data quality in legacy systems','Change fatigue in operations','Vendor delivery timelines']},
+        {title:'Next Focus',items:['Scale pilot to three more BUs','Launch Phase 2 workstreams','Accelerate capability building']}
+      ]},
+    {type:'timeline',title:'Implementation roadmap spans four quarters',subtitle:'Phased delivery with clear milestones and dependencies',footerMid:'Delivery timeline',
+      phases:[
+        {phase:'Q1 2025',date:'Jan–Mar',title:'Foundation',items:['Finalize architecture','Mobilize delivery teams','Set up governance'],past:true},
+        {phase:'Q2 2025',date:'Apr–Jun',title:'Build',items:['Deploy cloud infrastructure','Complete data migration','Implement core modules'],current:true},
+        {phase:'Q3 2025',date:'Jul–Sep',title:'Pilot',items:['Launch with 3 BUs','Conduct UAT cycles','Gather user feedback'],future:true},
+        {phase:'Q4 2025',date:'Oct–Dec',title:'Scale',items:['Enterprise rollout','Capability building','Transition to BAU'],future:true}
+      ]},
+    {type:'table',title:'Three strategic options evaluated against key criteria',subtitle:'Recommendation: Option B delivers optimal balance of value and risk',footerMid:'Strategic options analysis',
+      headers:['Criteria','Option A: Organic','Option B: Partnership ★','Option C: Acquisition'],
+      rows:[
+        ['Investment Required','$15M over 3 years','$25M over 2 years','$80M upfront'],
+        ['Time to Market','24–36 months','12–18 months','6–12 months'],
+        ['Execution Risk','Low','Moderate','High'],
+        ['Revenue Potential (Y3)','$30M','$55M','$75M'],
+        ['Strategic Fit','Medium','High','Medium']
+      ],
+      rowIcons:[null,['yellow','green','green'],['green','yellow','red'],null,['yellow','green','yellow']],
+      recommendation:'Pursue Option B (Strategic Partnership) for optimal balance of speed, risk, and value creation'},
+    {type:'cta',title:'Clear next steps required to maintain momentum',subtitle:'Three critical decisions needed from leadership by end of month',footerMid:'Immediate actions',
+      banner:{headline:'Executive decisions required to unlock Phase 2',subtext:'Delay beyond December will impact Q1 delivery milestones and jeopardize value capture timeline'},
+      actions:[
+        {num:'1',title:'Approve Phase 2 Funding',desc:'Authorize $12.5M investment for Phase 2 development, infrastructure scaling, and team expansion to meet delivery timeline.',owner:'CFO',due:'Dec 15'},
+        {num:'2',title:'Confirm Pilot Partners',desc:'Select 3 business units to participate in pilot based on readiness assessment and change capacity evaluation.',owner:'COO',due:'Dec 20'},
+        {num:'3',title:'Launch Steering Committee',desc:'Convene inaugural meeting with confirmed executive sponsors to establish governance cadence and decision rights.',owner:'CEO',due:'Jan 8'}
+      ]}
+  ]
+};
+
+async function generatePPTX(){
+  const btn=document.querySelector('button');
+  const origText=btn.innerText;
+  btn.disabled=true;btn.innerText='Generating...';
+  
+  try{
+    if(typeof PptxGenJS==='undefined')throw new Error('PptxGenJS library not loaded');
+    const pptx=new PptxGenJS();
+    pptx.defineLayout({name:'CUSTOM',width:13.33,height:7.5});
+    pptx.layout='CUSTOM';
+    pptx.title='Professional Consulting Slides v5';
+    pptx.author='Strategy&';
+    
+    const c=defined.c;
+    const total=defined.slides.length;
+    
+    function addMaster(slide,data,pn){
+      slide.addText(data.title,{x:0.48,y:0.42,w:12.37,h:0.75,fontFace:'Georgia',fontSize:28,color:c.main});
+      slide.addText(data.subtitle,{x:0.48,y:1.4,w:12.37,h:0.35,fontFace:'Arial',fontSize:16,color:c.red,bold:true});
+      slide.addText('Strategy&',{x:0.48,y:7.1,w:2,h:0.25,fontFace:'Arial',fontSize:12,color:'888888'});
+      slide.addText(data.footerMid||'',{x:5,y:7.1,w:3.33,h:0.25,fontFace:'Arial',fontSize:12,color:'888888',align:'center'});
+      slide.addText(pn+' / '+total,{x:11.35,y:7.1,w:1.5,h:0.25,fontFace:'Arial',fontSize:12,color:'888888',align:'right'});
+    }
+    
+    function renderCard(slide,card,x,y,w,h,numbered=true){
+      slide.addShape('rect',{x,y,w,h,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      slide.addShape('rect',{x,y,w,h:0.055,fill:c.red});
+      slide.addText(card.tag.toUpperCase(),{x:x+0.15,y:y+0.15,w:w-0.3,h:0.2,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+      slide.addText(card.name,{x:x+0.15,y:y+0.38,w:w-0.3,h:0.35,fontFace:'Arial',fontSize:14,color:c.main,bold:true});
+      slide.addShape('line',{x:x+0.1,y:y+0.78,w:w-0.2,h:0,line:{color:c.greyLight,width:0.5}});
+      slide.addText(card.desc,{x:x+0.15,y:y+0.85,w:w-0.3,h:0.45,fontFace:'Arial',fontSize:12,color:c.light,italic:true});
+      if(card.items){
+        card.items.forEach((it,i)=>{
+          const iY=y+1.35+(i*0.42);
+          slide.addText(numbered?(i+1)+'.':'•',{x:x+0.15,y:iY,w:0.35,h:0.35,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+          slide.addText(it,{x:x+0.5,y:iY,w:w-0.65,h:0.38,fontFace:'Arial',fontSize:12,color:c.main});
+        });
+      }
+      if(card.footer){
+        const fY=y+h-0.42;
+        slide.addShape('rect',{x,y:fY,w,h:0.42,fill:c.redLight});
+        slide.addText(card.footer.toUpperCase(),{x:x+0.15,y:fY+0.1,w:w-0.3,h:0.22,fontFace:'Arial',fontSize:12,color:c.redDark,bold:true});
+      }
+    }
+    
+    // LAYOUT 1: Three Columns
+    function renderThreecol(slide,data,pn){
+      addMaster(slide,data,pn);
+      const cW=3.95,cH=4.65,gap=0.25,sX=0.48,sY=1.95;
+      data.cards.forEach((cd,i)=>renderCard(slide,cd,sX+i*(cW+gap),sY,cW,cH,true));
+    }
+    
+    // LAYOUT 2: Two Columns
+    function renderTwocol(slide,data,pn){
+      addMaster(slide,data,pn);
+      const cW=6.0,cH=4.65,gap=0.37,sX=0.48,sY=1.95;
+      data.cards.forEach((cd,i)=>renderCard(slide,cd,sX+i*(cW+gap),sY,cW,cH,true));
+    }
+    
+    // LAYOUT 3: Spotlight (1 big + 2 small)
+    function renderSpotlight(slide,data,pn){
+      addMaster(slide,data,pn);
+      const m=data.main,sX=0.48,sY=1.95,mainW=7.5,sideW=4.6,gap=0.27,h=4.65;
+      
+      // Main card
+      slide.addShape('rect',{x:sX,y:sY,w:mainW,h,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      slide.addShape('rect',{x:sX,y:sY,w:mainW,h:0.055,fill:c.red});
+      slide.addText(m.tag.toUpperCase(),{x:sX+0.2,y:sY+0.18,w:mainW-0.4,h:0.2,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+      slide.addText(m.name,{x:sX+0.2,y:sY+0.42,w:mainW-0.4,h:0.4,fontFace:'Arial',fontSize:18,color:c.main,bold:true});
+      slide.addShape('line',{x:sX+0.15,y:sY+0.9,w:mainW-0.3,h:0,line:{color:c.greyLight,width:0.5}});
+      slide.addText(m.desc,{x:sX+0.2,y:sY+0.98,w:mainW-0.4,h:0.45,fontFace:'Arial',fontSize:12,color:c.light,italic:true});
+      
+      m.items.forEach((it,i)=>{
+        const iY=sY+1.5+(i*0.42);
+        slide.addText((i+1)+'.',{x:sX+0.2,y:iY,w:0.35,h:0.35,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        slide.addText(it,{x:sX+0.55,y:iY,w:mainW-0.75,h:0.38,fontFace:'Arial',fontSize:12,color:c.main});
+      });
+      
+      // Stats row
+      const statY=sY+h-0.85;
+      slide.addShape('line',{x:sX+0.15,y:statY,w:mainW-0.3,h:0,line:{color:c.greyLight,width:0.5}});
+      m.stats.forEach((st,i)=>{
+        const stX=sX+0.3+(i*2.35);
+        slide.addText(st.value,{x:stX,y:statY+0.12,w:2,h:0.4,fontFace:'Arial',fontSize:24,color:c.red,bold:true,align:'center'});
+        slide.addText(st.label,{x:stX,y:statY+0.52,w:2,h:0.2,fontFace:'Arial',fontSize:12,color:c.light,align:'center'});
+      });
+      
+      // Sidebar cards
+      const sbX=sX+mainW+gap,sbH=(h-gap)/2;
+      data.sidebar.forEach((sb,i)=>{
+        const sbY=sY+i*(sbH+gap);
+        slide.addShape('rect',{x:sbX,y:sbY,w:sideW,h:sbH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        slide.addShape('rect',{x:sbX,y:sbY,w:sideW,h:0.055,fill:c.red});
+        slide.addText(sb.tag.toUpperCase(),{x:sbX+0.15,y:sbY+0.15,w:sideW-0.3,h:0.18,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+        slide.addText(sb.name,{x:sbX+0.15,y:sbY+0.35,w:sideW-0.3,h:0.3,fontFace:'Arial',fontSize:13,color:c.main,bold:true});
+        slide.addText(sb.desc,{x:sbX+0.15,y:sbY+0.72,w:sideW-0.3,h:0.7,fontFace:'Arial',fontSize:12,color:c.light,italic:true});
+        const fY=sbY+sbH-0.38;
+        slide.addShape('rect',{x:sbX,y:fY,w:sideW,h:0.38,fill:c.redLight});
+        slide.addText(sb.footer.toUpperCase(),{x:sbX+0.15,y:fY+0.08,w:sideW-0.3,h:0.22,fontFace:'Arial',fontSize:12,color:c.redDark,bold:true});
+      });
+    }
+    
+    // LAYOUT 4: Horizontal Steps
+    function renderSteps(slide,data,pn){
+      addMaster(slide,data,pn);
+      const sX=0.48,sY=2.0,w=12.37,rowH=1.1,gap=0.18;
+      data.steps.forEach((st,i)=>{
+        const rY=sY+i*(rowH+gap);
+        slide.addShape('rect',{x:sX,y:rY,w,h:rowH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        slide.addShape('rect',{x:sX+0.2,y:rY+0.2,w:0.65,h:0.7,fill:c.red});
+        slide.addText(st.num,{x:sX+0.2,y:rY+0.32,w:0.65,h:0.5,fontFace:'Arial',fontSize:22,color:c.white,bold:true,align:'center'});
+        slide.addText(st.title,{x:sX+1.05,y:rY+0.22,w:8,h:0.35,fontFace:'Arial',fontSize:14,color:c.main,bold:true});
+        slide.addText(st.desc,{x:sX+1.05,y:rY+0.55,w:8,h:0.4,fontFace:'Arial',fontSize:12,color:c.light});
+        slide.addText(st.duration,{x:sX+10.0,y:rY+0.25,w:1.5,h:0.28,fontFace:'Arial',fontSize:12,color:c.light,fill:c.greyLight,align:'center'});
+        const stCol=st.status==='complete'?c.green:st.status==='progress'?'e65100':c.red;
+        const stBg=st.status==='complete'?c.greenLight:st.status==='progress'?'fff3e0':c.redLight;
+        const stTxt=st.status==='complete'?'COMPLETE':st.status==='progress'?'IN PROGRESS':'UPCOMING';
+        slide.addText(stTxt,{x:sX+10.0,y:rY+0.6,w:1.5,h:0.28,fontFace:'Arial',fontSize:12,color:stCol,fill:stBg,bold:true,align:'center'});
+      });
+    }
+    
+    // LAYOUT 5: Metrics Dashboard
+    function renderMetrics(slide,data,pn){
+      addMaster(slide,data,pn);
+      const sX=0.48,sY=1.95,mW=3.0,mH=1.55,gap=0.16;
+      
+      // Metric boxes
+      data.metrics.forEach((m,i)=>{
+        const mX=sX+i*(mW+gap);
+        slide.addShape('rect',{x:mX,y:sY,w:mW,h:mH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        slide.addShape('rect',{x:mX,y:sY,w:mW,h:0.055,fill:c.red});
+        slide.addText(m.value,{x:mX,y:sY+0.2,w:mW,h:0.5,fontFace:'Arial',fontSize:28,color:c.red,bold:true,align:'center'});
+        slide.addText(m.label,{x:mX,y:sY+0.7,w:mW,h:0.25,fontFace:'Arial',fontSize:12,color:c.light,align:'center'});
+        slide.addText(m.change,{x:mX+0.5,y:sY+1.05,w:mW-1.0,h:0.3,fontFace:'Arial',fontSize:12,color:c.green,fill:c.greenLight,align:'center'});
+      });
+      
+      // Insight panel
+      const pY=sY+mH+0.2,pH=2.65,colW=4.12;
+      slide.addShape('rect',{x:sX,y:pY,w:12.37,h:pH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+      
+      data.insights.forEach((ins,i)=>{
+        const cX=sX+0.2+i*colW;
+        if(i>0)slide.addShape('line',{x:sX+i*colW,y:pY+0.15,w:0,h:pH-0.3,line:{color:c.greyLight,width:0.5}});
+        slide.addText(ins.title,{x:cX,y:pY+0.2,w:colW-0.4,h:0.35,fontFace:'Arial',fontSize:13,color:c.main,bold:true});
+        ins.items.forEach((it,j)=>{
+          slide.addText('•',{x:cX,y:pY+0.6+j*0.55,w:0.2,h:0.4,fontFace:'Arial',fontSize:12,color:c.red,bold:true});
+          slide.addText(it,{x:cX+0.2,y:pY+0.6+j*0.55,w:colW-0.6,h:0.5,fontFace:'Arial',fontSize:12,color:c.light});
+        });
+      });
+    }
+    
+    // LAYOUT 6: Timeline
+    function renderTimeline(slide,data,pn){
+      addMaster(slide,data,pn);
+      const sX=0.48,sY=1.95,lineY=sY+0.35;
+      
+      // Timeline track
+      slide.addShape('rect',{x:sX+0.5,y:lineY,w:11.37,h:0.04,fill:c.greyBorder});
+      data.phases.forEach((p,i)=>{
+        const dotX=sX+0.6+i*3.1;
+        const dotFill=p.future?c.white:c.red;
+        slide.addShape('ellipse',{x:dotX-0.1,y:lineY-0.08,w:0.2,h:0.2,fill:dotFill,line:p.future?{color:c.red,width:2}:null});
+      });
+      
+      // Phase cards
+      const cY=sY+0.8,cW=2.95,cH=3.5,cardGap=0.22;
+      data.phases.forEach((p,i)=>{
+        const cX=sX+i*(cW+cardGap);
+        slide.addShape('rect',{x:cX,y:cY,w:cW,h:cH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        const hBg=p.past?c.light:p.future?'b34747':c.red;
+        slide.addShape('rect',{x:cX,y:cY,w:cW,h:0.5,fill:hBg});
+        slide.addText(p.phase,{x:cX+0.12,y:cY+0.1,w:1.5,h:0.3,fontFace:'Arial',fontSize:12,color:c.white,bold:true});
+        slide.addText(p.date,{x:cX+1.5,y:cY+0.12,w:1.3,h:0.25,fontFace:'Arial',fontSize:12,color:c.white,align:'right'});
+        slide.addText(p.title,{x:cX+0.15,y:cY+0.65,w:cW-0.3,h:0.35,fontFace:'Arial',fontSize:13,color:c.main,bold:true});
+        p.items.forEach((it,j)=>{
+          slide.addText('→',{x:cX+0.15,y:cY+1.1+j*0.45,w:0.2,h:0.35,fontFace:'Arial',fontSize:12,color:c.red});
+          slide.addText(it,{x:cX+0.35,y:cY+1.1+j*0.45,w:cW-0.5,h:0.4,fontFace:'Arial',fontSize:12,color:c.light});
+        });
+      });
+    }
+    
+    // LAYOUT 7: Comparison Table
+    function renderTable(slide,data,pn){
+      addMaster(slide,data,pn);
+      const sX=0.48,sY=1.95,rowH=0.6;
+      const colW=[2.5,3.29,3.29,3.29];
+      
+      // Header row
+      let xOff=sX;
+      data.headers.forEach((h,i)=>{
+        const bg=i===0?c.greyLight:i===2?c.green:c.red;
+        const col=i===0?c.main:c.white;
+        slide.addShape('rect',{x:xOff,y:sY,w:colW[i],h:rowH,fill:bg,line:{color:i===0?c.greyBorder:bg,width:0.5}});
+        slide.addText(h,{x:xOff+0.15,y:sY+0.15,w:colW[i]-0.3,h:0.32,fontFace:'Arial',fontSize:12,color:col,bold:true});
+        xOff+=colW[i];
+      });
+      
+      // Data rows
+      data.rows.forEach((row,ri)=>{
+        const rY=sY+rowH+ri*rowH;
+        let xOff=sX;
+        row.forEach((cell,ci)=>{
+          const bg=ci===0?c.greyLight:(ri%2===1?'fafafa':c.white);
+          slide.addShape('rect',{x:xOff,y:rY,w:colW[ci],h:rowH,fill:bg,line:{color:c.greyBorder,width:0.5}});
+          const isBold=ci===0||(ci===2&&ri===3);
+          slide.addText(cell,{x:xOff+0.15,y:rY+0.15,w:colW[ci]-0.3,h:0.32,fontFace:'Arial',fontSize:12,color:c.main,bold:isBold});
+          xOff+=colW[ci];
+        });
+      });
+      
+      // Recommendation footer
+      const fY=sY+rowH+data.rows.length*rowH+0.2;
+      slide.addShape('rect',{x:sX,y:fY,w:12.37,h:0.55,fill:c.redLight});
+      slide.addText('Recommendation: '+data.recommendation,{x:sX+0.3,y:fY+0.12,w:11.77,h:0.32,fontFace:'Arial',fontSize:12,color:c.redDark});
+    }
+    
+    // LAYOUT 8: Call to Action
+    function renderCta(slide,data,pn){
+      addMaster(slide,data,pn);
+      const sX=0.48,sY=1.95;
+      
+      // Banner
+      slide.addShape('rect',{x:sX,y:sY,w:12.37,h:1.15,fill:c.greyLight,line:{color:c.greyBorder,width:0.5}});
+      slide.addShape('rect',{x:sX+0.25,y:sY+0.2,w:0.85,h:0.75,fill:c.red});
+      slide.addText('✓',{x:sX+0.25,y:sY+0.32,w:0.85,h:0.5,fontFace:'Arial',fontSize:28,color:c.white,align:'center'});
+      slide.addText(data.banner.headline,{x:sX+1.3,y:sY+0.22,w:10.5,h:0.4,fontFace:'Arial',fontSize:18,color:c.main,bold:true});
+      slide.addText(data.banner.subtext,{x:sX+1.3,y:sY+0.65,w:10.5,h:0.35,fontFace:'Arial',fontSize:12,color:c.light});
+      
+      // Action cards
+      const aY=sY+1.4,aW=4.0,aH=2.95,cardGap=0.18;
+      data.actions.forEach((a,i)=>{
+        const aX=sX+i*(aW+cardGap);
+        slide.addShape('rect',{x:aX,y:aY,w:aW,h:aH,fill:c.white,line:{color:c.greyBorder,width:0.5}});
+        slide.addShape('rect',{x:aX,y:aY,w:0.055,h:aH,fill:c.red});
+        slide.addShape('ellipse',{x:aX+0.2,y:aY+0.2,w:0.42,h:0.42,fill:c.red});
+        slide.addText(a.num,{x:aX+0.2,y:aY+0.27,w:0.42,h:0.3,fontFace:'Arial',fontSize:14,color:c.white,bold:true,align:'center'});
+        slide.addText(a.title,{x:aX+0.72,y:aY+0.25,w:aW-0.92,h:0.35,fontFace:'Arial',fontSize:13,color:c.main,bold:true});
+        slide.addText(a.desc,{x:aX+0.2,y:aY+0.75,w:aW-0.4,h:1.3,fontFace:'Arial',fontSize:12,color:c.light});
+        slide.addShape('line',{x:aX+0.15,y:aY+aH-0.65,w:aW-0.3,h:0,line:{color:c.greyLight,width:0.5}});
+        slide.addText('Owner: '+a.owner,{x:aX+0.2,y:aY+aH-0.5,w:2,h:0.3,fontFace:'Arial',fontSize:12,color:c.light});
+        slide.addText(a.due,{x:aX+aW-1.2,y:aY+aH-0.55,w:1,h:0.35,fontFace:'Arial',fontSize:12,color:c.red,fill:c.redLight,bold:true,align:'center'});
+      });
+    }
+    
+    // Generate all slides
+    defined.slides.forEach((data,idx)=>{
+      const slide=pptx.addSlide();
+      const pn=idx+1;
+      switch(data.type){
+        case 'threecol':renderThreecol(slide,data,pn);break;
+        case 'twocol':renderTwocol(slide,data,pn);break;
+        case 'spotlight':renderSpotlight(slide,data,pn);break;
+        case 'steps':renderSteps(slide,data,pn);break;
+        case 'metrics':renderMetrics(slide,data,pn);break;
+        case 'timeline':renderTimeline(slide,data,pn);break;
+        case 'table':renderTable(slide,data,pn);break;
+        case 'cta':renderCta(slide,data,pn);break;
+      }
+    });
+    
+    await pptx.writeFile({fileName:'Professional_Consulting_Slides_v5.pptx'});
+    btn.disabled=false;btn.innerText=origText;
+  }catch(err){
+    console.error(err);
+    alert('Error generating PPTX: '+err.message);
+    btn.disabled=false;btn.innerText='Retry Download';
+  }
+}
+</script>
+</body>
+</html>
