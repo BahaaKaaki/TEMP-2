@@ -16,6 +16,8 @@ import dagre from 'dagre';
 import { defineComponent } from '@openuidev/react-lang';
 import { z } from 'zod/v4';
 
+import { CitationText } from '../citationText';
+
 function stringifyValue(value) {
   if (value === null || value === undefined) return '';
   if (typeof value === 'string') return value;
@@ -365,13 +367,13 @@ const Slide = defineComponent({
         </div>
       ) : null}
       <h3 className="max-w-3xl text-2xl font-bold leading-tight text-white">{props.title}</h3>
-      {props.body ? <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/75">{props.body}</p> : null}
+      {props.body ? <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/75"><CitationText>{props.body}</CitationText></p> : null}
       {props.bullets?.length ? (
         <ul className="mt-5 grid gap-2 text-sm text-white/80">
           {props.bullets.map((bullet, index) => (
             <li key={index} className="flex gap-2">
               <span className="mt-2 h-1.5 w-1.5 flex-none rounded-full bg-[#d93854]" />
-              <span>{bullet}</span>
+              <span><CitationText>{bullet}</CitationText></span>
             </li>
           ))}
         </ul>

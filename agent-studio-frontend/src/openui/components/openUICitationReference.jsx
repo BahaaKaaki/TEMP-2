@@ -1,7 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import { getCitationPageImage } from '../../api/client';
+import { getCitationPageImage, authenticatedFetch, API_BASE_URL } from '../../api/client';
+import { safeError } from '../../utils/safeLogger';
+
+/**
+ * Single, shared citation reference used by BOTH chat-message citations and
+ * deliverable (OpenUI) citations. Renders [N] as a badge with a hover tooltip;
+ * clicking opens a dark modal that consolidates everything: the source page
+ * snapshot (when available), the referenced text, document info, and downloads
+ * (the page image and/or the whole document). Web citations open their URL.
+ */
 
 function metadataValue(citation, keys) {
   const metadata = citation?.chunk_metadata || {};
@@ -18,7 +27,6 @@ function sourceName(citation) {
     || citation?.title
     || metadataValue(citation, ['document_name', 'file_name', 'filename', 'source'])
     || citation?.url
-    || citation?.chunk_id
     || 'Source'
   );
 }
@@ -28,7 +36,7 @@ function sourceLocation(citation) {
   const hasSlide = Boolean(metadataValue(citation, ['slide_number', 'slide']));
   const parts = [];
   if (page) parts.push(hasSlide ? `Slide ${page}` : `Page ${page}`);
-  if (citation?.chunk_index !== undefined) parts.push(`Chunk ${Number(citation.chunk_index) + 1}`);
+  if (citation?.chunk_index !== undefined && citation?.chunk_index !== null) parts.push(`Chunk ${Number(citation.chunk_index) + 1}`);
   if (citation?.relevance_score) parts.push(`${Math.round(Number(citation.relevance_score) * 100)}% match`);
   return parts.join(' · ');
 }
@@ -37,28 +45,44 @@ function formatMetadataKey(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function formatSize(bytes) {
+  if (!bytes && bytes !== 0) return 'N/A';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function shortUrl(url) {
+  try {
+    const u = new URL(url);
+    const path = u.pathname.length > 30 ? `${u.pathname.substring(0, 30)}…` : u.pathname;
+    return u.hostname + path;
+  } catch {
+    return url?.substring(0, 50) || '';
+  }
+}
+
 export default function OpenUICitationReference({ citationNumber, citationData }) {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0, flipped: false });
   const badgeRef = useRef(null);
 
-  const chunkId = citationData?.chunk_id;
-  const kbId = citationData?.kb_id;
-  const pageNumber =
-    citationData?.chunk_metadata?.page_number ?? citationData?.page_number ?? null;
-  const couldHavePageImage = Boolean(chunkId && pageNumber != null);
-
   const [pageImageUrl, setPageImageUrl] = useState(null);
-  // idle | loading | loaded | none
-  const [pageImageStatus, setPageImageStatus] = useState('idle');
+  const [pageImageStatus, setPageImageStatus] = useState('idle'); // idle | loading | loaded | none
+  const [fullCitation, setFullCitation] = useState(null);
+  const [downloadError, setDownloadError] = useState(null);
   const objectUrlRef = useRef(null);
   const fetchStartedRef = useRef(false);
   const mountedRef = useRef(true);
 
-  // Track mount so an async result never updates a unmounted component, and
-  // revoke the object URL on unmount. (Reset the flag in the body so React
-  // StrictMode's mount/unmount/mount cycle leaves it `true`.)
+  const chunkId = citationData?.chunk_id;
+  const kbId = citationData?.kb_id;
+  const isWeb = citationData?.type === 'web' && Boolean(citationData?.url);
+  const pageNumber =
+    citationData?.chunk_metadata?.page_number ?? citationData?.page_number ?? null;
+  const couldHavePageImage = Boolean(chunkId && pageNumber != null);
+
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -70,43 +94,58 @@ export default function OpenUICitationReference({ citationNumber, citationData }
     };
   }, []);
 
-  // Fetch the page snapshot once, on demand (when the modal opens). Triggering
-  // from the click handler — not a status-keyed effect — avoids the effect
-  // cancelling its own in-flight request and getting stuck on "loading".
-  const loadPageImage = () => {
-    if (!couldHavePageImage || fetchStartedRef.current) return;
+  // On open, load (in parallel) the page snapshot and the full citation details
+  // (document info + document_id for download). Triggered from the click
+  // handler so the request can never be cancelled by an effect re-run.
+  const loadDetails = () => {
+    if (isWeb || fetchStartedRef.current) return;
     fetchStartedRef.current = true;
-    setPageImageStatus('loading');
-    getCitationPageImage(chunkId, kbId)
-      .then((url) => {
-        if (!mountedRef.current) {
-          if (url) URL.revokeObjectURL(url);
-          return;
-        }
-        if (url) {
-          objectUrlRef.current = url;
-          setPageImageUrl(url);
-          setPageImageStatus('loaded');
-        } else {
-          setPageImageStatus('none');
-        }
-      })
-      .catch(() => {
-        if (mountedRef.current) setPageImageStatus('none');
-      });
+
+    if (couldHavePageImage) {
+      setPageImageStatus('loading');
+      getCitationPageImage(chunkId, kbId)
+        .then((url) => {
+          if (!mountedRef.current) {
+            if (url) URL.revokeObjectURL(url);
+            return;
+          }
+          if (url) {
+            objectUrlRef.current = url;
+            setPageImageUrl(url);
+            setPageImageStatus('loaded');
+          } else {
+            setPageImageStatus('none');
+          }
+        })
+        .catch(() => {
+          if (mountedRef.current) setPageImageStatus('none');
+        });
+    }
+
+    if (chunkId) {
+      const url = `${API_BASE_URL}/api/citations/${encodeURIComponent(chunkId)}${kbId ? `?kb_id=${encodeURIComponent(kbId)}` : ''}`;
+      authenticatedFetch(url)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((data) => {
+          if (mountedRef.current && data) setFullCitation(data);
+        })
+        .catch(() => {});
+    }
   };
 
   if (!citationData) {
     return <span className="text-cyan-200">[{citationNumber}]</span>;
   }
 
-  const isWeb = citationData.type === 'web' && citationData.url;
-  const title = sourceName(citationData);
-  const location = sourceLocation(citationData);
-  const metadata = citationData.chunk_metadata && typeof citationData.chunk_metadata === 'object'
-    ? citationData.chunk_metadata
-    : null;
-  const hasImageArea = couldHavePageImage && pageImageStatus !== 'none';
+  // Merge the on-demand details over the inline citation; keep chunk_metadata.
+  const merged = { ...citationData, ...(fullCitation || {}) };
+  if (!merged.chunk_metadata && citationData.chunk_metadata) merged.chunk_metadata = citationData.chunk_metadata;
+
+  const title = sourceName(merged);
+  const location = sourceLocation(merged);
+  const metadata = merged.chunk_metadata && typeof merged.chunk_metadata === 'object' ? merged.chunk_metadata : null;
+  const documentId = merged.document_id;
+  const chunkText = merged.chunk_text || citationData.chunk_text;
 
   const computeTooltipPosition = () => {
     const rect = badgeRef.current?.getBoundingClientRect();
@@ -128,8 +167,34 @@ export default function OpenUICitationReference({ citationNumber, citationData }
       return;
     }
     setShowModal(true);
-    loadPageImage();
+    loadDetails();
   };
+
+  const handleDownloadDocument = async () => {
+    setDownloadError(null);
+    if (!documentId) {
+      setDownloadError('The source document is not available for download.');
+      return;
+    }
+    try {
+      const response = await authenticatedFetch(`${API_BASE_URL}/api/documents/${documentId}/download`);
+      if (!response.ok) throw new Error('Download failed');
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = (title || 'document').replace(/[^\w\s.\-]/g, '_');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      safeError('Citation document download failed:', err);
+      setDownloadError('Could not download the document.');
+    }
+  };
+
+  const pageLabel = location && /slide/i.test(location) ? 'slide' : 'page';
 
   return (
     <>
@@ -159,12 +224,16 @@ export default function OpenUICitationReference({ citationNumber, citationData }
           }}
         >
           <div className="truncate font-semibold text-white" title={title}>{title}</div>
-          {location && <div className="mt-1 text-[#9d9d9d]">{location}</div>}
+          {isWeb ? (
+            <div className="mt-1 truncate text-cyan-300" title={citationData.url}>{shortUrl(citationData.url)}</div>
+          ) : (
+            location && <div className="mt-1 text-[#9d9d9d]">{location}</div>
+          )}
           <div className="mt-2 border-t border-[#464646] pt-2 text-[#9d9d9d]">
             {isWeb
               ? 'Click to open source'
               : couldHavePageImage
-                ? 'Click to view the source page'
+                ? `Click to view the source ${pageLabel}`
                 : 'Click for source details'}
           </div>
         </div>,
@@ -195,43 +264,54 @@ export default function OpenUICitationReference({ citationNumber, citationData }
               </button>
             </div>
 
-            <div className="overflow-y-auto px-5 py-4">
-              {/* Hero: the actual source page snapshot */}
-              {hasImageArea && pageImageStatus === 'loading' && (
-                <div className="mb-4 flex h-56 w-full animate-pulse items-center justify-center rounded-xl border border-[#464646] bg-[#1d1d1d] text-xs text-[#6b6b6b]">
-                  Loading source page…
-                </div>
+            <div className="flex-1 overflow-y-auto px-5 py-4 scrollbar-dark">
+              {/* Hero: the actual source page snapshot, when one exists */}
+              {pageImageStatus === 'loading' && (
+                <div className="mb-4 h-56 w-full animate-pulse rounded-xl border border-[#464646] bg-[#1d1d1d]" />
               )}
               {pageImageStatus === 'loaded' && pageImageUrl && (
                 <figure className="mb-4">
                   <div className="overflow-hidden rounded-xl border border-[#464646] bg-black/40">
                     <img
                       src={pageImageUrl}
-                      alt={`Source page${pageNumber != null ? ` ${pageNumber}` : ''}`}
-                      className="mx-auto block max-h-[60vh] w-auto"
+                      alt={`Source ${pageLabel}${pageNumber != null ? ` ${pageNumber}` : ''}`}
+                      className="mx-auto block max-h-[58vh] w-auto"
                     />
                   </div>
                   <figcaption className="mt-1.5 text-center text-[11px] text-[#6b6b6b]">
-                    {`The exact ${location && /slide/i.test(location) ? 'slide' : 'page'} this answer was drawn from`}
+                    {`The exact ${pageLabel} this answer was drawn from`}
                   </figcaption>
                 </figure>
               )}
 
-              {/* The cited passage, shown plainly */}
+              {/* Referenced passage */}
               <div className="rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
                 <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[#9d9d9d]">
                   Referenced text
                 </div>
                 <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#dadada]">
-                  {citationData.chunk_text || 'No source text is available for this citation.'}
+                  {chunkText || 'No source text is available for this citation.'}
                 </p>
               </div>
 
-              {metadata && Object.keys(metadata).length > 0 && (
+              {/* Document info + chunk metadata (secondary) */}
+              {(documentId || (metadata && Object.keys(metadata).length > 0)) && (
                 <details className="mt-4 rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
-                  <summary className="cursor-pointer select-none text-sm font-semibold text-white">Details</summary>
+                  <summary className="cursor-pointer select-none text-sm font-semibold text-white">Source details</summary>
                   <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
-                    {Object.entries(metadata).map(([key, value]) => (
+                    {merged.document_file_type && (
+                      <div className="min-w-0 rounded-lg bg-white/[0.03] px-3 py-2">
+                        <div className="text-xs text-[#9d9d9d]">File type</div>
+                        <div className="mt-0.5 break-words text-[#dadada]">{merged.document_file_type}</div>
+                      </div>
+                    )}
+                    {(merged.file_size_bytes || merged.file_size_bytes === 0) && (
+                      <div className="min-w-0 rounded-lg bg-white/[0.03] px-3 py-2">
+                        <div className="text-xs text-[#9d9d9d]">File size</div>
+                        <div className="mt-0.5 break-words text-[#dadada]">{formatSize(merged.file_size_bytes)}</div>
+                      </div>
+                    )}
+                    {metadata && Object.entries(metadata).map(([key, value]) => (
                       <div key={key} className="min-w-0 rounded-lg bg-white/[0.03] px-3 py-2">
                         <div className="text-xs text-[#9d9d9d]">{formatMetadataKey(key)}</div>
                         <div className="mt-0.5 break-words text-[#dadada]">{value == null ? 'N/A' : String(value)}</div>
@@ -240,6 +320,31 @@ export default function OpenUICitationReference({ citationNumber, citationData }
                   </div>
                 </details>
               )}
+            </div>
+
+            {/* Footer: downloads */}
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-[#464646] bg-[#161616] px-5 py-3">
+              <span className="text-xs text-[#f1a3b0]">{downloadError || ''}</span>
+              <div className="flex flex-wrap items-center gap-2">
+                {pageImageStatus === 'loaded' && pageImageUrl && (
+                  <a
+                    href={pageImageUrl}
+                    download={`${(title || 'source').replace(/[^\w\s.\-]/g, '_')}-${pageLabel}-${pageNumber ?? ''}.png`}
+                    className="flex items-center gap-1.5 rounded-[10px] border border-[#464646] bg-[#262626] px-3 py-1.5 text-xs text-[#e5e5e5] transition hover:border-[#d93854]/50 hover:text-white"
+                  >
+                    <svg className="h-4 w-4 text-[#d93854]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+                    {`Download ${pageLabel}`}
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={handleDownloadDocument}
+                  className="flex items-center gap-1.5 rounded-[10px] border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
+                >
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  Download document
+                </button>
+              </div>
             </div>
           </div>
         </div>,

@@ -2,77 +2,26 @@ import { defineComponent, useIsQueryLoading } from '@openuidev/react-lang';
 import { MarkDownRenderer as BaseMarkDownRenderer } from '@openuidev/react-ui';
 import { z } from 'zod/v4';
 
-import OpenUICitationReference from './openUICitationReference';
 import { useOpenUICitations } from '../citationContext';
-
-function citationMap(citations) {
-  return new Map(citations.map((citation) => [Number(citation.citation_number), citation]));
-}
-
-function renderTextWithCitationBadges(text, citationsByNumber, keyPrefix = 'openui-citation') {
-  const parts = [];
-  const regex = /\[(\d+)\]/g;
-  let lastIndex = 0;
-  let match;
-
-  while ((match = regex.exec(text)) !== null) {
-    const number = Number(match[1]);
-    const citation = citationsByNumber.get(number);
-    if (match.index > lastIndex) parts.push(text.slice(lastIndex, match.index));
-    parts.push(citation ? (
-      <OpenUICitationReference
-        key={`${keyPrefix}-${number}-${match.index}`}
-        citationNumber={number}
-        citationData={citation}
-      />
-    ) : (
-      <span
-        key={`${keyPrefix}-${number}-${match.index}`}
-        title={`Citation ${number}`}
-        className="mx-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-cyan-300/70 bg-cyan-400/20 px-1 text-[11px] font-bold leading-none text-cyan-100 shadow-[0_0_0_1px_rgba(34,211,238,0.12)] align-baseline"
-      >
-        {number}
-      </span>
-    ));
-    lastIndex = match.index + match[0].length;
-  }
-
-  if (lastIndex < text.length) parts.push(text.slice(lastIndex));
-  return parts.length > 0 ? parts : text;
-}
-
-function processChildren(children, citationsByNumber, keyPrefix) {
-  if (typeof children === 'string') {
-    return renderTextWithCitationBadges(children, citationsByNumber, keyPrefix);
-  }
-  if (Array.isArray(children)) {
-    return children.map((child, index) => (
-      typeof child === 'string'
-        ? renderTextWithCitationBadges(child, citationsByNumber, `${keyPrefix}-${index}`)
-        : child
-    ));
-  }
-  return children;
-}
+import { processChildren } from '../citationText';
 
 function CitationAwareMarkdown({ textMarkdown, variant }) {
   const citations = useOpenUICitations();
   const content = textMarkdown ?? '';
 
-  if (citations.length > 0) {
-    const citationsByNumber = citationMap(citations);
+  if (citations && citations.length > 0) {
     const components = {
       p: ({ children, ...props }) => (
-        <p {...props}>{processChildren(children, citationsByNumber, 'p')}</p>
+        <p {...props}>{processChildren(children, citations, 'p')}</p>
       ),
       li: ({ children, ...props }) => (
-        <li {...props}>{processChildren(children, citationsByNumber, 'li')}</li>
+        <li {...props}>{processChildren(children, citations, 'li')}</li>
       ),
       strong: ({ children, ...props }) => (
-        <strong {...props}>{processChildren(children, citationsByNumber, 'strong')}</strong>
+        <strong {...props}>{processChildren(children, citations, 'strong')}</strong>
       ),
       em: ({ children, ...props }) => (
-        <em {...props}>{processChildren(children, citationsByNumber, 'em')}</em>
+        <em {...props}>{processChildren(children, citations, 'em')}</em>
       ),
     };
 

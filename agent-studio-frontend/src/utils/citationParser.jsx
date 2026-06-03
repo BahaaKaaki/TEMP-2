@@ -1,4 +1,6 @@
-import CitationReference from '../components/chat/CitationReference';
+// Single, shared citation component (page image + referenced text + doc info +
+// downloads), used for both chat-message and deliverable citations.
+import CitationReference from '../openui/components/openUICitationReference';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { safeLog } from './safeLogger';

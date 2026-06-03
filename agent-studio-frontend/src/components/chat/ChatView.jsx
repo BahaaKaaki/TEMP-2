@@ -215,6 +215,7 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
   const previewText = (previewMessage?.content || '').trim();
   // Show the deliverable's own name rather than the producing agent's label.
   const headerLabel = getDeliverableName(step);
+  const needsReview = hasHitl && status === 'pending' && step.agentType !== 'code-executor';
   if (isCodeExecutor) {
     return (
       <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -275,12 +276,20 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
               Open the full view to explore this deliverable.
             </p>
           )}
-          <div className="mt-3 flex justify-end border-t border-white/10 pt-2">
+          <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2">
+            {needsReview && !isExpanded ? (
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#d93854]/15 px-2 py-0.5 text-[11px] font-semibold text-[#ff8ba0]">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#ff8ba0]" />
+                Needs your review
+              </span>
+            ) : (
+              <span />
+            )}
             <button type="button" onClick={() => (onToggleExpand ? onToggleExpand() : onExpand())} className={CHAT_TEXT_BTN}>
               <svg className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
-              {isExpanded ? 'Collapse' : 'Open deliverable'}
+              {isExpanded ? 'Collapse' : needsReview ? 'Review deliverable' : 'Open deliverable'}
             </button>
           </div>
         </ChatMessageBubble>
@@ -2905,7 +2914,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                   />
                   {inlineExpandedStepId === inlineStepId && (
                     <div className="mt-2 flex">
-                      <div className="min-w-0 max-w-[85%] flex-1 rounded-2xl border border-[#464646] bg-[#1f1f1f]/70 p-3 deliverable-dark-theme">
+                      <div className="min-w-0 max-w-[85%] flex-1 rounded-2xl border border-[#464646] bg-[#1f1f1f]/70 p-3 deliverable-dark-theme animate-in fade-in slide-in-from-top-1 duration-200">
                         <div className="flex items-center justify-between pb-2">
                           <span className="text-xs font-semibold uppercase tracking-wide text-[#9d9d9d]">
                             {getDeliverableName(step)}
@@ -3149,21 +3158,6 @@ export default function ChatView({ testMode = false, onClose = null }) {
         </div>
 
         <div className="chat-thread__composer flex-shrink-0 px-4 py-3">
-        {hasPendingDeliverables && (
-          <div className="mb-3 rounded-2xl border border-[#d93854]/45 bg-[#2a1d21] px-4 py-3 shadow-[inset_0_1px_0_rgba(217,56,84,0.18)]">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 text-sm font-bold text-white">
-                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-[#d93854]/20 text-[#ff8ba0]">!</span>
-                  Deliverable ready for review
-                </div>
-                <p className="mt-1 text-xs text-[#dadada]">
-                  Open the deliverable, review the generated output, then approve or reject to continue the workflow.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
         {isWorkflowEnded && (
           <div className="chat-thread__alert chat-thread__alert--muted mb-2">
             This workflow has ended. Start a new chat session to continue.
@@ -3883,10 +3877,18 @@ export default function ChatView({ testMode = false, onClose = null }) {
             className="fixed inset-0 z-40 bg-black/30"
             onClick={() => setShowOutputPanel(false)}
           />
-          <div className="fixed top-0 right-0 h-full w-[400px] z-40 bg-[#1a1a1a] border-l border-[#464646] shadow-2xl flex flex-col output-panel-slide">
+          <div className="fixed top-0 right-0 h-full w-[500px] max-w-[94vw] z-40 bg-[#1a1a1a] border-l border-[#464646] shadow-2xl flex flex-col output-panel-slide">
             {/* Panel Header */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
-              <h2 className="text-2xl font-bold text-white">Output</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-white">Output</h2>
+                <div className="mt-1 text-xs text-[#8b8b8b]">
+                  {(() => {
+                    const n = outputSteps.filter((s) => !hiddenDeliverableAgentIds.has(s.agentId || s.agent_id)).length;
+                    return n === 1 ? '1 deliverable' : `${n} deliverables`;
+                  })()}
+                </div>
+              </div>
               <button
                 onClick={() => setShowOutputPanel(false)}
                 className={`w-9 h-9 rounded-[10px] ${CHAT_ICON_BTN}`}
@@ -3907,7 +3909,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
               ) : (
                 <div className="relative pl-4">
                   {/* Vertical connector line */}
-                  <div className="absolute left-[7px] top-6 bottom-6 w-px bg-[#464646]" />
+                  <div className="absolute left-[7px] top-6 bottom-6 w-px bg-[#353535]" />
 
                   <div className="space-y-6">
                     {outputSteps.filter(s => !hiddenDeliverableAgentIds.has(s.agentId || s.agent_id)).map((step, stepIdx) => {
@@ -3937,16 +3939,15 @@ export default function ChatView({ testMode = false, onClose = null }) {
 
                       return (
                         <div key={stepId || stepIdx} className="relative">
-                          {/* Dot on the connector line */}
-                          <div className="absolute -left-4 top-4 w-[7px] h-[7px] rounded-full border-2 border-[#6b6b6b] bg-[#1a1a1a] z-10" />
+                          {/* Dot on the connector line (category-colored, trace style) */}
+                          <div className="absolute -left-4 top-4 w-[7px] h-[7px] rounded-full border-2 z-10" style={{ borderColor: stepColor, background: '#1a1a1a' }} />
 
-                          {/* Agent node pill */}
+                          {/* Deliverable card (trace-style) */}
                           <button
                             onClick={() => !openUINotReady && openExpandedDeliverable(stepId, 0)}
                             disabled={openUINotReady}
                             title={openUINotReady ? 'Generating view...' : undefined}
-                            className="w-full flex items-center gap-3 px-5 py-3 rounded-[10px] transition-all hover:brightness-110 group disabled:opacity-50 disabled:cursor-default disabled:hover:brightness-100"
-                            style={{ background: `linear-gradient(to right, ${stepColor}, ${stepColor}40)` }}
+                            className="w-full flex items-center gap-3 rounded-xl border border-[#464646] bg-[#202020] px-4 py-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-all hover:border-[#6b6b6b] hover:bg-[#262626] group disabled:opacity-50 disabled:cursor-default disabled:hover:bg-[#202020]"
                           >
                             {stepNodeInfo?.icon && (
                               <span className="flex items-center justify-center w-5 h-5 flex-shrink-0">
