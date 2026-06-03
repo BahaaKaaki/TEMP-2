@@ -3161,22 +3161,6 @@ export default function ChatView({ testMode = false, onClose = null }) {
                   Open the deliverable, review the generated output, then approve or reject to continue the workflow.
                 </p>
               </div>
-              {reviewableDeliverable && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setInlineExpandedStepId(reviewableDeliverable.id);
-                    setTimeout(() => {
-                      document
-                        .getElementById(`deliverable-${reviewableDeliverable.id}`)
-                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }, 60);
-                  }}
-                  className={`h-9 rounded-[10px] px-4 text-xs ${CHAT_TOOLBAR_BTN}`}
-                >
-                  Review deliverable
-                </button>
-              )}
             </div>
           </div>
         )}

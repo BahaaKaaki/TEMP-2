@@ -13,12 +13,24 @@ _SUMMARY_PROPERTY: Dict[str, Any] = {
     ),
 }
 
+_TITLE_PROPERTY: Dict[str, Any] = {
+    "type": "string",
+    "description": (
+        "A short, specific human-readable title naming this deliverable "
+        "(3-8 words), e.g. 'Comparable-Company Benchmark' or "
+        "'Operating-Model Options'. Shown as the deliverable's name in the UI; "
+        "name the deliverable itself, not the agent or the task."
+    ),
+}
+
 
 def inject_summary_field(schema: Dict[str, Any]) -> Dict[str, Any]:
-    """Return a copy of schema with `summary` injected as a required string property.
+    """Return a copy of schema with `title` and `summary` injected as required strings.
 
-    No-op when schema is not a JSON-Schema object with a properties dict, or when
-    `summary` already exists. Does not mutate input.
+    `title` is the deliverable's human-facing name (shown on the card); `summary`
+    is rendered above the structured output. No-op when schema is not a JSON-Schema
+    object with a properties dict, or when the field already exists. Does not mutate
+    input.
     """
     if not isinstance(schema, dict):
         return schema
@@ -32,9 +44,13 @@ def inject_summary_field(schema: Dict[str, Any]) -> Dict[str, Any]:
     new_props = dict(props)
     if "summary" not in new_props:
         new_props = {"summary": dict(_SUMMARY_PROPERTY), **new_props}
+    if "title" not in new_props:
+        new_props = {"title": dict(_TITLE_PROPERTY), **new_props}
 
     required = list(schema.get("required", []) or [])
     if "summary" not in required:
         required = ["summary"] + required
+    if "title" not in required:
+        required = ["title"] + required
 
     return {**schema, "properties": new_props, "required": required}

@@ -307,8 +307,10 @@ export default function CitationReference({ citationNumber, citationData }) {
         document.body
       )}
 
-      {/* Full Details Modal (KB citations only) */}
-      {!isWeb && showModal && (
+      {/* Full Details Modal (KB citations only) -- portaled to body so it is
+          never nested inside the markdown <p> that renders the badge (which
+          caused "<p> cannot contain <div>" hydration errors). */}
+      {!isWeb && showModal && createPortal(
         <div
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
           onClick={() => setShowModal(false)}
@@ -476,7 +478,8 @@ export default function CitationReference({ citationNumber, citationData }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Error Modals (KB only) */}

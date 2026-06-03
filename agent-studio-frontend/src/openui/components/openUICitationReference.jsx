@@ -33,12 +33,6 @@ function sourceLocation(citation) {
   return parts.join(' · ');
 }
 
-function sourcePreview(citation, max = 220) {
-  const text = String(citation?.chunk_text || '').replace(/\s+/g, ' ').trim();
-  if (!text) return '';
-  return text.length > max ? `${text.slice(0, max)}…` : text;
-}
-
 function formatMetadataKey(key) {
   return key.replace(/_/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
 }
@@ -56,17 +50,36 @@ export default function OpenUICitationReference({ citationNumber, citationData }
   const couldHavePageImage = Boolean(chunkId && pageNumber != null);
 
   const [pageImageUrl, setPageImageUrl] = useState(null);
-  const [pageImageStatus, setPageImageStatus] = useState('idle'); // idle | loading | loaded | none
+  // idle | loading | loaded | none
+  const [pageImageStatus, setPageImageStatus] = useState('idle');
   const objectUrlRef = useRef(null);
+  const fetchStartedRef = useRef(false);
+  const mountedRef = useRef(true);
 
-  // Fetch the source page snapshot once, when the modal first opens.
+  // Track mount so an async result never updates a unmounted component, and
+  // revoke the object URL on unmount. (Reset the flag in the body so React
+  // StrictMode's mount/unmount/mount cycle leaves it `true`.)
   useEffect(() => {
-    if (!showModal || !couldHavePageImage || pageImageStatus !== 'idle') return undefined;
-    let cancelled = false;
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      if (objectUrlRef.current) {
+        URL.revokeObjectURL(objectUrlRef.current);
+        objectUrlRef.current = null;
+      }
+    };
+  }, []);
+
+  // Fetch the page snapshot once, on demand (when the modal opens). Triggering
+  // from the click handler — not a status-keyed effect — avoids the effect
+  // cancelling its own in-flight request and getting stuck on "loading".
+  const loadPageImage = () => {
+    if (!couldHavePageImage || fetchStartedRef.current) return;
+    fetchStartedRef.current = true;
     setPageImageStatus('loading');
     getCitationPageImage(chunkId, kbId)
       .then((url) => {
-        if (cancelled) {
+        if (!mountedRef.current) {
           if (url) URL.revokeObjectURL(url);
           return;
         }
@@ -79,20 +92,9 @@ export default function OpenUICitationReference({ citationNumber, citationData }
         }
       })
       .catch(() => {
-        if (!cancelled) setPageImageStatus('none');
+        if (mountedRef.current) setPageImageStatus('none');
       });
-    return () => {
-      cancelled = true;
-    };
-  }, [showModal, couldHavePageImage, chunkId, kbId, pageImageStatus]);
-
-  // Revoke the object URL when the component unmounts.
-  useEffect(
-    () => () => {
-      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
-    },
-    [],
-  );
+  };
 
   if (!citationData) {
     return <span className="text-cyan-200">[{citationNumber}]</span>;
@@ -101,10 +103,10 @@ export default function OpenUICitationReference({ citationNumber, citationData }
   const isWeb = citationData.type === 'web' && citationData.url;
   const title = sourceName(citationData);
   const location = sourceLocation(citationData);
-  const preview = sourcePreview(citationData);
   const metadata = citationData.chunk_metadata && typeof citationData.chunk_metadata === 'object'
     ? citationData.chunk_metadata
     : null;
+  const hasImageArea = couldHavePageImage && pageImageStatus !== 'none';
 
   const computeTooltipPosition = () => {
     const rect = badgeRef.current?.getBoundingClientRect();
@@ -126,6 +128,7 @@ export default function OpenUICitationReference({ citationNumber, citationData }
       return;
     }
     setShowModal(true);
+    loadPageImage();
   };
 
   return (
@@ -157,9 +160,12 @@ export default function OpenUICitationReference({ citationNumber, citationData }
         >
           <div className="truncate font-semibold text-white" title={title}>{title}</div>
           {location && <div className="mt-1 text-[#9d9d9d]">{location}</div>}
-          {preview && <div className="mt-2 line-clamp-3 leading-relaxed text-[#cfcfcf]">{preview}</div>}
           <div className="mt-2 border-t border-[#464646] pt-2 text-[#9d9d9d]">
-            {isWeb ? 'Click to open source' : 'Click for source details'}
+            {isWeb
+              ? 'Click to open source'
+              : couldHavePageImage
+                ? 'Click to view the source page'
+                : 'Click for source details'}
           </div>
         </div>,
         document.body,
@@ -171,7 +177,7 @@ export default function OpenUICitationReference({ citationNumber, citationData }
           onClick={() => setShowModal(false)}
         >
           <div
-            className="flex max-h-[82vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#464646] bg-[#111111] shadow-2xl"
+            className="flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-2xl border border-[#464646] bg-[#111111] shadow-2xl"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 border-b border-[#464646] px-5 py-4">
@@ -183,40 +189,47 @@ export default function OpenUICitationReference({ citationNumber, citationData }
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-lg border border-[#464646] px-3 py-1.5 text-sm text-[#dadada] transition hover:border-[#d93854]/60 hover:text-white"
+                className="flex-none rounded-lg border border-[#464646] px-3 py-1.5 text-sm text-[#dadada] transition hover:border-[#d93854]/60 hover:text-white"
               >
                 Close
               </button>
             </div>
+
             <div className="overflow-y-auto px-5 py-4">
-              {pageImageStatus === 'loading' && (
-                <div className="mb-4 flex h-40 items-center justify-center rounded-xl border border-[#464646] bg-[#1a1a1a] text-sm text-[#9d9d9d]">
+              {/* Hero: the actual source page snapshot */}
+              {hasImageArea && pageImageStatus === 'loading' && (
+                <div className="mb-4 flex h-56 w-full animate-pulse items-center justify-center rounded-xl border border-[#464646] bg-[#1d1d1d] text-xs text-[#6b6b6b]">
                   Loading source page…
                 </div>
               )}
               {pageImageStatus === 'loaded' && pageImageUrl && (
-                <div className="mb-4 overflow-hidden rounded-xl border border-[#464646] bg-black/30">
-                  <img
-                    src={pageImageUrl}
-                    alt={`Source page${pageNumber != null ? ` ${pageNumber}` : ''}`}
-                    className="mx-auto block max-h-[55vh] w-auto"
-                  />
-                </div>
+                <figure className="mb-4">
+                  <div className="overflow-hidden rounded-xl border border-[#464646] bg-black/40">
+                    <img
+                      src={pageImageUrl}
+                      alt={`Source page${pageNumber != null ? ` ${pageNumber}` : ''}`}
+                      className="mx-auto block max-h-[60vh] w-auto"
+                    />
+                  </div>
+                  <figcaption className="mt-1.5 text-center text-[11px] text-[#6b6b6b]">
+                    {`The exact ${location && /slide/i.test(location) ? 'slide' : 'page'} this answer was drawn from`}
+                  </figcaption>
+                </figure>
               )}
-              <details
-                className="rounded-xl border border-[#464646] bg-[#1a1a1a] p-4"
-                open={pageImageStatus !== 'loaded'}
-              >
-                <summary className="cursor-pointer select-none text-sm font-semibold text-white">
+
+              {/* The cited passage, shown plainly */}
+              <div className="rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
+                <div className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-[#9d9d9d]">
                   Referenced text
-                </summary>
-                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#dadada]">
+                </div>
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#dadada]">
                   {citationData.chunk_text || 'No source text is available for this citation.'}
                 </p>
-              </details>
+              </div>
+
               {metadata && Object.keys(metadata).length > 0 && (
                 <details className="mt-4 rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
-                  <summary className="cursor-pointer select-none text-sm font-semibold text-white">Metadata</summary>
+                  <summary className="cursor-pointer select-none text-sm font-semibold text-white">Details</summary>
                   <div className="mt-3 grid gap-2 text-sm sm:grid-cols-2">
                     {Object.entries(metadata).map(([key, value]) => (
                       <div key={key} className="min-w-0 rounded-lg bg-white/[0.03] px-3 py-2">
