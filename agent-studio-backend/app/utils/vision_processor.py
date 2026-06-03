@@ -34,6 +34,9 @@ class VisionPageResult:
     page_number: int
     text: str
     structured_data: Optional[Dict[str, Any]] = None
+    # The rendered PNG of this page, retained so the caller can persist it as a
+    # source snapshot for citation display. Not all callers need it.
+    image_png: Optional[bytes] = None
 
 
 # ---------------------------------------------------------------------------
@@ -306,6 +309,7 @@ async def process_page(
         page_number=page_num,
         text=text,
         structured_data=structured_data,
+        image_png=image,
     )
 
 

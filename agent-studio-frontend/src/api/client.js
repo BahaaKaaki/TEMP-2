@@ -753,6 +753,27 @@ export async function downloadFile(fileId) {
 }
 
 /**
+ * Fetch the source page snapshot (PNG) for a citation's chunk.
+ * Returns an object URL for the image, or null when no snapshot exists (404).
+ * Caller is responsible for revoking the returned object URL.
+ * @param {string} chunkId - Chunk UUID
+ * @param {string} [kbId] - Knowledge base ID (speeds up the lookup)
+ * @returns {Promise<string|null>}
+ */
+export async function getCitationPageImage(chunkId, kbId) {
+  const params = kbId ? `?kb_id=${encodeURIComponent(kbId)}` : '';
+  const response = await authenticatedFetch(
+    `${API_BASE_URL}/api/citations/${encodeURIComponent(chunkId)}/page-image${params}`
+  );
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch page image: ${response.status}`);
+  }
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+}
+
+/**
  * Delete a file
  * @param {string} fileId - File UUID
  * @returns {Promise<Object>} Delete confirmation

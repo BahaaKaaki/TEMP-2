@@ -1,5 +1,7 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+
+import { getCitationPageImage } from '../../api/client';
 
 function metadataValue(citation, keys) {
   const metadata = citation?.chunk_metadata || {};
@@ -46,6 +48,51 @@ export default function OpenUICitationReference({ citationNumber, citationData }
   const [showModal, setShowModal] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0, flipped: false });
   const badgeRef = useRef(null);
+
+  const chunkId = citationData?.chunk_id;
+  const kbId = citationData?.kb_id;
+  const pageNumber =
+    citationData?.chunk_metadata?.page_number ?? citationData?.page_number ?? null;
+  const couldHavePageImage = Boolean(chunkId && pageNumber != null);
+
+  const [pageImageUrl, setPageImageUrl] = useState(null);
+  const [pageImageStatus, setPageImageStatus] = useState('idle'); // idle | loading | loaded | none
+  const objectUrlRef = useRef(null);
+
+  // Fetch the source page snapshot once, when the modal first opens.
+  useEffect(() => {
+    if (!showModal || !couldHavePageImage || pageImageStatus !== 'idle') return undefined;
+    let cancelled = false;
+    setPageImageStatus('loading');
+    getCitationPageImage(chunkId, kbId)
+      .then((url) => {
+        if (cancelled) {
+          if (url) URL.revokeObjectURL(url);
+          return;
+        }
+        if (url) {
+          objectUrlRef.current = url;
+          setPageImageUrl(url);
+          setPageImageStatus('loaded');
+        } else {
+          setPageImageStatus('none');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setPageImageStatus('none');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showModal, couldHavePageImage, chunkId, kbId, pageImageStatus]);
+
+  // Revoke the object URL when the component unmounts.
+  useEffect(
+    () => () => {
+      if (objectUrlRef.current) URL.revokeObjectURL(objectUrlRef.current);
+    },
+    [],
+  );
 
   if (!citationData) {
     return <span className="text-cyan-200">[{citationNumber}]</span>;
@@ -142,12 +189,31 @@ export default function OpenUICitationReference({ citationNumber, citationData }
               </button>
             </div>
             <div className="overflow-y-auto px-5 py-4">
-              <div className="rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
-                <div className="mb-2 text-sm font-semibold text-white">Referenced chunk</div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#dadada]">
+              {pageImageStatus === 'loading' && (
+                <div className="mb-4 flex h-40 items-center justify-center rounded-xl border border-[#464646] bg-[#1a1a1a] text-sm text-[#9d9d9d]">
+                  Loading source page…
+                </div>
+              )}
+              {pageImageStatus === 'loaded' && pageImageUrl && (
+                <div className="mb-4 overflow-hidden rounded-xl border border-[#464646] bg-black/30">
+                  <img
+                    src={pageImageUrl}
+                    alt={`Source page${pageNumber != null ? ` ${pageNumber}` : ''}`}
+                    className="mx-auto block max-h-[55vh] w-auto"
+                  />
+                </div>
+              )}
+              <details
+                className="rounded-xl border border-[#464646] bg-[#1a1a1a] p-4"
+                open={pageImageStatus !== 'loaded'}
+              >
+                <summary className="cursor-pointer select-none text-sm font-semibold text-white">
+                  Referenced text
+                </summary>
+                <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-[#dadada]">
                   {citationData.chunk_text || 'No source text is available for this citation.'}
                 </p>
-              </div>
+              </details>
               {metadata && Object.keys(metadata).length > 0 && (
                 <details className="mt-4 rounded-xl border border-[#464646] bg-[#1a1a1a] p-4">
                   <summary className="cursor-pointer select-none text-sm font-semibold text-white">Metadata</summary>

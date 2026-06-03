@@ -80,3 +80,23 @@ export function getDeliverableSummary(deliverable) {
   if (typeof summary === 'string') return summary.trim() || null;
   return null;
 }
+
+/**
+ * Human-facing name for a deliverable (prefer the deliverable's own title over
+ * the producing agent's label). Falls back to the agent label, then a generic
+ * label, so a card is never nameless.
+ */
+export function getDeliverableName(deliverable) {
+  const data = deliverable?.deliverable;
+  const content = typeof data === 'object' && data !== null ? data : null;
+  const explicit = content?.title || content?.name || content?.deliverable_title;
+  if (typeof explicit === 'string' && explicit.trim()) return explicit.trim();
+  // A single-section deliverable reads well as its section title.
+  const sections = content && Array.isArray(content.sections) ? content.sections : null;
+  if (sections && sections.length === 1) {
+    const t = sections[0]?.section_title || sections[0]?.title;
+    if (typeof t === 'string' && t.trim()) return t.trim();
+  }
+  const fallback = deliverable?.agentLabel || deliverable?.title;
+  return typeof fallback === 'string' && fallback.trim() ? fallback.trim() : 'Deliverable';
+}

@@ -338,7 +338,24 @@ class DocumentService(BaseService):
             
             await self.storage_connector.delete_blob(document.blob_name)
             logger.info(f"Deleted blob for document {document_id}")
-            
+
+            # Remove any persisted page snapshots for this document.
+            try:
+                base_path = document.blob_name.rsplit("/", 1)[0]
+                pages_prefix = f"{base_path}/{document_id}/pages/"
+                page_blobs = await self.storage_connector.list_blobs(prefix=pages_prefix)
+                for pb in page_blobs:
+                    await self.storage_connector.delete_blob(pb.name)
+                if page_blobs:
+                    logger.info(
+                        "Deleted %d page snapshot(s) for document %s",
+                        len(page_blobs), document_id,
+                    )
+            except Exception as snap_err:
+                logger.warning(
+                    "Failed to delete page snapshots for %s: %s", document_id, snap_err,
+                )
+
             query = text("DELETE FROM rag_document WHERE id = :document_id")
             await self.db.execute(query, {"document_id": document_id})
             
@@ -413,7 +430,50 @@ class DocumentService(BaseService):
         except Exception as e:
             logger.error(f"Failed to generate download URL for document {document_id}: {e}")
             raise
-    
+
+    async def _persist_page_images(
+        self,
+        base_path: str,
+        document_id: str,
+        page_images: dict,
+    ) -> dict:
+        """Persist rendered page images as PNG blobs for citation snapshots.
+
+        Stores each page at a deterministic path
+        ``{base_path}/{document_id}/pages/{page:04d}.png`` so the citation
+        page-image endpoint can locate it from a chunk's document + page_number.
+        Best-effort: failures are logged and skipped. Returns
+        ``{page_number: blob_name}`` for pages that were stored.
+        """
+        image_map: dict = {}
+        for page_number, image_bytes in (page_images or {}).items():
+            if not image_bytes:
+                continue
+            blob_name = f"{base_path}/{document_id}/pages/{int(page_number):04d}.png"
+            try:
+                await self.storage_connector.upload_blob(
+                    blob_name=blob_name,
+                    data=image_bytes,
+                    content_type="image/png",
+                    metadata={
+                        "document_id": document_id,
+                        "page_number": str(page_number),
+                        "type": "page_snapshot",
+                    },
+                )
+                image_map[int(page_number)] = blob_name
+            except Exception as e:
+                logger.warning(
+                    "Failed to persist page snapshot (doc=%s page=%s): %s",
+                    document_id, page_number, e,
+                )
+        if image_map:
+            logger.info(
+                "Persisted %d page snapshot(s) for document %s",
+                len(image_map), document_id,
+            )
+        return image_map
+
     async def _process_document_async(self, document_id: str, kb_id: str, user_id: str = None, chunking_overrides: Optional[dict] = None, metadata_fields: Optional[list] = None, vision_config: Optional[dict] = None) -> None:
         """
         Process document asynchronously (extract text, create chunks, etc.).
@@ -497,6 +557,14 @@ class DocumentService(BaseService):
                         )
 
                         if results:
+                            # Persist each rendered page as a citation snapshot
+                            # (images already rendered by the vision pipeline).
+                            base_path = document.blob_name.rsplit("/", 1)[0]
+                            await self._persist_page_images(
+                                base_path,
+                                document_id,
+                                {r.page_number: r.image_png for r in results if r.image_png},
+                            )
                             pre_chunked_texts = [r.text for r in results]
                             pre_chunked_metadata = [
                                 {"page_number": r.page_number, **(r.structured_data or {})}
@@ -543,15 +611,70 @@ class DocumentService(BaseService):
                         )
 
                         if success and extracted_text:
-                            chunks = await kb_service.add_chunks_to_kb(
-                                kb_id=kb_id,
-                                document_id=document_id,
-                                text=extracted_text,
-                                document_name=document.file_name,
-                                chunking_overrides=chunking_overrides,
-                                parsed_elements=parsed_elements,
-                                metadata_fields=metadata_fields,
-                            )
+                            # For page-chunked PDFs, persist a snapshot per page and
+                            # route through the pre-chunked path so each chunk carries
+                            # its page_number — enabling source page images on citations.
+                            # No behavior change for non-PDF or non-page-chunked KBs.
+                            page_pre_texts = None
+                            page_pre_meta = None
+                            try:
+                                ext = (
+                                    document.file_name.rsplit(".", 1)[-1].lower()
+                                    if "." in document.file_name else ""
+                                )
+                                if ext == "pdf":
+                                    from domain.entities.knowledge_base import ChunkingMethod
+                                    kb_entity = await kb_service.get_knowledge_base(kb_id)
+                                    if chunking_overrides and chunking_overrides.get("method"):
+                                        effective_method = ChunkingMethod(chunking_overrides["method"])
+                                    else:
+                                        effective_method = kb_entity.chunking_config.method
+                                    if effective_method == ChunkingMethod.PAGE:
+                                        page_pairs = await asyncio.to_thread(
+                                            FileParser.group_elements_by_page_with_numbers,
+                                            parsed_elements,
+                                        )
+                                        if page_pairs:
+                                            from utils.vision_processor import render_pages_to_images
+                                            images = await asyncio.to_thread(
+                                                render_pages_to_images, temp_file_path,
+                                            )
+                                            base_path = document.blob_name.rsplit("/", 1)[0]
+                                            await self._persist_page_images(
+                                                base_path,
+                                                document_id,
+                                                {i: img for i, img in enumerate(images, start=1)},
+                                            )
+                                            page_pre_texts = [t for (_pn, t) in page_pairs]
+                                            page_pre_meta = [{"page_number": pn} for (pn, _t) in page_pairs]
+                            except Exception as snap_err:
+                                logger.warning(
+                                    "Page snapshot prep failed for %s (continuing without snapshots): %s",
+                                    document_id, snap_err,
+                                )
+                                page_pre_texts = None
+                                page_pre_meta = None
+
+                            if page_pre_texts:
+                                chunks = await kb_service.add_chunks_to_kb(
+                                    kb_id=kb_id,
+                                    document_id=document_id,
+                                    text=extracted_text,
+                                    document_name=document.file_name,
+                                    pre_chunked_texts=page_pre_texts,
+                                    pre_chunked_metadata=page_pre_meta,
+                                    metadata_fields=metadata_fields,
+                                )
+                            else:
+                                chunks = await kb_service.add_chunks_to_kb(
+                                    kb_id=kb_id,
+                                    document_id=document_id,
+                                    text=extracted_text,
+                                    document_name=document.file_name,
+                                    chunking_overrides=chunking_overrides,
+                                    parsed_elements=parsed_elements,
+                                    metadata_fields=metadata_fields,
+                                )
 
                             await doc_repo.update_extracted_text(
                                 document_id,

@@ -57,6 +57,7 @@ import {
 } from '../builder/nodeCategoryStyles';
 import OpenUIMessage from '@/openui/OpenUIMessage';
 import {
+  getDeliverableName,
   getDeliverableSummary,
   hasRenderableOpenUI,
   readDeliverableOpenUILang,
@@ -206,13 +207,14 @@ function normalizeDeliverablePreviewText(value) {
     .toLowerCase();
 }
 
-function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agentType, onExpand, hasHitl, previewMessage }) {
+function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agentType, onExpand, onToggleExpand, isExpanded, hasHitl, previewMessage }) {
   const bubbleGradient = getMessageBubbleGradient(agentType);
   const isCodeExecutor = step.agentType === 'code-executor';
   const status = step.status;
   const summary = getDeliverableSummary(step);
   const previewText = (previewMessage?.content || '').trim();
-  const headerLabel = step.agentLabel || stepTitle;
+  // Show the deliverable's own name rather than the producing agent's label.
+  const headerLabel = getDeliverableName(step);
   if (isCodeExecutor) {
     return (
       <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -274,11 +276,11 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
             </p>
           )}
           <div className="mt-3 flex justify-end border-t border-white/10 pt-2">
-            <button type="button" onClick={() => onExpand()} className={CHAT_TEXT_BTN}>
-              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+            <button type="button" onClick={() => (onToggleExpand ? onToggleExpand() : onExpand())} className={CHAT_TEXT_BTN}>
+              <svg className={`h-3.5 w-3.5 transition-transform ${isExpanded ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
-              Open full view
+              {isExpanded ? 'Collapse' : 'Open deliverable'}
             </button>
           </div>
         </ChatMessageBubble>
@@ -391,6 +393,8 @@ export default function ChatView({ testMode = false, onClose = null }) {
 
   // Deliverables modal state — which deliverable tab is open (null = closed)
   const [expandedDeliverableId, setExpandedDeliverableId] = useState(null);
+  // Inline (below-the-card) expansion of a deliverable in the chat thread.
+  const [inlineExpandedStepId, setInlineExpandedStepId] = useState(null);
   // Section index the expanded view should open on (deep-link from the Output
   // panel or the inline card's currently-selected tab).
   const [expandedInitialSection, setExpandedInitialSection] = useState(0);
@@ -2879,18 +2883,63 @@ export default function ChatView({ testMode = false, onClose = null }) {
               const stepTitle = step.agentLabel || step.title || `Deliverable`;
               const stepNodeInfo = step.agentType ? getNodeInfo(step.agentType) : null;
               const stepCategoryColor = step.agentType ? getCategoryColor(step.agentType) : null;
+              const inlineStepId = step.id || item.agentId;
               return (
-                <OutputStepMessage
-                  key={`del-${step.id || item.agentId}-${readDeliverableOpenUILang(step).length}`}
-                  step={step}
-                  stepTitle={stepTitle}
-                  stepNodeInfo={stepNodeInfo}
-                  categoryColor={stepCategoryColor}
-                  agentType={step.agentType}
-                  hasHitl={agentsWithHitlFollowing.has(stepAgentId)}
-                  previewMessage={item.previewMessage}
-                  onExpand={(secIdx) => openExpandedDeliverable(step.id || item.agentId, secIdx)}
-                />
+                <div
+                  key={`del-${inlineStepId}-${readDeliverableOpenUILang(step).length}`}
+                  id={`deliverable-${inlineStepId}`}
+                >
+                  <OutputStepMessage
+                    step={step}
+                    stepTitle={stepTitle}
+                    stepNodeInfo={stepNodeInfo}
+                    categoryColor={stepCategoryColor}
+                    agentType={step.agentType}
+                    hasHitl={agentsWithHitlFollowing.has(stepAgentId)}
+                    previewMessage={item.previewMessage}
+                    isExpanded={inlineExpandedStepId === inlineStepId}
+                    onToggleExpand={() =>
+                      setInlineExpandedStepId((prev) => (prev === inlineStepId ? null : inlineStepId))
+                    }
+                    onExpand={(secIdx) => openExpandedDeliverable(inlineStepId, secIdx)}
+                  />
+                  {inlineExpandedStepId === inlineStepId && (
+                    <div className="mt-2 flex">
+                      <div className="min-w-0 max-w-[85%] flex-1 rounded-2xl border border-[#464646] bg-[#1f1f1f]/70 p-3 deliverable-dark-theme">
+                        <div className="flex items-center justify-between pb-2">
+                          <span className="text-xs font-semibold uppercase tracking-wide text-[#9d9d9d]">
+                            {getDeliverableName(step)}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setInlineExpandedStepId(null)}
+                            className="text-[11px] text-[#b5b5b5] hover:text-white"
+                          >
+                            Collapse
+                          </button>
+                        </div>
+                        <div className="max-h-[75vh] overflow-auto">
+                          <DeliverableReview
+                            deliverable={step}
+                            executionId={activeExecutionId}
+                            onApprove={handleApproveDeliverable}
+                            onReject={handleRejectDeliverable}
+                            onWidgetRespond={handleWidgetRespond}
+                            isProcessing={isProcessingDeliverable}
+                            initialSectionIndex={0}
+                            templateId={(() => {
+                              const aid = step.agentId || step.agent_id;
+                              if (!aid || !workflow) return null;
+                              const { nodes } = parseWorkflowGraph();
+                              const n = nodes.find((nd) => nd.id === aid);
+                              return n?.config?.templateId || null;
+                            })()}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             }
 
@@ -3115,7 +3164,14 @@ export default function ChatView({ testMode = false, onClose = null }) {
               {reviewableDeliverable && (
                 <button
                   type="button"
-                  onClick={() => openExpandedDeliverable(reviewableDeliverable.id, 0)}
+                  onClick={() => {
+                    setInlineExpandedStepId(reviewableDeliverable.id);
+                    setTimeout(() => {
+                      document
+                        .getElementById(`deliverable-${reviewableDeliverable.id}`)
+                        ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 60);
+                  }}
                   className={`h-9 rounded-[10px] px-4 text-xs ${CHAT_TOOLBAR_BTN}`}
                 >
                   Review deliverable
@@ -3774,7 +3830,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
       {/* Deliverables Expanded Modal */}
       {expandedDeliverableId && outputSteps.length > 0 && (() => {
         const activeStep = outputSteps.find(s => (s.id || s.agentId || s.agent_id) === expandedDeliverableId);
-        const activeLabel = activeStep?.agentLabel || activeStep?.title || 'Deliverable';
+        const activeLabel = getDeliverableName(activeStep);
         const activeColor = activeStep?.agentType ? getCategoryColor(activeStep.agentType) : '#464646';
         const activeAgentKey = activeStep?.agentId || activeStep?.agent_id;
         const activeHasHitl = activeAgentKey ? agentsWithHitlFollowing.has(activeAgentKey) : false;
@@ -3872,7 +3928,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                   <div className="space-y-6">
                     {outputSteps.filter(s => !hiddenDeliverableAgentIds.has(s.agentId || s.agent_id)).map((step, stepIdx) => {
                       const stepId = step.id || step.agentId || step.agent_id;
-                      const stepLabel = step.agentLabel || step.title || 'Deliverable';
+                      const stepLabel = getDeliverableName(step);
                       const stepNodeInfo = step.agentType ? getNodeInfo(step.agentType) : null;
                       const stepColor = step.agentType ? getCategoryColor(step.agentType) : '#464646';
                       const isCodeExecutor = step.agentType === 'code-executor';

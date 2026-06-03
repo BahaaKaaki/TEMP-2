@@ -3,11 +3,11 @@ Citation API routes.
 
 Provides endpoints to fetch citation details on-demand.
 """
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Response
 import logging
 from typing import Optional
 
-from core.dependencies import get_current_user
+from core.dependencies import get_current_user, get_azure_storage_connector
 from db.pgsql import get_admin_db
 from db.models import User
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -161,6 +161,108 @@ async def get_citation_details(
     except Exception as e:
         logger.error(f"Error fetching citation {chunk_id}: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail="Failed to fetch citation details")
+
+
+@router.get("/{chunk_id}/page-image")
+async def get_citation_page_image(
+    chunk_id: str,
+    kb_id: Optional[str] = None,
+    db: AsyncSession = Depends(get_admin_db),
+    current_user: User = Depends(get_current_user),
+    storage=Depends(get_azure_storage_connector),
+):
+    """
+    Stream the source page snapshot (PNG) for a citation's chunk.
+
+    Resolves the chunk's document_id + page_number, derives the deterministic
+    page-image blob path, and streams the PNG. Returns 404 when no snapshot
+    exists (e.g. recursive-chunked or non-PDF documents).
+
+    Uses get_admin_db to bypass RLS so citations from public KBs are accessible
+    to anyone who can use the shared workflow (mirrors get_citation_details).
+    """
+    try:
+        # Resolve the chunk row (document_id + metadata) honoring KB access.
+        chunk = None
+        if kb_id:
+            kb_row = (await db.execute(
+                text("""
+                    SELECT "chunkTableName" FROM knowledge_base
+                    WHERE id = :kb_id AND ("createdBy" = :uid OR "isPublic" = true)
+                """),
+                {"kb_id": kb_id, "uid": current_user.id},
+            )).fetchone()
+            if not kb_row:
+                raise HTTPException(status_code=404, detail="Knowledge base not found or access denied")
+            chunk = (await db.execute(
+                text(f"SELECT document_id, metadata FROM {kb_row[0]} WHERE id = :cid LIMIT 1"),
+                {"cid": chunk_id},
+            )).fetchone()
+        else:
+            kbs = (await db.execute(
+                text("""
+                    SELECT "chunkTableName" FROM knowledge_base
+                    WHERE "createdBy" = :uid OR "isPublic" = true
+                """),
+                {"uid": current_user.id},
+            )).fetchall()
+            for (tbl,) in kbs:
+                try:
+                    row = (await db.execute(
+                        text(f"SELECT document_id, metadata FROM {tbl} WHERE id = :cid LIMIT 1"),
+                        {"cid": chunk_id},
+                    )).fetchone()
+                    if row:
+                        chunk = row
+                        break
+                except Exception:
+                    continue
+
+        if not chunk:
+            raise HTTPException(status_code=404, detail="Chunk not found")
+
+        document_id = chunk[0]
+        metadata = chunk[1]
+        if isinstance(metadata, str):
+            import json as _json
+            try:
+                metadata = _json.loads(metadata)
+            except (ValueError, TypeError):
+                metadata = None
+        page_number = metadata.get("page_number") if isinstance(metadata, dict) else None
+        try:
+            page_number = int(page_number)
+        except (TypeError, ValueError):
+            raise HTTPException(status_code=404, detail="No page snapshot for this citation")
+
+        doc_row = (await db.execute(
+            text('SELECT "blobName" FROM rag_document WHERE id = :doc_id'),
+            {"doc_id": document_id},
+        )).fetchone()
+        if not doc_row or not doc_row[0]:
+            raise HTTPException(status_code=404, detail="Document not found")
+
+        base_path = doc_row[0].rsplit("/", 1)[0]
+        page_blob = f"{base_path}/{document_id}/pages/{page_number:04d}.png"
+
+        try:
+            data = await storage.download_blob(page_blob)
+        except Exception:
+            raise HTTPException(status_code=404, detail="Page snapshot not available")
+        if not data:
+            raise HTTPException(status_code=404, detail="Page snapshot not available")
+
+        return Response(
+            content=data,
+            media_type="image/png",
+            headers={"Cache-Control": "private, max-age=3600"},
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error fetching page image for chunk {chunk_id}: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Failed to fetch page image")
 
 
 @router.get("/batch")

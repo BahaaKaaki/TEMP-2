@@ -259,6 +259,34 @@ class FileParser:
         return ["\n\n".join(parts) for parts in pages.values() if parts]
 
     @staticmethod
+    def group_elements_by_page_with_numbers(
+        parsed_elements: Optional[List[Dict]],
+    ) -> List[Tuple[int, str]]:
+        """Like ``group_elements_by_page`` but keeps each page's page_number.
+
+        Returns a list of ``(page_number, page_text)`` pairs ordered by page so
+        callers can align page text with rendered page images for citations.
+        """
+        if not parsed_elements:
+            return []
+
+        from collections import OrderedDict
+        pages: "OrderedDict[int, List[str]]" = OrderedDict()
+        current_page = 1
+
+        for elem in parsed_elements:
+            text = (elem.get("text") or "").strip()
+            if not text:
+                continue
+            meta = elem.get("metadata")
+            page_num = meta.get("page_number") if isinstance(meta, dict) else None
+            if page_num is not None:
+                current_page = page_num
+            pages.setdefault(current_page, []).append(text)
+
+        return [(pn, "\n\n".join(parts)) for pn, parts in pages.items() if parts]
+
+    @staticmethod
     def get_text_preview(text: str, max_length: int = 500) -> str:
         """
         Get a preview of extracted text.

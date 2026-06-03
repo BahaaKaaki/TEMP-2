@@ -364,11 +364,8 @@ const DeliverableReview = ({
       {deliverable.status === 'pending' && deliverable.agentType !== 'code-executor' && (
         <div className="sticky bottom-0 z-20 mt-4 rounded-2xl border border-[#d93854]/35 bg-[#171717]/95 p-3 shadow-[0_-10px_30px_rgba(0,0,0,0.28)] backdrop-blur">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="text-sm font-bold text-white">Review required</div>
-              <p className="text-xs text-[#b5b5b5]">
-                Approve to continue the workflow, or reject with feedback for the agent to revise.
-              </p>
+            <div className="min-w-0 text-xs text-[#b5b5b5]">
+              Approve to continue, or request changes for the agent to revise.
             </div>
             <div className="flex flex-wrap items-center justify-end gap-2">
               <button
