@@ -130,8 +130,38 @@ def _strip_externally_rendered_fields(content: Any) -> Any:
     return content
 
 
+def _is_empty(value: Any) -> bool:
+    """True for null/empty values we should not send to the renderer.
+
+    Treats None, "", [], and {} as empty while preserving meaningful falsy
+    values such as 0 and False.
+    """
+    return value is None or value == "" or value == [] or value == {}
+
+
+def _prune_empty(value: Any) -> Any:
+    """Recursively drop null/empty fields so the model never sees or renders them.
+
+    Applied only to the translation payload; the stored deliverable JSON is
+    unaffected. The prompt already tells the model to omit empty fields, but
+    pruning here saves input tokens and removes any temptation to render
+    placeholders for missing content.
+    """
+    if isinstance(value, dict):
+        pruned = {}
+        for key, item in value.items():
+            cleaned = _prune_empty(item)
+            if not _is_empty(cleaned):
+                pruned[key] = cleaned
+        return pruned
+    if isinstance(value, list):
+        cleaned_items = [_prune_empty(item) for item in value]
+        return [item for item in cleaned_items if not _is_empty(item)]
+    return value
+
+
 def _payload_json(content: Any) -> str:
-    content = _strip_externally_rendered_fields(content)
+    content = _prune_empty(_strip_externally_rendered_fields(content))
     try:
         return json.dumps(content, indent=2, ensure_ascii=False, default=str)
     except (TypeError, ValueError):
