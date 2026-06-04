@@ -72,6 +72,7 @@ export default function OpenUICitationReference({ citationNumber, citationData }
   const [pageImageStatus, setPageImageStatus] = useState('idle'); // idle | loading | loaded | none
   const [fullCitation, setFullCitation] = useState(null);
   const [downloadError, setDownloadError] = useState(null);
+  const [downloading, setDownloading] = useState(false);
   const objectUrlRef = useRef(null);
   const fetchStartedRef = useRef(false);
   const mountedRef = useRef(true);
@@ -176,6 +177,7 @@ export default function OpenUICitationReference({ citationNumber, citationData }
       setDownloadError('The source document is not available for download.');
       return;
     }
+    setDownloading(true);
     try {
       const response = await authenticatedFetch(`${API_BASE_URL}/api/documents/${documentId}/download`);
       if (!response.ok) throw new Error('Download failed');
@@ -191,6 +193,8 @@ export default function OpenUICitationReference({ citationNumber, citationData }
     } catch (err) {
       safeError('Citation document download failed:', err);
       setDownloadError('Could not download the document.');
+    } finally {
+      if (mountedRef.current) setDownloading(false);
     }
   };
 
@@ -339,10 +343,18 @@ export default function OpenUICitationReference({ citationNumber, citationData }
                 <button
                   type="button"
                   onClick={handleDownloadDocument}
-                  className="flex items-center gap-1.5 rounded-[10px] border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/70 hover:bg-emerald-500/25"
+                  disabled={downloading}
+                  className="flex items-center gap-1.5 rounded-[10px] border border-emerald-400/40 bg-emerald-500/15 px-3 py-1.5 text-xs font-semibold text-emerald-100 transition hover:border-emerald-300/70 hover:bg-emerald-500/25 disabled:cursor-wait disabled:opacity-70"
                 >
-                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                  Download document
+                  {downloading ? (
+                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                  ) : (
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                  )}
+                  {downloading ? 'Downloading…' : 'Download document'}
                 </button>
               </div>
             </div>

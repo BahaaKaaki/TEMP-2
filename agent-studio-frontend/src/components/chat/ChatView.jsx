@@ -58,6 +58,7 @@ import {
 import OpenUIMessage from '@/openui/OpenUIMessage';
 import {
   getDeliverableName,
+  getDeliverableSections,
   getDeliverableSummary,
   hasRenderableOpenUI,
   readDeliverableOpenUILang,
@@ -217,6 +218,12 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
   // Show the deliverable's own name rather than the producing agent's label.
   const headerLabel = getDeliverableName(step);
   const needsReview = hasHitl && status === 'pending' && step.agentType !== 'code-executor';
+  const sectionCount = (getDeliverableSections(step) || []).length;
+  const statusPill =
+    status === 'approved' ? { cls: 'border-emerald-900/60 bg-emerald-900/30 text-emerald-300', txt: 'Approved' }
+      : status === 'rejected' ? { cls: 'border-red-900/60 bg-red-900/40 text-red-300', txt: 'Rejected' }
+        : (status === 'pending' && !needsReview) ? { cls: 'border-yellow-900/60 bg-yellow-900/30 text-yellow-300', txt: 'Pending' }
+          : null;
   if (isCodeExecutor) {
     return (
       <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
@@ -255,45 +262,73 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
   return (
     <div className="flex gap-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
       <div className="min-w-0 max-w-[85%] flex-1">
-        <ChatMessageBubble
-          variant="agent"
-          background={bubbleGradient}
-          agentLabel={headerLabel}
-          nodeInfo={stepNodeInfo}
-          status={status}
-          showHitlStatus={hasHitl && Boolean(status)}
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => onExpand()}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onExpand();
+            }
+          }}
+          className="group cursor-pointer overflow-hidden rounded-2xl border border-[#3a3a3a] bg-gradient-to-b from-[#242424] to-[#1a1a1a] shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all hover:border-[#d93854]/55 hover:shadow-[0_12px_34px_rgba(0,0,0,0.34)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d93854]/60"
         >
-          {previewText ? (
-            <div
-              className="markdown-content overflow-hidden text-sm leading-relaxed text-white/85"
-              style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-            >
-              <AgentMessageContent message={previewMessage} />
+          {needsReview && (
+            <div className="flex items-center gap-2 border-b border-[#d93854]/30 bg-[#d93854]/12 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#ff8ba0]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#ff8ba0] animate-pulse" />
+              Needs your review
             </div>
-          ) : summary ? (
-            <p className="text-sm leading-relaxed text-white/85">{renderTextWithCitations(summary, step?.deliverable?._citations)}</p>
-          ) : (
-            <p className="text-sm italic leading-relaxed text-white/50">
-              Open the full view to explore this deliverable.
-            </p>
           )}
-          <div className="mt-3 flex items-center justify-between border-t border-white/10 pt-2">
-            {needsReview ? (
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-[#d93854]/15 px-2 py-0.5 text-[11px] font-semibold text-[#ff8ba0]">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ff8ba0]" />
-                Needs your review
-              </span>
-            ) : (
-              <span />
-            )}
-            <button type="button" onClick={() => onExpand()} className={CHAT_TEXT_BTN}>
-              <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          <div className="flex items-start gap-3 px-4 pt-4">
+            <span
+              className="flex h-10 w-10 flex-none items-center justify-center rounded-xl"
+              style={{ background: `${categoryColor || '#d93854'}2e` }}
+            >
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
+            </span>
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8b8b8b]">Deliverable</span>
+                {statusPill && (
+                  <span className={`rounded-full border px-1.5 py-0.5 text-[9px] font-semibold ${statusPill.cls}`}>{statusPill.txt}</span>
+                )}
+              </div>
+              <div className="mt-0.5 truncate text-base font-semibold text-white" title={headerLabel}>{headerLabel}</div>
+              {summary ? (
+                <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-white/70">
+                  {renderTextWithCitations(summary, step?.deliverable?._citations)}
+                </p>
+              ) : (
+                <p className="mt-1.5 text-sm italic leading-relaxed text-white/45">Open to explore this deliverable.</p>
+              )}
+            </div>
+          </div>
+          <div className="mt-3 flex items-center justify-between gap-3 border-t border-white/[0.07] px-4 py-2.5">
+            <span className="min-w-0 truncate text-[11px] text-[#8b8b8b]">
+              {step.agentLabel}{sectionCount > 1 ? ` · ${sectionCount} sections` : ''}
+            </span>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onExpand();
+              }}
+              className={`inline-flex flex-none items-center gap-1.5 rounded-[10px] px-3.5 py-2 text-xs font-semibold transition-colors ${
+                needsReview
+                  ? 'bg-[#d93854] text-white hover:bg-[#c42f48]'
+                  : 'border border-[#5a5a5a] bg-[#2c2c2c] text-white hover:border-[#d93854]/60 hover:bg-[#332227]'
+              }`}
+            >
               {needsReview ? 'Review deliverable' : 'Open deliverable'}
+              <svg className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
             </button>
           </div>
-        </ChatMessageBubble>
+        </div>
       </div>
     </div>
   );
@@ -3899,7 +3934,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                       return (
                         <div key={stepId || stepIdx} className="relative">
                           {/* Dot on the connector line (category-colored, trace style) */}
-                          <div className="absolute -left-4 top-4 w-[7px] h-[7px] rounded-full border-2 z-10" style={{ borderColor: stepColor, background: '#1a1a1a' }} />
+                          <div className="absolute -left-3 top-4 w-[7px] h-[7px] rounded-full border-2 z-10" style={{ borderColor: stepColor, background: '#1a1a1a' }} />
 
                           {/* Deliverable card (trace-style) */}
                           <button
@@ -3951,7 +3986,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                                   className="relative w-full flex items-center gap-2.5 pl-5 pr-3 py-2 rounded-lg hover:bg-[#2a2a2a] transition-colors group"
                                 >
                                   {/* Sub-item dot */}
-                                  <div className="absolute left-[4px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full bg-[#6b6b6b]" />
+                                  <div className="absolute left-[5px] top-1/2 -translate-y-1/2 w-[5px] h-[5px] rounded-full bg-[#6b6b6b]" />
                                   <svg className="w-4 h-4 text-[#6b6b6b] flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                                   </svg>
