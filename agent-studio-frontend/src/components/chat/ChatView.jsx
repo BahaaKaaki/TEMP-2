@@ -2868,7 +2868,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            Output
+            Deliverables
           </button>
         )}
 
@@ -3290,7 +3290,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 onPaste={handlePasteOnInput}
                 rows={1}
                 disabled={isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile || hasPendingParsing}
-                className="w-full text-base bg-transparent resize-none transition-all duration-200 focus:outline-none placeholder:text-[#b5b5b5] disabled:opacity-60 disabled:cursor-not-allowed overflow-y-auto caret-white force-white-text"
+                className="w-full text-base leading-6 bg-transparent resize-none transition-all duration-200 focus:outline-none placeholder:text-[#b5b5b5] disabled:opacity-60 disabled:cursor-not-allowed overflow-y-auto caret-white force-white-text"
                 style={{ minHeight: '24px', maxHeight: '200px' }}
               />
 
@@ -3353,7 +3353,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                   type="button"
                   onClick={() => handleSend()}
                   disabled={!session || isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile || hasPendingParsing}
-                  className={CHAT_SEND_BTN}
+                  className={`${CHAT_SEND_BTN} !h-10 !w-10`}
                   title="Send message"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3365,7 +3365,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                   type="button"
                   onClick={toggleListening}
                   disabled={isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile}
-                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
+                  className={`flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
                     isListening
                       ? 'animate-pulse border border-red-400 bg-red-500 text-white disabled:cursor-not-allowed disabled:opacity-40'
                       : CHAT_GHOST_ICON_BTN
@@ -3873,11 +3873,11 @@ export default function ChatView({ testMode = false, onClose = null }) {
             {/* Panel Header */}
             <div className="flex items-center justify-between px-6 pt-6 pb-4 flex-shrink-0">
               <div>
-                <h2 className="text-2xl font-bold text-white">Output</h2>
+                <h2 className="text-2xl font-bold text-white">Deliverables</h2>
                 <div className="mt-1 text-xs text-[#8b8b8b]">
                   {(() => {
                     const n = outputSteps.filter((s) => !hiddenDeliverableAgentIds.has(s.agentId || s.agent_id)).length;
-                    return n === 1 ? '1 deliverable' : `${n} deliverables`;
+                    return n === 1 ? '1 produced' : `${n} produced`;
                   })()}
                 </div>
               </div>
@@ -3936,16 +3936,15 @@ export default function ChatView({ testMode = false, onClose = null }) {
 
                       return (
                         <div key={stepId || stepIdx} className="relative">
-                          {/* Dot on the connector line (category-colored, trace style) */}
-                          <div className="absolute -left-3 top-4 w-[7px] h-[7px] rounded-full border-2 z-10" style={{ borderColor: stepColor, background: '#1a1a1a' }} />
-
                           {/* Deliverable card (trace-style) */}
                           <button
                             onClick={() => !openUINotReady && openExpandedDeliverable(stepId, 0)}
                             disabled={openUINotReady}
                             title={openUINotReady ? 'Generating view...' : undefined}
-                            className="w-full flex items-center gap-3 rounded-xl border border-[#464646] bg-[#202020] px-4 py-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-all hover:border-[#6b6b6b] hover:bg-[#262626] group disabled:opacity-50 disabled:cursor-default disabled:hover:bg-[#202020]"
+                            className="relative w-full flex items-center gap-3 rounded-xl border border-[#464646] bg-[#202020] px-4 py-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-all hover:border-[#6b6b6b] hover:bg-[#262626] group disabled:opacity-50 disabled:cursor-default disabled:hover:bg-[#202020]"
                           >
+                            {/* Timeline dot — vertically centered on the card (category-colored) */}
+                            <div className="absolute -left-3 top-1/2 -translate-y-1/2 w-[7px] h-[7px] rounded-full border-2 z-10" style={{ borderColor: stepColor, background: '#1a1a1a' }} />
                             {stepNodeInfo?.icon && (
                               <span className="flex h-7 w-7 items-center justify-center rounded-lg flex-shrink-0" style={{ background: `${stepColor}33` }}>
                                 {stepNodeInfo.icon.startsWith('/') ? (

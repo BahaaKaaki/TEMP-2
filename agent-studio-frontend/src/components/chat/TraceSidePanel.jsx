@@ -260,7 +260,7 @@ function TraceCard({ span }) {
 
   return (
     <div className="relative pl-5">
-      <div className={`absolute left-[1.5px] top-4 h-[8px] w-[8px] rounded-full border-2 ${statusDotClass(status)}`} />
+      <div className={`absolute left-[1.5px] top-1/2 -translate-y-1/2 h-[8px] w-[8px] rounded-full border-2 ${statusDotClass(status)}`} />
       <div className="overflow-hidden rounded-xl border border-[#464646] bg-[#202020] px-4 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.16)]">
         <div className="flex items-start gap-3">
           <div className="flex-1 min-w-0">
