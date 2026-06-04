@@ -245,6 +245,12 @@ async def get_citation_page_image(
         base_path = doc_row[0].rsplit("/", 1)[0]
         page_blob = f"{base_path}/{document_id}/pages/{page_number:04d}.png"
 
+        # Quiet existence check first: a missing snapshot is the common case
+        # (documents uploaded before this feature, or recursive-chunked). This
+        # avoids the download_blob 3-retry + ERROR-log storm that BlobNotFound
+        # would otherwise trigger; blob_exists() is a single quiet HEAD.
+        if not await storage.blob_exists(page_blob):
+            raise HTTPException(status_code=404, detail="No page snapshot for this citation")
         try:
             data = await storage.download_blob(page_blob)
         except Exception:
