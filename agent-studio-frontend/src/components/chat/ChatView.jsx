@@ -3169,7 +3169,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
           )}
 
           {/* Input Row */}
-          <div className="flex items-start gap-3">
+          <div className="flex items-end gap-2">
           <div
             className={`flex-1 flex flex-col gap-2 relative ${
               isDragOver ? 'ring-2 ring-[#d93854]/50' : ''
@@ -3325,12 +3325,6 @@ export default function ChatView({ testMode = false, onClose = null }) {
               )}
               </div>
             </div>
-
-            {/* Helper Text */}
-            <div className="px-2 flex items-center justify-between text-xs text-[#6b6b6b]">
-              <span>@ to mention data base, Shift+Enter for new line</span>
-              <span>{inputValue.length}/2000</span>
-            </div>
           </div>
 
             {/* Send / Mic combo button */}
@@ -3339,7 +3333,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 type="button"
                 onClick={() => handleSend()}
                 disabled={!session || isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile || hasPendingParsing}
-                className={`${CHAT_SEND_BTN} self-start`}
+                className={CHAT_SEND_BTN}
                 title="Send message"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3351,7 +3345,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 type="button"
                 onClick={toggleListening}
                 disabled={isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile}
-                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center self-start rounded-xl transition-all duration-200 ${
+                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
                   isListening
                     ? 'animate-pulse border border-red-400 bg-red-500 text-white disabled:cursor-not-allowed disabled:opacity-40'
                     : CHAT_GHOST_ICON_BTN
@@ -3377,7 +3371,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 type="button"
                 onClick={handleDeliverNow}
                 disabled={isTyping || isUploadingFile}
-                className={`${CHAT_GHOST_BTN} self-start whitespace-nowrap`}
+                className={`${CHAT_GHOST_BTN} whitespace-nowrap`}
                 title="Force the agent to produce its deliverable now"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -3386,6 +3380,10 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 Deliver Now
               </button>
             )}
+          </div>
+          <div className="mt-1.5 flex items-center justify-between px-2 text-xs text-[#6b6b6b]">
+            <span>@ to mention a database, Shift+Enter for new line</span>
+            <span>{inputValue.length}/2000</span>
           </div>
         </div>
       </div>

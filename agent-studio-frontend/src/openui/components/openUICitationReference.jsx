@@ -73,6 +73,7 @@ export default function OpenUICitationReference({ citationNumber, citationData }
   const [fullCitation, setFullCitation] = useState(null);
   const [downloadError, setDownloadError] = useState(null);
   const [downloading, setDownloading] = useState(false);
+  const [imageZoomed, setImageZoomed] = useState(false);
   const objectUrlRef = useRef(null);
   const fetchStartedRef = useRef(false);
   const mountedRef = useRef(true);
@@ -275,15 +276,20 @@ export default function OpenUICitationReference({ citationNumber, citationData }
               )}
               {pageImageStatus === 'loaded' && pageImageUrl && (
                 <figure className="mb-4">
-                  <div className="overflow-hidden rounded-xl border border-[#464646] bg-black/40">
+                  <button
+                    type="button"
+                    onClick={() => setImageZoomed(true)}
+                    title="Click to enlarge"
+                    className="block w-full cursor-zoom-in overflow-hidden rounded-xl border border-[#464646] bg-black/40 transition hover:border-[#d93854]/50"
+                  >
                     <img
                       src={pageImageUrl}
                       alt={`Source ${pageLabel}${pageNumber != null ? ` ${pageNumber}` : ''}`}
                       className="mx-auto block max-h-[58vh] w-auto"
                     />
-                  </div>
+                  </button>
                   <figcaption className="mt-1.5 text-center text-[11px] text-[#6b6b6b]">
-                    {`The exact ${pageLabel} this answer was drawn from`}
+                    {`The exact ${pageLabel} this answer was drawn from · click to enlarge`}
                   </figcaption>
                 </figure>
               )}
@@ -359,6 +365,20 @@ export default function OpenUICitationReference({ citationNumber, citationData }
               </div>
             </div>
           </div>
+        </div>,
+        document.body,
+      )}
+
+      {imageZoomed && pageImageUrl && createPortal(
+        <div
+          className="fixed inset-0 z-[10001] flex items-center justify-center bg-black/90 p-4 cursor-zoom-out"
+          onClick={() => setImageZoomed(false)}
+        >
+          <img
+            src={pageImageUrl}
+            alt={`Source ${pageLabel}${pageNumber != null ? ` ${pageNumber}` : ''}`}
+            className="max-h-[95vh] max-w-[95vw] object-contain"
+          />
         </div>,
         document.body,
       )}
