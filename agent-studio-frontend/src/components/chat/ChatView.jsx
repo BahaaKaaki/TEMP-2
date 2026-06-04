@@ -272,7 +272,7 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
               onExpand();
             }
           }}
-          className="group cursor-pointer overflow-hidden rounded-2xl border border-[#3a3a3a] bg-gradient-to-b from-[#242424] to-[#1a1a1a] shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all hover:border-[#d93854]/55 hover:shadow-[0_12px_34px_rgba(0,0,0,0.34)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d93854]/60"
+          className="group cursor-pointer overflow-hidden rounded-2xl border border-[#464646] bg-[#202020] shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-all hover:border-[#d93854]/55 hover:bg-[#262626] hover:shadow-[0_12px_34px_rgba(0,0,0,0.30)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#d93854]/60"
         >
           {needsReview && (
             <div className="flex items-center gap-2 border-b border-[#d93854]/30 bg-[#d93854]/12 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-wide text-[#ff8ba0]">
@@ -3169,10 +3169,9 @@ export default function ChatView({ testMode = false, onClose = null }) {
           )}
 
           {/* Input Row */}
-          <div className="flex items-end gap-2">
           <div
-            className={`flex-1 flex flex-col gap-2 relative ${
-              isDragOver ? 'ring-2 ring-[#d93854]/50' : ''
+            className={`relative ${
+              isDragOver ? 'rounded-xl ring-2 ring-[#d93854]/50' : ''
             }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -3194,7 +3193,7 @@ export default function ChatView({ testMode = false, onClose = null }) {
               multiple
               disabled={isUploadingFile || isComposerBlockedByDeliverable || isWorkflowEnded}
             />
-            <div className="chat-thread__composer-shell flex w-full min-w-[240px] items-center gap-2 overflow-hidden px-4 py-3">
+            <div className="chat-thread__composer-shell flex w-full min-w-[240px] items-center gap-2 px-3 py-2">
               {/* Attach button */}
               <button
                 onClick={() => fileInputRef.current?.click()}
@@ -3324,62 +3323,61 @@ export default function ChatView({ testMode = false, onClose = null }) {
                 </div>
               )}
               </div>
+
+              {/* Deliver Now — secondary action, inside the bar */}
+              {!isWorkflowEnded && !isComposerBlockedByDeliverable && session && messages.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleDeliverNow}
+                  disabled={isTyping || isUploadingFile}
+                  className={`${CHAT_GHOST_BTN} whitespace-nowrap`}
+                  title="Force the agent to produce its deliverable now"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Deliver Now
+                </button>
+              )}
+
+              {/* Send / Mic combo — primary action, far right */}
+              {inputValue.trim() ? (
+                <button
+                  type="button"
+                  onClick={() => handleSend()}
+                  disabled={!session || isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile || hasPendingParsing}
+                  className={CHAT_SEND_BTN}
+                  title="Send message"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={toggleListening}
+                  disabled={isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile}
+                  className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
+                    isListening
+                      ? 'animate-pulse border border-red-400 bg-red-500 text-white disabled:cursor-not-allowed disabled:opacity-40'
+                      : CHAT_GHOST_ICON_BTN
+                  }`}
+                  title={isListening ? 'Stop recording' : 'Voice input'}
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    {isListening ? (
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
+                    ) : (
+                      <>
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-14 0" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18v3m0-3a4 4 0 01-4-4V7a4 4 0 118 0v7a4 4 0 01-4 4z" />
+                      </>
+                    )}
+                  </svg>
+                </button>
+              )}
             </div>
-          </div>
-
-            {/* Send / Mic combo button */}
-            {inputValue.trim() ? (
-              <button
-                type="button"
-                onClick={() => handleSend()}
-                disabled={!session || isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile || hasPendingParsing}
-                className={CHAT_SEND_BTN}
-                title="Send message"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                </svg>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={toggleListening}
-                disabled={isWorkflowEnded || isComposerBlockedByDeliverable || isUploadingFile}
-                className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl transition-all duration-200 ${
-                  isListening
-                    ? 'animate-pulse border border-red-400 bg-red-500 text-white disabled:cursor-not-allowed disabled:opacity-40'
-                    : CHAT_GHOST_ICON_BTN
-                }`}
-                title={isListening ? 'Stop recording' : 'Voice input'}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  {isListening ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" />
-                  ) : (
-                    <>
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-14 0" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18v3m0-3a4 4 0 01-4-4V7a4 4 0 118 0v7a4 4 0 01-4 4z" />
-                    </>
-                  )}
-                </svg>
-              </button>
-            )}
-
-            {/* Deliver Now Button */}
-            {!isWorkflowEnded && !isComposerBlockedByDeliverable && session && messages.length > 0 && (
-              <button
-                type="button"
-                onClick={handleDeliverNow}
-                disabled={isTyping || isUploadingFile}
-                className={`${CHAT_GHOST_BTN} whitespace-nowrap`}
-                title="Force the agent to produce its deliverable now"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Deliver Now
-              </button>
-            )}
           </div>
           <div className="mt-1.5 flex items-center justify-between px-2 text-xs text-[#6b6b6b]">
             <span>@ to mention a database, Shift+Enter for new line</span>
