@@ -63,6 +63,7 @@ import {
   readDeliverableOpenUILang,
   requiresOpenUI,
 } from '@/openui/resolveOpenUILang';
+import { renderTextWithCitations } from '@/openui/citationText';
 
 // Tracks sessions with active workflow executions.
 // Maps sessionId → cached messages array (preserves chat across switches).
@@ -270,7 +271,7 @@ function OutputStepMessage({ step, stepTitle, stepNodeInfo, categoryColor, agent
               <AgentMessageContent message={previewMessage} />
             </div>
           ) : summary ? (
-            <p className="text-sm leading-relaxed text-white/85">{summary}</p>
+            <p className="text-sm leading-relaxed text-white/85">{renderTextWithCitations(summary, step?.deliverable?._citations)}</p>
           ) : (
             <p className="text-sm italic leading-relaxed text-white/50">
               Open the full view to explore this deliverable.
@@ -3936,6 +3937,11 @@ export default function ChatView({ testMode = false, onClose = null }) {
                         }
                       }
                       const showSections = sections.length > 1;
+                      const statusPill =
+                        step.status === 'approved' ? { cls: 'border-emerald-900/60 bg-emerald-900/30 text-emerald-300', txt: 'Approved' }
+                          : step.status === 'rejected' ? { cls: 'border-red-900/60 bg-red-900/40 text-red-300', txt: 'Rejected' }
+                            : step.status === 'pending' ? { cls: 'border-yellow-900/60 bg-yellow-900/30 text-yellow-300', txt: 'Pending' }
+                              : null;
 
                       return (
                         <div key={stepId || stepIdx} className="relative">
@@ -3950,22 +3956,30 @@ export default function ChatView({ testMode = false, onClose = null }) {
                             className="w-full flex items-center gap-3 rounded-xl border border-[#464646] bg-[#202020] px-4 py-3 text-left shadow-[0_8px_24px_rgba(0,0,0,0.16)] transition-all hover:border-[#6b6b6b] hover:bg-[#262626] group disabled:opacity-50 disabled:cursor-default disabled:hover:bg-[#202020]"
                           >
                             {stepNodeInfo?.icon && (
-                              <span className="flex items-center justify-center w-5 h-5 flex-shrink-0">
+                              <span className="flex h-7 w-7 items-center justify-center rounded-lg flex-shrink-0" style={{ background: `${stepColor}33` }}>
                                 {stepNodeInfo.icon.startsWith('/') ? (
-                                  <img src={stepNodeInfo.icon} alt={stepNodeInfo.name} className="w-5 h-5 brightness-0 invert" />
+                                  <img src={stepNodeInfo.icon} alt={stepNodeInfo.name} className="h-4 w-4 brightness-0 invert" />
                                 ) : (
                                   <span className="text-sm">{stepNodeInfo.icon}</span>
                                 )}
                               </span>
                             )}
-                            <span className="flex-1 text-sm font-semibold text-white text-left truncate">{stepLabel}</span>
+                            <div className="min-w-0 flex-1">
+                              <div className="truncate text-sm font-semibold text-white">{stepLabel}</div>
+                              <div className="mt-0.5 truncate text-[11px] text-[#8b8b8b]">
+                                {step.agentLabel}{showSections ? ` · ${sections.length} sections` : ''}
+                              </div>
+                            </div>
+                            {statusPill && (
+                              <span className={`flex-shrink-0 rounded-full border px-2 py-0.5 text-[10px] ${statusPill.cls}`}>{statusPill.txt}</span>
+                            )}
                             {openUINotReady ? (
                               <svg className="animate-spin w-4 h-4 text-white/60 flex-shrink-0" fill="none" viewBox="0 0 24 24">
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                               </svg>
                             ) : (
-                              <svg className="w-4 h-4 text-white/60 group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4 text-[#6b6b6b] group-hover:text-white transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 17l9.2-9.2M17 17V7H7" />
                               </svg>
                             )}

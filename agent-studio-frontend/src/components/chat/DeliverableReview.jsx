@@ -16,6 +16,7 @@ import DeliverableOpenUIView from '@/openui/DeliverableOpenUIView';
 import { getDeliverableOpenUISections } from '@/openui/resolveOpenUILang';
 import { downloadInteractiveDeliverableHtml } from '@/openui/exportOpenUIHtml';
 import { CHAT_SECONDARY_BTN } from './chatButtonStyles';
+import { renderTextWithCitations } from '@/openui/citationText';
 
 const DeliverableReview = ({
   deliverable,
@@ -314,7 +315,10 @@ const DeliverableReview = ({
               <div className="flex flex-col flex-1 min-h-0">
                 {(deliverable.deliverable?.summary || deliverable.summary) && (
                   <p className="mb-4 text-sm text-white/80 leading-relaxed">
-                    {deliverable.deliverable?.summary || deliverable.summary}
+                    {renderTextWithCitations(
+                      deliverable.deliverable?.summary || deliverable.summary,
+                      deliverable.deliverable?._citations,
+                    )}
                   </p>
                 )}
                 <DeliverableOpenUIView
