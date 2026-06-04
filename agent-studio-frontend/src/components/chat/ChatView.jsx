@@ -2213,6 +2213,10 @@ export default function ChatView({ testMode = false, onClose = null }) {
       const response = await approveDeliverable(deliverableId, approvalData);
       safeLog('Approval response:', response);
 
+      // Approving is terminal — close the deliverable and return to the chat
+      // so the user sees the workflow continue.
+      setExpandedDeliverableId(null);
+
       if (session && session.id) {
         const deliverablesData = await getSessionDeliverables(session.id);
         if (deliverablesData && deliverablesData.deliverables) {
@@ -2347,6 +2351,9 @@ export default function ChatView({ testMode = false, onClose = null }) {
     try {
       const response = await rejectDeliverable(deliverableId, { review_notes: rejectionNotes });
       safeLog('Rejection response:', response);
+
+      // Feedback sent — close the deliverable and return to the chat to watch the revision.
+      setExpandedDeliverableId(null);
 
       if (session && session.id) {
         const sessionData = await getChatSession(session.id);
